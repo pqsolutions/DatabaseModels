@@ -1,8 +1,10 @@
 
-CREATE Procedure [dbo].[SPC_FetchAllPatients]
+alter Procedure [dbo].[SPC_FetchAllPatients] (@GID int)
 As
 Begin
-	Select top 1
+	if @GID = 0
+	Begin
+	Select 
 		[ID]
 		,[GID]
 		,[FIRSTNAME] 
@@ -10,6 +12,18 @@ Begin
 		,[CITY] 
 	From [dbo].[TBL_PATIENT] 
 	Order by [GID]
+	End
+	else
+	if @GID > 0
+	Begin
+	Select 
+		[ID]
+		,[GID]
+		,[FIRSTNAME] 
+		,[LASTNAME] 
+		,[CITY] 
+	From [dbo].[TBL_PATIENT] where GID = @GID
+	End
 End
 
 GO

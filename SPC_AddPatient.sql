@@ -1,4 +1,4 @@
-CREATE procedure [dbo].[SPC_AddPatient]
+alter procedure [dbo].[SPC_AddPatient]
 ( 
 	@GID int
 	,@FIRSTNAME varchar(100)
