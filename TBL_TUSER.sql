@@ -1,0 +1,24 @@
+USE [Eduquaydb]
+GO
+
+/****** Object:  Table [dbo].[TBL_TUSER]    Script Date: 3/22/2020 7:44:52 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[TBL_TUSER](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[Useremail] [varchar](200) NOT NULL,
+	[Userpassword] [varchar](255) NOT NULL,
+	[UserFirstName] [varchar](50) NULL,
+	[UserLastName] [varchar](50) NULL,
+ CONSTRAINT [PK_TUSER] PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+
