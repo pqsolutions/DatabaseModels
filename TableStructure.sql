@@ -464,3 +464,134 @@ GO
 
 -----------------------------------------------------------------------------------------------------------------------
 
+USE [Eduquaydb]
+GO
+
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+SET ANSI_PADDING ON
+GO
+
+CREATE TABLE [dbo].[Tbl_Gov_IDTypeMaster](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[GovIDType] [varchar](100) NOT NULL,
+	[Createdon] [datetime] NULL,
+	[Createdby] [int] NULL,
+	[Updatedon] [datetime] NULL,
+	[Updatedby] [int] NULL,
+	[Comments] [varchar](max) NULL,
+	[Isactive] [bit] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+SET ANSI_PADDING OFF
+GO
+
+
+--------------------------------------------------------------------------------------------------------------------------------
+
+USE [Eduquaydb]
+GO
+
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+SET ANSI_PADDING ON
+GO
+
+CREATE TABLE [dbo].[Tbl_SubjectTypeMaster](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[SubjectType] [varchar](100) NOT NULL,
+	[Createdon] [datetime] NULL,
+	[Createdby] [int] NULL,
+	[Updatedon] [datetime] NULL,
+	[Updatedby] [int] NULL,
+	[Comments] [varchar](max) NULL,
+	[Isactive] [bit] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+SET ANSI_PADDING OFF
+GO
+
+
+-------------------------------------------------------------------------------------------------------------------------
+USE [Eduquaydb]
+GO
+
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+SET ANSI_PADDING ON
+GO
+
+
+
+CREATE TABLE [dbo].[Tbl_UserMaster](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[UserType_ID] [int] NOT NULL,
+	[UserRole_ID] [int] NOT NULL,
+	[User_gov_code] [varchar](150) NOT NULL,
+	[Username] [varchar](150) NOT NULL,
+	[Password] [varchar](150) NOT NULL,
+	[StateID] [int] NOT NULL,
+	[DistrictID] [int] NOT NULL,
+	[BlockID] [int] NULL,
+	[CHCID] [int]  NULL,
+	[PHCID] [int]  NULL,
+	[SCID] [int]  NULL,
+	[RIID] [int]  NULL,
+	[FirstName] [varchar](150) NOT NULL,
+	[MiddleName] [varchar](150) NULL,
+	[LastName] [varchar](150) NULL,
+	[ContactNo1] [varchar](150) NULL,
+	[ContactNo2] [varchar](150)  NULL,
+	[Email] [Varchar](150) NULL,
+	[GovIDType_ID] [int] NULL,
+	[GovIDDetails] [varchar] (150) NULL,
+	[Address] [varchar](MAX) NULL,
+	[Pincode] [varchar](150) NULL,
+	[Createdon] [datetime] NULL,
+	[Createdby] [int] NULL,
+	[Updatedon] [datetime] NULL,
+	[Updatedby] [int] NULL,
+	[Comments] [varchar](max) NULL,
+	[IsActive] [bit] NULL,
+	[DigitalSignature] [image] NULL
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+SET ANSI_PADDING OFF
+GO
+
+
+
+-------------------------------------------------------------------------------------------------------------------------------
