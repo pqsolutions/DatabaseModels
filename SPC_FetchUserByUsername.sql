@@ -6,12 +6,12 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-IF EXISTS (Select 1 from sys.objects where name='SPC_FetchUser' and [type] = 'p')
+IF EXISTS (Select 1 from sys.objects where name='SPC_FetchUserByUsername' and [type] = 'p')
 Begin
-	DROP PROCEDURE SPC_FetchUser
+	DROP PROCEDURE SPC_FetchUserByUsername
 End
 GO
-CREATE Procedure [dbo].[SPC_FetchUser](@ID int)
+CREATE Procedure [dbo].[SPC_FetchUserByUsername](@Username varchar(150))
 As
 Begin
 	SELECT 
@@ -63,5 +63,5 @@ Begin
 	INNER JOIN [Eduquaydb].[dbo].[Tbl_SCMaster] sc WITH (NOLOCK) ON sc.ID = um.SCID
 	INNER JOIN [Eduquaydb].[dbo].[Tbl_RIMaster] ri WITH (NOLOCK) ON ri.ID = um.RIID
 	INNER JOIN [Eduquaydb].[dbo].[Tbl_Gov_IDTypeMaster] gm WITH (NOLOCK) ON gm.ID = um.GovIDType_ID
-	WHERE um.[ID]= @ID
+	WHERE um.[Username] = @Username
 End

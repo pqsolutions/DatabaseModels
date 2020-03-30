@@ -24,7 +24,7 @@ Begin
 			,um.[Password]
 			,um.[StateID]
 			,s.[Statename]
-			,um.[DistricID]
+			,um.[DistrictID]
 			,d.[Districtname] 
 			,ISNULL(um.[BlockId],0)AS BlockID
 			,b.[Blockname]
@@ -62,6 +62,6 @@ Begin
 	INNER JOIN [Eduquaydb].[dbo].[Tbl_PHCMaster] p WITH (NOLOCK) ON p.ID = um.PHCID	
 	INNER JOIN [Eduquaydb].[dbo].[Tbl_SCMaster] sc WITH (NOLOCK) ON sc.ID = um.SCID
 	INNER JOIN [Eduquaydb].[dbo].[Tbl_RIMaster] ri WITH (NOLOCK) ON ri.ID = um.RIID
-	INNER JOIN [Eduquaydb].[dbo].[Tbl_Gov-IDTypeMaster] gm WITH (NOLOCK) ON gm.ID = gm.GovIDType
+	INNER JOIN [Eduquaydb].[dbo].[Tbl_Gov_IDTypeMaster] gm WITH (NOLOCK) ON gm.ID = um.GovIDType_ID
 	WHERE um.[UserRole_ID] = @UserRoleId
 End
