@@ -14,8 +14,8 @@ GO
 CREATE Procedure [dbo].[SPC_FetchUserByUsername](@Username varchar(150))
 As
 Begin
-	SELECT 
-			um.[UserType_ID]  
+	SELECT  um.[ID]
+			,um.[UserType_ID]  
 			,ut.[Usertype]
 			,um.[UserRole_ID] 
 			,ur.[Userrolename]
