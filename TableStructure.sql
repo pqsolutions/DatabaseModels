@@ -595,3 +595,218 @@ GO
 
 
 -------------------------------------------------------------------------------------------------------------------------------
+
+
+USE [Eduquaydb]
+GO
+
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+SET ANSI_PADDING ON
+GO
+
+
+
+CREATE TABLE [dbo].[Tbl_SubjectPrimaryDetail](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[SubjectTypeID] [int] NOT NULL,
+	[UniqueSubjectID] [varchar](200) NOT NULL,
+	[DistrictID] [int] NOT NULL,
+	[CHCID] [int] NOT NULL,
+	[PHCID] [int] NOT NULL,
+	[SCID] [int] NOT NULL,
+	[RIID] [int] NOT NULL,
+	[FirstName] [varchar] (150)NOT NULL,
+	[MiddleName] [varchar] (150) NULL,
+	[LastName] [varchar] (150) NULL,
+	[DOB] [datetime] NULL,
+	[Age] [int] NULL,
+	[Gender] [varchar] (20) NULL,
+	[MaritalStatus] [bit] NULL,
+	[MobileNo] [varchar] (150) NULL,
+	[SpouseSubjectID] [varchar](200)  NULL,
+	[Spouse_FirstName] [varchar] (150) NULL,
+	[Spouse_MiddleName] [varchar] (150) NULL,
+	[Spouse_LastName] [varchar] (150) NULL,
+	[Spouse_ContactNo] [varchar] (150) NULL,
+	[GovIdType_ID] [int] NULL,
+	[GovIdDetail] [varchar] (150) NULL,
+	[AssignANM_ID] [int] NULL,
+	[CreatedBy] [int] NOT NULL,
+	[CreatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
+	[IsActive] [bit] NULL
+	
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+SET ANSI_PADDING OFF
+GO
+
+
+-----------------------------------------------------------------------------------------------------------
+
+USE [Eduquaydb]
+GO
+
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+SET ANSI_PADDING ON
+GO
+
+
+
+CREATE TABLE [dbo].[Tbl_SubjectAddressDetail](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[SubjectTypeID] [int] NOT NULL,
+	[UniqueSubjectID] [varchar](200) NOT NULL,
+	[Religion_Id] [int] NULL,
+	[Caste_Id] [int] NULL,
+	[Community_Id] [int] NULL,
+	[Address1] [varchar] (150) NULL,
+	[Address2] [varchar] (150) NULL,
+	[Address3] [varchar] (150) NULL,
+	[Pincode] [varchar] (150) NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
+	
+	
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+SET ANSI_PADDING OFF
+GO
+
+
+------------------------------------------------------------------
+
+
+USE [Eduquaydb]
+GO
+
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+SET ANSI_PADDING ON
+GO
+
+
+
+CREATE TABLE [dbo].[Tbl_SubjectPregnancyDetail](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[SubjectTypeID] [int] NOT NULL,
+	[UniqueSubjectID] [varchar](200) NOT NULL,
+	[RCHID] [varchar] (150) NULL,
+	[ECNumber] [varchar] (150) NULL,
+	[LMP_Date] [datetime] NULL,
+	[Gestational_period] [decimal](18,2) NULL,
+	[G] [int] NULL,
+	[P] [int] NULL,
+	[L] [int] NULL,
+	[A] [int] NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
+	
+	
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+SET ANSI_PADDING OFF
+GO
+
+
+---------------------------------------------------------------------------------------------
+
+
+
+USE [Eduquaydb]
+GO
+
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+SET ANSI_PADDING ON
+GO
+
+
+
+CREATE TABLE [dbo].[Tbl_SubjectParentDetail](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[SubjectTypeID] [int] NOT NULL,
+	[UniqueSubjectID] [varchar](200) NOT NULL,	
+	[Mother_FirstName] [varchar] (150) NULL,
+	[Mother_MiddleName] [varchar] (150) NULL,
+	[Mother_LastName] [varchar] (150) NULL,	
+	[Mother_UniquetID] [varchar](200)  NULL,	
+	[Mother_ContactNo] [varchar] (150) NULL,
+	[Father_FirstName] [varchar] (150) NULL,
+	[Father_MiddleName] [varchar] (150) NULL,
+	[Father_LastName] [varchar] (150) NULL,	
+	[Father_UniquetID] [varchar](200)  NULL,	
+	[Father_ContactNo] [varchar] (150) NULL,
+	[Gaurdian_FirstName] [varchar] (150) NULL,
+	[Gaurdian_MiddleName] [varchar] (150) NULL,
+	[Gaurdian_LastName] [varchar] (150) NULL,	
+	[Gaurdian_ContactNo] [varchar] (150) NULL,
+	[RBSKId] [varchar] (150) NULL,
+	[SchoolName] [varchar] (150) NULL,
+	[SchoolAddress1] [varchar] (250) NULL,
+	[SchoolAddress2] [varchar] (250) NULL,
+	[SchoolAddress3] [varchar] (250) NULL,
+	[SchoolPincode] [varchar] (250) NULL,
+	[SchoolCity] [varchar] (200) NULL,
+	[SchoolState] [int] NULL,
+	[Standard] [varchar] (10) NULL,
+	[Section] [varchar](5) NULL,
+	[RollNo] [varchar] (50) NULL,	
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL
+	
+	
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+SET ANSI_PADDING OFF
+GO
+
+
+-------------------------------------------------------------------------------------
