@@ -52,16 +52,16 @@ Begin
 			,um.[Comments] 
 			,um.[Isactive] 
 			,um.[DigitalSignature]     
-	FROM [Eduquaydb].[dbo].[Tbl_UserMaster] um
-	LEFT JOIN [Eduquaydb].[dbo].[Tbl_UserRoleMaster] ur WITH (NOLOCK) ON ur.ID = um.UserRole_ID
-	LEFT JOIN [Eduquaydb].[dbo].[Tbl_UserTypeMaster] ut WITH (NOLOCK) ON ut.ID = um.UserType_ID
-	LEFT JOIN [Eduquaydb].[dbo].[Tbl_StateMaster] s WITH (NOLOCK) ON s.ID = um.StateID
-	LEFT JOIN [Eduquaydb].[dbo].[Tbl_DistrictMaster] d WITH (NOLOCK) ON d.ID = um.DistrictID
-	INNER JOIN [Eduquaydb].[dbo].[Tbl_BlockMaster] b WITH (NOLOCK) ON b.ID = um.BlockID
-	INNER JOIN [Eduquaydb].[dbo].[Tbl_CHCMaster] c WITH (NOLOCK) ON c.ID = um.CHCID
-	INNER JOIN [Eduquaydb].[dbo].[Tbl_PHCMaster] p WITH (NOLOCK) ON p.ID = um.PHCID	
-	INNER JOIN [Eduquaydb].[dbo].[Tbl_SCMaster] sc WITH (NOLOCK) ON sc.ID = um.SCID
-	INNER JOIN [Eduquaydb].[dbo].[Tbl_RIMaster] ri WITH (NOLOCK) ON ri.ID = um.RIID
-	INNER JOIN [Eduquaydb].[dbo].[Tbl_Gov_IDTypeMaster] gm WITH (NOLOCK) ON gm.ID = um.GovIDType_ID
+	FROM [dbo].[Tbl_UserMaster] um
+	LEFT JOIN [dbo].[Tbl_UserRoleMaster] ur WITH (NOLOCK) ON ur.ID = um.UserRole_ID
+	LEFT JOIN [dbo].[Tbl_UserTypeMaster] ut WITH (NOLOCK) ON ut.ID = um.UserType_ID
+	LEFT JOIN [dbo].[Tbl_StateMaster] s WITH (NOLOCK) ON s.ID = um.StateID
+	LEFT JOIN [dbo].[Tbl_DistrictMaster] d WITH (NOLOCK) ON d.ID = um.DistrictID
+	INNER JOIN [dbo].[Tbl_BlockMaster] b WITH (NOLOCK) ON b.ID = um.BlockID
+	INNER JOIN [dbo].[Tbl_CHCMaster] c WITH (NOLOCK) ON c.ID = um.CHCID
+	INNER JOIN [dbo].[Tbl_PHCMaster] p WITH (NOLOCK) ON p.ID = um.PHCID	
+	INNER JOIN [dbo].[Tbl_SCMaster] sc WITH (NOLOCK) ON sc.ID = um.SCID
+	INNER JOIN [dbo].[Tbl_RIMaster] ri WITH (NOLOCK) ON ri.ID = um.RIID
+	INNER JOIN [dbo].[Tbl_Gov_IDTypeMaster] gm WITH (NOLOCK) ON gm.ID = um.GovIDType_ID
 	WHERE um.[UserRole_ID] = @UserRoleId
 End
