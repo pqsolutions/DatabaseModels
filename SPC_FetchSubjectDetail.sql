@@ -51,7 +51,8 @@ BEGIN
 			,RM.[Religionname]
 			,SAD.[Caste_Id]
 			,CAM.[Castename]
-			,SAD.[CommunityName]
+			,SAD.[Community_Id]
+			,COM.[CommunityName]
 			,SAD.[Address1]
 			,SAD.[Address2]
 			,SAD.[Address3]
@@ -104,7 +105,8 @@ BEGIN
 	LEFT JOIN [dbo].[Tbl_StateMaster] SMS WITH (NOLOCK) ON SMS.[ID] = SPAD.[SchoolState] 
 	LEFT JOIN [dbo].[Tbl_ReligionMaster] RM WITH (NOLOCK) ON RM.[ID] = SAD.[Religion_Id]  
 	LEFT JOIN [dbo].[Tbl_CasteMaster] CAM WITH (NOLOCK) ON CAM.[ID] = SAD.[Caste_Id]   
-	INNER JOIN [dbo].[Tbl_Gov_IDTypeMaster] GIM WITH (NOLOCK) ON GIM.[ID] = SPRD.[GovIdType_ID]    
+	LEFT JOIN [dbo].[Tbl_Gov_IDTypeMaster] GIM WITH (NOLOCK) ON GIM.[ID] = SPRD.[GovIdType_ID]    
+	LEFT JOIN [dbo].[Tbl_CommunityMaster] COM WITH (NOLOCK) ON COM.[ID] = SAD.[Community_Id]    
 	
 	WHERE  SPRD.[UniqueSubjectID] = @UniqueSubjectID	
 END

@@ -12,8 +12,7 @@ End
 GO
 CREATE PROCEDURE [dbo].[SPC_AddSubjectAddressDetail]
 (
-	@SubjectTypeID  INT
-	,@UniqueSubjectID VARCHAR(2000)
+	@SubjectID  INT	
 	,@Religion_Id INT
 	,@Caste_Id INT
 	,@Community_Id INT
@@ -26,16 +25,18 @@ CREATE PROCEDURE [dbo].[SPC_AddSubjectAddressDetail]
 ) AS
 DECLARE
 	@SubCount INT
+	,@UniqueSubjectID VARCHAR(250)
 	,@tempUserId INT
 BEGIN
 	BEGIN TRY
-		IF @uniqueSubjectId = '' OR @uniqueSubjectId is NULL
+		IF  @SubjectID IS NOT NULL
 		BEGIN
-			SELECT @SubCount =  count(ID) from Tbl_SubjectAddressDetail where UniqueSubjectID = @UniqueSubjectID
+			SELECT @SubCount =  count(ID) FROM Tbl_SubjectAddressDetail WHERE SubjectID = @SubjectID
+			SELECT @UniqueSubjectID =   UniqueSubjectID FROM Tbl_SubjectPrimaryDetail WHERE ID = @SubjectID
 			IF (@SubCount <= 0) 
 			BEGIN
 				INSERT INTO [dbo].[Tbl_SubjectAddressDetail]
-						   (SubjectTypeID
+						   (SubjectID
 						   ,UniqueSubjectID
 						   ,Religion_Id
 						   ,Caste_Id
@@ -47,7 +48,7 @@ BEGIN
 						   ,UpdatedBy
 						   ,UpdatedOn)
 					 VALUES
-						   (@SubjectTypeID
+						   (@SubjectID
 						   ,@UniqueSubjectID
 						   ,@Religion_Id
 						   ,@Caste_Id
@@ -64,8 +65,7 @@ BEGIN
 			ELSE 
 			BEGIN
 				UPDATE [dbo].[Tbl_SubjectAddressDetail]
-				   SET SubjectTypeID = @SubjectTypeID					 
-					  ,Religion_Id = @Religion_Id
+				   SET Religion_Id = @Religion_Id
 					  ,Caste_Id = @Caste_Id
 					  ,Community_Id = @Community_Id
 					  ,Address1 = @Address1

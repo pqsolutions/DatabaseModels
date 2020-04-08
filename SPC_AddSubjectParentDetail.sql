@@ -12,8 +12,7 @@ End
 GO
 CREATE PROCEDURE [dbo].[SPC_AddSubjectParentDetail]
 (
-	@SubjectTypeID  INT
-	,@UniqueSubjectID VARCHAR(200)
+	@SubjectID  INT	
 	,@Mother_FirstName VARCHAR(150)
 	,@Mother_MiddleName VARCHAR(150)
 	,@Mother_LastName VARCHAR(150)
@@ -44,16 +43,18 @@ CREATE PROCEDURE [dbo].[SPC_AddSubjectParentDetail]
 ) AS
 DECLARE
 	@SubCount INT
+	,@UniqueSubjectID VARCHAR(200)
 	,@tempUserId INT
 BEGIN
 	BEGIN TRY
-		IF @uniqueSubjectId = '' OR @uniqueSubjectId is NULL
+		IF @SubjectID IS NOT NULL
 		BEGIN
-			SELECT @SubCount =  count(ID) from Tbl_SubjectParentDetail where UniqueSubjectID = @UniqueSubjectID
+			SELECT @SubCount =  count(ID) from Tbl_SubjectParentDetail where SubjectID = @SubjectID
+			SELECT @UniqueSubjectID =   UniqueSubjectID FROM Tbl_SubjectPrimaryDetail WHERE ID = @SubjectID
 			IF (@SubCount <= 0) 
 			BEGIN
 				INSERT INTO [dbo].[Tbl_SubjectParentDetail]
-					(SubjectTypeID
+					(SubjectID
 					,UniqueSubjectID
 					,Mother_FirstName
 					,Mother_MiddleName
@@ -83,7 +84,7 @@ BEGIN
 					,UpdatedBy
 					,UpdatedOn)
 				VALUES
-					(@SubjectTypeID  
+					(@SubjectID  
 					,@UniqueSubjectID 
 					,@Mother_FirstName 
 					,@Mother_MiddleName 
@@ -118,8 +119,7 @@ BEGIN
 			ELSE 
 			BEGIN
 				UPDATE [dbo].[Tbl_SubjectParentDetail]
-				   SET SubjectTypeID = @SubjectTypeID
-						,Mother_FirstName = @Mother_FirstName
+				   SET Mother_FirstName = @Mother_FirstName
 						,Mother_MiddleName = @Mother_MiddleName
 						,Mother_LastName = @Mother_LastName
 						,Mother_UniquetID = @Mother_UniquetID

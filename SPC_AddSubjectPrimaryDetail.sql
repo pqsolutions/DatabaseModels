@@ -41,10 +41,11 @@ CREATE PROCEDURE [dbo].[SPC_AddSubjectPrimaryDetail]
 	  ,@Source CHAR(1)
 	  
 )AS
-
+DECLARE 
+	@ID INT
 BEGIN
 	BEGIN TRY
-		IF @uniqueSubjectId = '' OR @uniqueSubjectId is NULL
+		IF @uniqueSubjectId = '' OR @uniqueSubjectId IS NULL
 		BEGIN
 			 SET @uniqueSubjectId = (Select [dbo].[FN_GenerateUniqueSubjectId](@AssignANM_ID,@Source))
 			 INSERT INTO [dbo].[Tbl_SubjectPrimaryDetail]
@@ -105,10 +106,11 @@ BEGIN
 					   ,@UpdatedBy
 					   ,GETDATE()
 					   ,@IsActive)
-				SELECT  @UniqueSubjectID as UniqueSubjectID
+				SELECT  @UniqueSubjectID as UniqueSubjectID, SCOPE_IDENTITY() AS ID
 		END
 		ELSE
 		BEGIN
+			SET @ID = (SELECT ID FROM Tbl_SubjectPrimaryDetail WHERE UniqueSubjectID = @UniqueSubjectID) 
 			UPDATE [dbo].[Tbl_SubjectPrimaryDetail]
 				   SET SubjectTypeID = @SubjectTypeID					  
 					  ,DistrictID = @DistrictID
@@ -135,9 +137,9 @@ BEGIN
 					  ,UpdatedBy = @UpdatedBy
 					  ,UpdatedOn = GETDATE()
 					  ,IsActive = @IsActive
-					WHERE UniqueSubjectID = @UniqueSubjectID
+					WHERE ID = @ID
 					
-				SELECT  @UniqueSubjectID as UniqueSubjectID
+				SELECT  @UniqueSubjectID AS UniqueSubjectID, @ID AS ID
 							
 		END
 	END TRY

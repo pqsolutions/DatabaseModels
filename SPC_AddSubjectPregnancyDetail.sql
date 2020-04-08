@@ -12,8 +12,7 @@ End
 GO
 CREATE PROCEDURE [dbo].[SPC_AddSubjectPregnancyDetail]
 (
-	@SubjectTypeID INT
-	,@UniqueSubjectID  VARCHAR(200)
+	@SubjectID INT
 	,@RCHID  VARCHAR(150)
 	,@ECNumber  VARCHAR(150)
 	,@LMP_Date  DATETIME
@@ -27,16 +26,18 @@ CREATE PROCEDURE [dbo].[SPC_AddSubjectPregnancyDetail]
 ) AS
 DECLARE
 	@SubCount INT
+	,@UniqueSubjectID  VARCHAR(200)
 	,@tempUserId INT
 BEGIN
 	BEGIN TRY
-		IF @uniqueSubjectId = '' OR @uniqueSubjectId is NULL
+		IF @SubjectID IS NOT NULL
 		BEGIN
-			SELECT @SubCount =  count(ID) from Tbl_SubjectPregnancyDetail where UniqueSubjectID = @UniqueSubjectID
+			SELECT @SubCount =  count(ID) from Tbl_SubjectPregnancyDetail where SubjectID = @SubjectID
+			SELECT @UniqueSubjectID =   UniqueSubjectID FROM Tbl_SubjectPrimaryDetail WHERE ID = @SubjectID
 			IF (@SubCount <= 0) 
 			BEGIN
 				INSERT INTO [dbo].[Tbl_SubjectPregnancyDetail]
-					(SubjectTypeID
+					(SubjectID
 					,UniqueSubjectID
 					,RCHID
 					,ECNumber
@@ -49,7 +50,7 @@ BEGIN
 					,UpdatedBy
 					,UpdatedOn)
 				VALUES
-					(@SubjectTypeID
+					(@SubjectID
 					,@UniqueSubjectID 
 					,@RCHID
 					,@ECNumber
@@ -67,8 +68,7 @@ BEGIN
 			ELSE 
 			BEGIN
 				UPDATE [dbo].[Tbl_SubjectPregnancyDetail]
-				   SET SubjectTypeID = @SubjectTypeID					 
-					  ,RCHID = @RCHID
+				   SET RCHID = @RCHID
 					  ,ECNumber = @ECNumber
 					  ,LMP_Date = @LMP_Date
 					  ,Gestational_period = @Gestational_period

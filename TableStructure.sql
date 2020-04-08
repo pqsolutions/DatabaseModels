@@ -674,11 +674,11 @@ GO
 
 CREATE TABLE [dbo].[Tbl_SubjectAddressDetail](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
-	[SubjectTypeID] [int] NOT NULL,
+	[SubjectID] [int] NOT NULL,
 	[UniqueSubjectID] [varchar](200) NOT NULL,
 	[Religion_Id] [int] NULL,
 	[Caste_Id] [int] NULL,
-	[CommunityName]  [varchar](250) NULL,
+	[Community_Id] [int] NULL,
 	[Address1] [varchar] (150) NULL,
 	[Address2] [varchar] (150) NULL,
 	[Address3] [varchar] (150) NULL,
@@ -719,7 +719,7 @@ GO
 
 CREATE TABLE [dbo].[Tbl_SubjectPregnancyDetail](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
-	[SubjectTypeID] [int] NOT NULL,
+	[SubjectID] [int] NOT NULL,
 	[UniqueSubjectID] [varchar](200) NOT NULL,
 	[RCHID] [varchar] (150) NULL,
 	[ECNumber] [varchar] (150) NULL,
@@ -766,7 +766,7 @@ GO
 
 CREATE TABLE [dbo].[Tbl_SubjectParentDetail](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
-	[SubjectTypeID] [int] NOT NULL,
+	[SubjectID] [int] NOT NULL,
 	[UniqueSubjectID] [varchar](200) NOT NULL,	
 	[Mother_FirstName] [varchar] (150) NULL,
 	[Mother_MiddleName] [varchar] (150) NULL,
@@ -882,3 +882,38 @@ GO
 
 
 ----------------------------------------------------------------------------------------------------------------------------
+
+
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+SET ANSI_PADDING ON
+GO
+
+CREATE TABLE [dbo].[Tbl_CommunityMaster](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[CasteID] [int] NOT NULL,
+	[Communityname] [varchar](150) NOT NULL,	
+	[Createdon] [datetime] NULL,
+	[Createdby] [int] NULL,
+	[Updatedon] [datetime] NULL,
+	[Updatedby] [int] NULL,
+	[Comments] [varchar](max) NULL,
+	[Isactive] [bit] NULL,
+	
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+SET ANSI_PADDING OFF
+GO
