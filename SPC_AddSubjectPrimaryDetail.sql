@@ -5,7 +5,7 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-IF EXISTS (Select 1 from sys.objects where name='SPC_AddSubjectPrimaryDetail' and [type] = 'p')
+IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_AddSubjectPrimaryDetail' AND [type] = 'p')
 Begin
 	DROP PROCEDURE SPC_AddSubjectPrimaryDetail
 End
@@ -18,6 +18,7 @@ CREATE PROCEDURE [dbo].[SPC_AddSubjectPrimaryDetail]
       ,@PHCID INT
       ,@SCID INT
       ,@RIID INT
+      ,@SubjectTitle VARCHAR(50)
       ,@FirstName VARCHAR(150)
       ,@MiddleName VARCHAR(150)
       ,@LastName VARCHAR(150)
@@ -26,6 +27,7 @@ CREATE PROCEDURE [dbo].[SPC_AddSubjectPrimaryDetail]
       ,@Gender VARCHAR(20)
       ,@MaritalStatus BIT
       ,@MobileNo VARCHAR(150)
+      ,@EmailId VARCHAR(200)
       ,@SpouseSubjectID VARCHAR(200)
       ,@Spouse_FirstName VARCHAR(150)
       ,@Spouse_MiddleName VARCHAR(150)
@@ -34,6 +36,7 @@ CREATE PROCEDURE [dbo].[SPC_AddSubjectPrimaryDetail]
       ,@GovIdType_ID INT
       ,@GovIdDetail VARCHAR(150)
       ,@AssignANM_ID INT
+      ,@DateofRegister DATETIME
       ,@CreatedBy INT     
       ,@UpdatedBy INT     
       ,@IsActive BIT
@@ -43,70 +46,81 @@ CREATE PROCEDURE [dbo].[SPC_AddSubjectPrimaryDetail]
 )AS
 DECLARE 
 	@ID INT
+	,@Count int
 BEGIN
 	BEGIN TRY
 		IF @uniqueSubjectId = '' OR @uniqueSubjectId IS NULL
 		BEGIN
 			 SET @uniqueSubjectId = (Select [dbo].[FN_GenerateUniqueSubjectId](@AssignANM_ID,@Source))
-			 INSERT INTO [dbo].[Tbl_SubjectPrimaryDetail]
-					   (SubjectTypeID
-					   ,UniqueSubjectID
-					   ,DistrictID
-					   ,CHCID
-					   ,PHCID
-					   ,SCID
-					   ,RIID
-					   ,FirstName
-					   ,MiddleName
-					   ,LastName
-					   ,DOB
-					   ,Age
-					   ,Gender
-					   ,MaritalStatus
-					   ,MobileNo
-					   ,SpouseSubjectID
-					   ,Spouse_FirstName
-					   ,Spouse_MiddleName
-					   ,Spouse_LastName
-					   ,Spouse_ContactNo
-					   ,GovIdType_ID
-					   ,GovIdDetail
-					   ,AssignANM_ID
-					   ,CreatedBy
-					   ,CreatedOn
-					   ,UpdatedBy
-					   ,UpdatedOn
-					   ,IsActive)
-				 VALUES
-					   (@SubjectTypeID
-					   ,@UniqueSubjectID
-					   ,@DistrictID
-					   ,@CHCID
-					   ,@PHCID
-					   ,@SCID
-					   ,@RIID
-					   ,@FirstName
-					   ,@MiddleName
-					   ,@LastName
-					   ,@DOB
-					   ,@Age
-					   ,@Gender
-					   ,@MaritalStatus
-					   ,@MobileNo
-					   ,@SpouseSubjectID
-					   ,@Spouse_FirstName
-					   ,@Spouse_MiddleName
-					   ,@Spouse_LastName
-					   ,@Spouse_ContactNo
-					   ,@GovIdType_ID
-					   ,@GovIdDetail
-					   ,@AssignANM_ID
-					   ,@CreatedBy
-					   ,GETDATE()
-					   ,@UpdatedBy
-					   ,GETDATE()
-					   ,@IsActive)
-				SELECT  @UniqueSubjectID as UniqueSubjectID, SCOPE_IDENTITY() AS ID
+			 SELECT @Count =  count(ID) FROM Tbl_SubjectPrimaryDetail WHERE uniqueSubjectId = @uniqueSubjectId
+			 IF (@Count <= 0)
+			 BEGIN
+				 INSERT INTO [dbo].[Tbl_SubjectPrimaryDetail]
+						   (SubjectTypeID
+						   ,UniqueSubjectID
+						   ,DistrictID
+						   ,CHCID
+						   ,PHCID
+						   ,SCID
+						   ,RIID
+						   ,SubjectTitle
+						   ,FirstName
+						   ,MiddleName
+						   ,LastName
+						   ,DOB
+						   ,Age
+						   ,Gender
+						   ,MaritalStatus
+						   ,MobileNo
+						   ,EmailId
+						   ,SpouseSubjectID
+						   ,Spouse_FirstName
+						   ,Spouse_MiddleName
+						   ,Spouse_LastName
+						   ,Spouse_ContactNo
+						   ,GovIdType_ID
+						   ,GovIdDetail
+						   ,AssignANM_ID
+						   ,DateofRegister
+						   ,CreatedBy
+						   ,CreatedOn
+						   ,UpdatedBy
+						   ,UpdatedOn
+						   ,IsActive)
+					 VALUES
+						   (@SubjectTypeID
+						   ,@UniqueSubjectID
+						   ,@DistrictID
+						   ,@CHCID
+						   ,@PHCID
+						   ,@SCID
+						   ,@RIID
+						   ,@SubjectTitle
+						   ,@FirstName
+						   ,@MiddleName
+						   ,@LastName
+						   ,@DOB
+						   ,@Age
+						   ,@Gender
+						   ,@MaritalStatus
+						   ,@MobileNo
+						   ,@EmailId
+						   ,@SpouseSubjectID
+						   ,@Spouse_FirstName
+						   ,@Spouse_MiddleName
+						   ,@Spouse_LastName
+						   ,@Spouse_ContactNo
+						   ,@GovIdType_ID
+						   ,@GovIdDetail
+						   ,@AssignANM_ID
+						   ,@DateofRegister
+						   ,@CreatedBy
+						   ,GETDATE()
+						   ,@UpdatedBy
+						   ,GETDATE()
+						   ,@IsActive)
+					SELECT  @UniqueSubjectID as UniqueSubjectID, SCOPE_IDENTITY() AS ID
+				END
 		END
 		ELSE
 		BEGIN
@@ -118,6 +132,7 @@ BEGIN
 					  ,PHCID = @PHCID
 					  ,SCID = @SCID
 					  ,RIID = @RIID
+					  ,SubjectTitle = @SubjectTitle
 					  ,FirstName = @FirstName
 					  ,MiddleName = @MiddleName
 					  ,LastName = @LastName
@@ -126,6 +141,7 @@ BEGIN
 					  ,Gender = @Gender
 					  ,MaritalStatus = @MaritalStatus
 					  ,MobileNo = @MobileNo
+					  ,EmailId = @EmailId
 					  ,SpouseSubjectID = @SpouseSubjectID
 					  ,Spouse_FirstName = @Spouse_FirstName
 					  ,Spouse_MiddleName = @Spouse_MiddleName
@@ -133,7 +149,8 @@ BEGIN
 					  ,Spouse_ContactNo = @Spouse_ContactNo
 					  ,GovIdType_ID = @GovIdType_ID
 					  ,GovIdDetail = @GovIdDetail
-					  ,AssignANM_ID = @AssignANM_ID					  				 
+					  ,AssignANM_ID = @AssignANM_ID
+					  ,DateofRegister = @DateofRegister					  				 
 					  ,UpdatedBy = @UpdatedBy
 					  ,UpdatedOn = GETDATE()
 					  ,IsActive = @IsActive

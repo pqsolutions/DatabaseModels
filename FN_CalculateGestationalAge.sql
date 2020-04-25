@@ -1,0 +1,37 @@
+USE [Eduquaydb]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+IF EXISTS (SELECT 1 FROM sys.objects WHERE name='FN_CalculateGestationalAge' AND [type] = 'FN')
+BEGIN
+	DROP FUNCTION FN_CalculateGestationalAge
+END
+GO
+CREATE FUNCTION [dbo].[FN_CalculateGestationalAge]   
+(
+	@ID INT	
+) 
+RETURNS VARCHAR(20)        
+AS    
+BEGIN
+	DECLARE
+		@LMPDate  DATETIME
+		,@Week INT
+		,@Day INT
+		,@GestationalAge VARCHAR(20)		
+		SET @LMPDate = (SELECT TOP 1 LMP_Date FROM Tbl_SubjectPregnancyDetail WHERE SubjectID = @ID)
+		IF @LMPDATE IS NOT NULL OR @LMPDATE != ''
+		BEGIN
+			SET @Week = (SELECT DATEDIFF(day, @LMPDate, GETDATE())/7) 
+			SET @Day = (SELECT DATEDIFF(day, @LMPDate, GETDATE())%7)
+			SET @GestationalAge = (CAST(@Week AS VARCHAR(5)) + ' Weeks ' + CAST(@Day AS VARCHAR(5)) + ' Day(s) ')
+		END
+		ELSE
+		BEGIN
+			SET @GestationalAge = '0'
+		END
+	RETURN 	@GestationalAge
+END

@@ -7,9 +7,8 @@ GO
 
 SET QUOTED_IDENTIFIER ON
 GO
-
-SET ANSI_PADDING ON
-GO
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_StateMaster' AND [type] = 'U')
+BEGIN
 
 CREATE TABLE [dbo].[Tbl_StateMaster](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
@@ -22,19 +21,14 @@ CREATE TABLE [dbo].[Tbl_StateMaster](
 	[Updatedby] [int] NULL,
 	[Comments] [varchar](max) NULL,
 	[Isactive] [bit] NULL,
-	[Latitude] [varchar](150) NULL,
-	[Longitude] [varchar](150) NULL,
+	
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
 )WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 
-GO
-
-SET ANSI_PADDING OFF
-GO
-
+END
 
 -------------------------------------------------------------
 
@@ -49,11 +43,8 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-SET ANSI_PADDING ON
-GO
-
-
-
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_DistrictMaster' AND [type] = 'U')
+BEGIN
 CREATE TABLE [dbo].[Tbl_DistrictMaster](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
 	[StateID] [int] NOT NULL,
@@ -64,20 +55,14 @@ CREATE TABLE [dbo].[Tbl_DistrictMaster](
 	[Updatedon] [datetime] NULL,
 	[Updatedby] [int] NULL,
 	[Comments] [varchar](max) NULL,
-	[Isactive] [bit] NULL,
-	[Latitude] [varchar](150) NULL,
-	[Longitude] [varchar](150) NULL,
+	[Isactive] [bit] NULL,	
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
 )WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 
-GO
-
-SET ANSI_PADDING OFF
-GO
-
+END
 
 -----------------------------------------------------------------------------------
 
@@ -92,11 +77,8 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-SET ANSI_PADDING ON
-GO
-
-
-
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_BlockMaster' AND [type] = 'U')
+BEGIN
 CREATE TABLE [dbo].[Tbl_BlockMaster](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
 	[DistrictID] [int] NOT NULL,
@@ -108,18 +90,14 @@ CREATE TABLE [dbo].[Tbl_BlockMaster](
 	[Updatedby] [int] NULL,
 	[Comments] [varchar](max) NULL,
 	[Isactive] [bit] NULL,
-	[Latitude] [varchar](150) NULL,
-	[Longitude] [varchar](150) NULL,
+	
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
 )WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 
-GO
-
-SET ANSI_PADDING OFF
-GO
+END
 
 
 -----------------------------------------------------------------------------------------------------------
@@ -133,11 +111,8 @@ GO
 
 SET QUOTED_IDENTIFIER ON
 GO
-
-SET ANSI_PADDING ON
-GO
-
-
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_FacilityTypeMaster' AND [type] = 'U')
+BEGIN
 
 CREATE TABLE [dbo].[Tbl_FacilityTypeMaster](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
@@ -154,11 +129,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 
-GO
-
-SET ANSI_PADDING OFF
-GO
-
+END
 
 --------------------------------------------------------------------------------------------------------------
 
@@ -171,9 +142,8 @@ GO
 
 SET QUOTED_IDENTIFIER ON
 GO
-
-SET ANSI_PADDING ON
-GO
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_HNINMaster' AND [type] = 'U')
+BEGIN
 
 CREATE TABLE [dbo].[Tbl_HNINMaster](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
@@ -204,12 +174,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 
-GO
-
-SET ANSI_PADDING OFF
-GO
-
-
+END
 ----------------------------------------------------------------------------------------------------------------------------------
 
 USE [Eduquaydb]
@@ -220,11 +185,8 @@ GO
 
 SET QUOTED_IDENTIFIER ON
 GO
-
-SET ANSI_PADDING ON
-GO
-
-
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_CHCMaster' AND [type] = 'U')
+BEGIN
 
 CREATE TABLE [dbo].[Tbl_CHCMaster](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
@@ -233,7 +195,8 @@ CREATE TABLE [dbo].[Tbl_CHCMaster](
 	[CHC_gov_code] [varchar](100) NOT NULL,
 	[CHCname] [varchar](100) NOT NULL,
 	[Istestingfacility] [bit] NULL,
-	[HNIN_ID] [int] NULL,
+	[HNIN_ID]  [varchar](200) NULL,
+	[Pincode] [varchar](150) NULL,
 	[Createdon] [datetime] NULL,
 	[Createdby] [int] NULL,
 	[Updatedon] [datetime] NULL,
@@ -247,11 +210,7 @@ PRIMARY KEY CLUSTERED
 	[ID] ASC
 )WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
 ) ON [PRIMARY]
-
-GO
-
-SET ANSI_PADDING OFF
-GO
+END
 
 
 -----------------------------------------------------------------------------------------------------------------------
@@ -266,17 +225,16 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-SET ANSI_PADDING ON
-GO
-
-
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_PHCMaster' AND [type] = 'U')
+BEGIN
 
 CREATE TABLE [dbo].[Tbl_PHCMaster](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
 	[CHCID] [int] NOT NULL,
 	[PHC_gov_code] [varchar](100) NOT NULL,
 	[PHCname] [varchar](100) NOT NULL,
-	[HNIN_ID] [int] NULL,
+	[HNIN_ID]  [varchar](200) NULL,
+	[Pincode] [varchar](150) NULL,
 	[Createdon] [datetime] NULL,
 	[Createdby] [int] NULL,
 	[Updatedon] [datetime] NULL,
@@ -291,10 +249,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 
-GO
-
-SET ANSI_PADDING OFF
-GO
+END
 
 --------------------------------------------------------------------------------------------------------------------------------------
 
@@ -308,8 +263,8 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-SET ANSI_PADDING ON
-GO
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_SCMaster' AND [type] = 'U')
+BEGIN
 
 CREATE TABLE [dbo].[Tbl_SCMaster](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
@@ -318,7 +273,7 @@ CREATE TABLE [dbo].[Tbl_SCMaster](
 	[SC_gov_code] [varchar](100) NOT NULL,
 	[SCname] [varchar](100) NOT NULL,
 	[Pincode] [varchar](100) NULL,
-	[HNIN_ID] [int] NULL,
+	[HNIN_ID] [varchar](200) NULL,
 	[Createdon] [datetime] NULL,
 	[Createdby] [int] NULL,
 	[Updatedon] [datetime] NULL,
@@ -333,12 +288,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 
-GO
-
-SET ANSI_PADDING OFF
-GO
-
-
+END
 ---------------------------------------------------------------------------------------------------------------------------------
 
 USE [Eduquaydb]
@@ -351,11 +301,8 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-SET ANSI_PADDING ON
-GO
-
-
-
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_RIMaster' AND [type] = 'U')
+BEGIN
 CREATE TABLE [dbo].[Tbl_RIMaster](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
 	[PHCID] [int] NOT NULL,
@@ -363,6 +310,7 @@ CREATE TABLE [dbo].[Tbl_RIMaster](
 	[RI_gov_code] [varchar](100) NOT NULL,
 	[RIsite] [varchar](100) NOT NULL,
 	[Pincode] [varchar](100) NULL,
+	[ILRID] [int] NULL,
 	[Createdon] [datetime] NULL,
 	[Createdby] [int] NULL,
 	[Updatedon] [datetime] NULL,
@@ -376,12 +324,7 @@ PRIMARY KEY CLUSTERED
 	[ID] ASC
 )WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
 ) ON [PRIMARY]
-
-GO
-
-SET ANSI_PADDING OFF
-GO
-
+END
 
 ----------------------------------------------------------------------------------------------------------------
 
@@ -395,11 +338,8 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-SET ANSI_PADDING ON
-GO
-
-
-
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_UserRoleMaster' AND [type] = 'U')
+BEGIN
 CREATE TABLE [dbo].[Tbl_UserRoleMaster](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
 	[UsertypeID] [int] NOT NULL,
@@ -416,11 +356,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 
-GO
-
-SET ANSI_PADDING OFF
-GO
-
+END
 
 
 ----------------------------------------------------------------------------------------------
@@ -435,11 +371,9 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-SET ANSI_PADDING ON
-GO
 
-
-
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_UserTypeMaster' AND [type] = 'U')
+BEGIN
 CREATE TABLE [dbo].[Tbl_UserTypeMaster](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
 	[Usertype] [varchar](150) NOT NULL,
@@ -455,12 +389,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 
-GO
-
-SET ANSI_PADDING OFF
-GO
-
-
+END
 
 -----------------------------------------------------------------------------------------------------------------------
 
@@ -474,8 +403,8 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-SET ANSI_PADDING ON
-GO
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_Gov_IDTypeMaster' AND [type] = 'U')
+BEGIN
 
 CREATE TABLE [dbo].[Tbl_Gov_IDTypeMaster](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
@@ -492,11 +421,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 
-GO
-
-SET ANSI_PADDING OFF
-GO
-
+END
 
 --------------------------------------------------------------------------------------------------------------------------------
 
@@ -510,8 +435,8 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-SET ANSI_PADDING ON
-GO
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_SubjectTypeMaster' AND [type] = 'U')
+BEGIN
 
 CREATE TABLE [dbo].[Tbl_SubjectTypeMaster](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
@@ -528,10 +453,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 
-GO
-
-SET ANSI_PADDING OFF
-GO
+END
 
 
 -------------------------------------------------------------------------------------------------------------------------
@@ -545,9 +467,8 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-SET ANSI_PADDING ON
-GO
-
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_UserMaster' AND [type] = 'U')
+BEGIN
 
 
 CREATE TABLE [dbo].[Tbl_UserMaster](
@@ -563,7 +484,7 @@ CREATE TABLE [dbo].[Tbl_UserMaster](
 	[CHCID] [int]  NULL,
 	[PHCID] [int]  NULL,
 	[SCID] [int]  NULL,
-	[RIID] [int]  NULL,
+	[RIID] [varchar](50)  NULL,
 	[FirstName] [varchar](150) NOT NULL,
 	[MiddleName] [varchar](150) NULL,
 	[LastName] [varchar](150) NULL,
@@ -587,15 +508,213 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 
-GO
-
-SET ANSI_PADDING OFF
-GO
-
-
+END
 
 -------------------------------------------------------------------------------------------------------------------------------
 
+
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_ReligionMaster' AND [type] = 'U')
+BEGIN
+
+CREATE TABLE [dbo].[Tbl_ReligionMaster](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[Religionname] [varchar](150) NOT NULL,	
+	[Createdon] [datetime] NULL,
+	[Createdby] [int] NULL,
+	[Updatedon] [datetime] NULL,
+	[Updatedby] [int] NULL,
+	[Comments] [varchar](max) NULL,
+	[Isactive] [bit] NULL,
+	
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END
+
+
+--------------------------------------------------------------------------------------------------------------------------
+
+
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_ReligionMaster' AND [type] = 'U')
+BEGIN
+
+CREATE TABLE [dbo].[Tbl_CasteMaster](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[Castename] [varchar](150) NOT NULL,	
+	[Createdon] [datetime] NULL,
+	[Createdby] [int] NULL,
+	[Updatedon] [datetime] NULL,
+	[Updatedby] [int] NULL,
+	[Comments] [varchar](max) NULL,
+	[Isactive] [bit] NULL,
+	
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END
+
+
+----------------------------------------------------------------------------------------------------------------------------
+
+
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_CommunityMaster' AND [type] = 'U')
+BEGIN
+CREATE TABLE [dbo].[Tbl_CommunityMaster](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[CasteID] [int] NOT NULL,
+	[Communityname] [varchar](150) NOT NULL,	
+	[Createdon] [datetime] NULL,
+	[Createdby] [int] NULL,
+	[Updatedon] [datetime] NULL,
+	[Updatedby] [int] NULL,
+	[Comments] [varchar](max) NULL,
+	[Isactive] [bit] NULL,
+	
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+END
+------------------------------------------------------------------------------------------
+
+
+
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_TestTypeMaster' AND [type] = 'U')
+BEGIN
+CREATE TABLE [dbo].[Tbl_TestTypeMaster](
+	[ID] [int] IDENTITY(1,1) NOT NULL,	
+	[TestType] [varchar](150) NOT NULL,	
+	[Createdon] [datetime] NULL,
+	[Createdby] [int] NULL,
+	[Updatedon] [datetime] NULL,
+	[Updatedby] [int] NULL,
+	[Comments] [varchar](max) NULL,
+	[Isactive] [bit] NULL,
+	
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END
+
+
+---------------------------------------------------------------------------------------------------------
+
+
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_ThresholdValueMaster' AND [type] = 'U')
+BEGIN
+CREATE TABLE [dbo].[Tbl_ThresholdValueMaster](
+	[ID] [int] IDENTITY(1,1) NOT NULL,	
+	[TestTypeID] [int] NOT NULL,
+	[TestName] [varchar](150) NOT NULL,
+	[ThresholdValue] [decimal](18,2) NOT NULL,	
+	[Createdon] [datetime] NULL,
+	[Createdby] [int] NULL,
+	[Updatedon] [datetime] NULL,
+	[Updatedby] [int] NULL,
+	[Comments] [varchar](max) NULL,
+	[Isactive] [bit] NULL,
+	
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+END
+
+
+---------------------------------------------------------------------------------------------------------------
+
+
+
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_ClinicalDiagnosisMaster' AND [type] = 'U')
+BEGIN
+
+CREATE TABLE [dbo].[Tbl_ClinicalDiagnosisMaster](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[DiagnosisName] [varchar](250) NOT NULL,	
+	[Createdon] [datetime] NULL,
+	[Createdby] [int] NULL,
+	[Updatedon] [datetime] NULL,
+	[Updatedby] [int] NULL,
+	[Comments] [varchar](max) NULL,
+	[Isactive] [bit] NULL,
+	
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END
+
+-------------------------------------------------------------------------------------------------------------------------
 
 USE [Eduquaydb]
 GO
@@ -607,11 +726,9 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-SET ANSI_PADDING ON
-GO
 
-
-
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_SubjectPrimaryDetail' AND [type] = 'U')
+BEGIN
 CREATE TABLE [dbo].[Tbl_SubjectPrimaryDetail](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
 	[SubjectTypeID] [int] NOT NULL,
@@ -621,6 +738,7 @@ CREATE TABLE [dbo].[Tbl_SubjectPrimaryDetail](
 	[PHCID] [int] NOT NULL,
 	[SCID] [int] NOT NULL,
 	[RIID] [int] NOT NULL,
+	[SubjectTitle] [varchar] (50) NOT NULL,
 	[FirstName] [varchar] (150)NOT NULL,
 	[MiddleName] [varchar] (150) NULL,
 	[LastName] [varchar] (150) NULL,
@@ -629,6 +747,7 @@ CREATE TABLE [dbo].[Tbl_SubjectPrimaryDetail](
 	[Gender] [varchar] (20) NULL,
 	[MaritalStatus] [bit] NULL,
 	[MobileNo] [varchar] (150) NULL,
+	[EmailId] [varchar](200) NULL,
 	[SpouseSubjectID] [varchar](200)  NULL,
 	[Spouse_FirstName] [varchar] (150) NULL,
 	[Spouse_MiddleName] [varchar] (150) NULL,
@@ -637,6 +756,7 @@ CREATE TABLE [dbo].[Tbl_SubjectPrimaryDetail](
 	[GovIdType_ID] [int] NULL,
 	[GovIdDetail] [varchar] (150) NULL,
 	[AssignANM_ID] [int] NULL,
+	[DateofRegister] [datetime] NULL,
 	[CreatedBy] [int] NOT NULL,
 	[CreatedOn] [datetime] NULL,
 	[UpdatedBy] [int] NULL,
@@ -649,11 +769,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 
-GO
-
-SET ANSI_PADDING OFF
-GO
-
+END
 
 -----------------------------------------------------------------------------------------------------------
 
@@ -667,10 +783,9 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-SET ANSI_PADDING ON
-GO
 
-
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_SubjectAddressDetail' AND [type] = 'U')
+BEGIN
 
 CREATE TABLE [dbo].[Tbl_SubjectAddressDetail](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
@@ -693,11 +808,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 
-GO
-
-SET ANSI_PADDING OFF
-GO
-
+END
 
 ------------------------------------------------------------------
 
@@ -712,9 +823,8 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-SET ANSI_PADDING ON
-GO
-
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_SubjectPregnancyDetail' AND [type] = 'U')
+BEGIN
 
 
 CREATE TABLE [dbo].[Tbl_SubjectPregnancyDetail](
@@ -739,11 +849,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 
-GO
-
-SET ANSI_PADDING OFF
-GO
-
+END
 
 ---------------------------------------------------------------------------------------------
 
@@ -759,9 +865,8 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-SET ANSI_PADDING ON
-GO
-
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_SubjectParentDetail' AND [type] = 'U')
+BEGIN
 
 
 CREATE TABLE [dbo].[Tbl_SubjectParentDetail](
@@ -803,13 +908,9 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 
-GO
+END
+-----------------------------------------------------------------------------------------------------------------------
 
-SET ANSI_PADDING OFF
-GO
-
-
--------------------------------------------------------------------------------------
 USE [Eduquaydb]
 GO
 
@@ -819,18 +920,26 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-SET ANSI_PADDING ON
-GO
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_SampleCollection' AND [type] = 'U')
+BEGIN
 
-CREATE TABLE [dbo].[Tbl_ReligionMaster](
+CREATE TABLE [dbo].[Tbl_SampleCollection](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
-	[Religionname] [varchar](150) NOT NULL,	
-	[Createdon] [datetime] NULL,
-	[Createdby] [int] NULL,
-	[Updatedon] [datetime] NULL,
-	[Updatedby] [int] NULL,
-	[Comments] [varchar](max) NULL,
-	[Isactive] [bit] NULL,
+	[SubjectID] [int] NOT NULL,
+	[UniqueSubjectID] [varchar](200) NOT NULL,
+	[BarcodeNo] [varchar](200) NOT NULL,
+	[SampleCollectionDate] [date] NOT NULL,
+	[SampleCollectionTime] [time](2) NOT NULL,
+	[BarcodeDamaged] [bit] NULL,
+	[SampleDamaged] [bit] NULL,
+	[SampleTimeoutExpiry] [bit] NULL,
+	[IsAccept] [bit] NULL,
+	[Reason_Id] [int] NOT NULL,
+	[CollectionFrom] [int] NULL,
+	[CollectedBy] [int] NULL,
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL,
+	
 	
 PRIMARY KEY CLUSTERED 
 (
@@ -838,14 +947,105 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 
+END
+-------------------------------------------------------------------------------------------------------
+
+USE [Eduquaydb]
 GO
 
-SET ANSI_PADDING OFF
+SET ANSI_NULLS ON
 GO
 
+SET QUOTED_IDENTIFIER ON
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_Shipment' AND [type] = 'U')
+BEGIN
+
+CREATE TABLE [dbo].[Tbl_Shipment](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[SubjectID] [int] NOT NULL,
+	[UniqueSubjectID] [varchar](200) NOT NULL,
+	[SampleCollectionID] [int] NOT NULL,
+	[ShipmentType] [int] NOT NULL,
+	[ShipmentID] [varchar](200) NOT NULL,
+	[ANM_ID] [int] NULL,
+	[TestingCHCID][int] NULL,
+	[RIID] [int] NULL,
+	[ILR_ID] [int] NULL,
+	[AVDID] [int] NULL,
+	[ContactNo] [varchar] (150) NULL,
+	[DateofShipment][date] NULL,
+	[TimeofShipment] [time](2)NULL,
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL,
+	
+	
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END
+
+--------------------------------------------------------------------------------------------------------------------------
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_ConstantValues' AND [type] = 'U')
+BEGIN
+
+CREATE TABLE [dbo].[Tbl_ConstantValues](
+	[ID] [int] IDENTITY(1,1) NOT NULL,	
+	[Name] [varchar] (200) NOT NULL,	
+	[CreatedOn] [datetime] NULL,
+	
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END
 
 --------------------------------------------------------------------------------------------------------------------------
 
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_ILRMaster' AND [type] = 'U')
+BEGIN
+
+CREATE TABLE [dbo].[Tbl_ILRMaster](
+	[ID] [int] IDENTITY(1,1) NOT NULL,	
+	[ILRCode] [varchar] (200) NOT NULL,	
+	[ILRPoint] [varchar] (200) NOT NULL,	
+	[CreatedBy][int] NULL,
+	[CreatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn][datetime] NULL	
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END
+
+--------------------------------------------------------------------------------------------------------------------------
 
 USE [Eduquaydb]
 GO
@@ -856,64 +1056,23 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-SET ANSI_PADDING ON
-GO
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_AVDMaster' AND [type] = 'U')
+BEGIN
 
-CREATE TABLE [dbo].[Tbl_CasteMaster](
-	[ID] [int] IDENTITY(1,1) NOT NULL,
-	[Castename] [varchar](150) NOT NULL,	
-	[Createdon] [datetime] NULL,
-	[Createdby] [int] NULL,
-	[Updatedon] [datetime] NULL,
-	[Updatedby] [int] NULL,
-	[Comments] [varchar](max) NULL,
-	[Isactive] [bit] NULL,
-	
+CREATE TABLE [dbo].[Tbl_AVDMaster](
+	[ID] [int] IDENTITY(1,1) NOT NULL,	
+	[AVDName] [varchar] (200) NOT NULL,
+	[ContactNo] [varchar] (200)  NULL,	
+	[CreatedBy][int] NULL,
+	[CreatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn][datetime] NULL	
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
 )WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 
-GO
+END
 
-SET ANSI_PADDING OFF
-GO
-
-
-----------------------------------------------------------------------------------------------------------------------------
-
-
-USE [Eduquaydb]
-GO
-
-SET ANSI_NULLS ON
-GO
-
-SET QUOTED_IDENTIFIER ON
-GO
-
-SET ANSI_PADDING ON
-GO
-
-CREATE TABLE [dbo].[Tbl_CommunityMaster](
-	[ID] [int] IDENTITY(1,1) NOT NULL,
-	[CasteID] [int] NOT NULL,
-	[Communityname] [varchar](150) NOT NULL,	
-	[Createdon] [datetime] NULL,
-	[Createdby] [int] NULL,
-	[Updatedon] [datetime] NULL,
-	[Updatedby] [int] NULL,
-	[Comments] [varchar](max) NULL,
-	[Isactive] [bit] NULL,
-	
-PRIMARY KEY CLUSTERED 
-(
-	[ID] ASC
-)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
-) ON [PRIMARY]
-
-GO
-
-SET ANSI_PADDING OFF
-GO
+----------------------------------------------------------------------------------------

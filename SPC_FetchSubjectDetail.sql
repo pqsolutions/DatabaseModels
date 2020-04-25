@@ -28,6 +28,7 @@ BEGIN
 			,SM.[SCname] 
 			,SPRD.[RIID]
 			,RIM.[RIsite] 
+			,SPRD.[SubjectTitle]
 			,SPRD.[FirstName]
 			,SPRD.[MiddleName]
 			,SPRD.[LastName]
@@ -36,6 +37,8 @@ BEGIN
 			,SPRD.[Gender]
 			,SPRD.[MaritalStatus]
 			,SPRD.[MobileNo]
+			,SPRD.[EmailId]
+			,(CONVERT(VARCHAR,SPRD.[DateofRegister],105)) AS DateofRegister
 			,SPRD.[SpouseSubjectID]
 			,SPRD.[Spouse_FirstName]
 			,SPRD.[Spouse_MiddleName]
