@@ -21,7 +21,7 @@ BEGIN
       ,AM.[AVDName]
       ,IM.[ILRPoint]
       ,CONVERT(VARCHAR,S.[DateofShipment],105) AS ShipmentDate
-	FROM [dbo].[Tbl_Shipment] S 
+	FROM [dbo].[Tbl_ANMShipment] S 
 	LEFT JOIN [dbo].[Tbl_UserMaster] UM WITH (NOLOCK) ON UM.ID = S.ANM_ID
 	LEFT JOIN [dbo].[Tbl_CHCMaster] CM WITH (NOLOCK) ON CM.ID = S.TestingCHCID
 	LEFT JOIN [dbo].[Tbl_AVDMaster] AM WITH (NOLOCK) ON AM.ID = S.AVDID

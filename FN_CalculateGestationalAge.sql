@@ -27,7 +27,7 @@ BEGIN
 		BEGIN
 			SET @Week = (SELECT DATEDIFF(day, @LMPDate, GETDATE())/7) 
 			SET @Day = (SELECT DATEDIFF(day, @LMPDate, GETDATE())%7)
-			SET @GestationalAge = (CAST(@Week AS VARCHAR(5)) + ' Weeks ' + CAST(@Day AS VARCHAR(5)) + ' Day(s) ')
+			SET @GestationalAge = (CAST(@Week AS VARCHAR(5)) + '.' + CAST(@Day AS VARCHAR(5)))
 		END
 		ELSE
 		BEGIN

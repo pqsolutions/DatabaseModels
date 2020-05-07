@@ -10,7 +10,7 @@ GO
 
 IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_FetchSubjectNotSampleCollectionbyANM' AND [type] = 'p')
 BEGIN
-	DROP PROCEDURE SPC_FetchSubjectNotSampleCollectionbyANM
+	DROP PROCEDURE SPC_FetchSubjectNotSampleCollectionbyANM 
 END
 GO
 CREATE PROCEDURE [dbo].[SPC_FetchSubjectNotSampleCollectionbyANM] 
@@ -36,6 +36,6 @@ BEGIN
 			AND (SP.[DateofRegister] BETWEEN CONVERT(DATE,@FromDate,103) AND CONVERT(DATE,@ToDate,103))
 			AND (@SubjectType = 0 OR SP.[SubjectTypeID] = @SubjectType)
 			AND SP.[ID] NOT IN (SELECT SubjectID FROM Tbl_SampleCollection WHERE CollectedBy = @ANMID 
-								AND BarcodeDamaged != 1 AND SampleDamaged != 1 AND SampleTimeoutExpiry != 1)
+								 AND SampleDamaged != 1 AND SampleTimeoutExpiry != 1)
 END
       

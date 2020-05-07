@@ -17,6 +17,8 @@ CREATE PROCEDURE [dbo].[SPC_FetchSubjectDetail]
 BEGIN
 	SELECT SPRD.[SubjectTypeID]
 			,STM.[SubjectType]
+			,SPRD.[ChildSubjectTypeID]
+			,STM1.[SubjectType] AS ChildSubjectType
 			,SPRD.[UniqueSubjectID]
 			,SPRD.[DistrictID]
 			,DM.[Districtname] 
@@ -96,6 +98,7 @@ BEGIN
 			,SPAD.[RollNo]
 	FROM [dbo].[Tbl_SubjectPrimaryDetail] AS SPRD
 	LEFT JOIN [dbo].[Tbl_SubjectTypeMaster] STM WITH (NOLOCK) ON STM.[ID] = SPRD.[SubjectTypeID]
+	LEFT JOIN [dbo].[Tbl_SubjectTypeMaster] STM1 WITH (NOLOCK) ON STM1.[ID] = SPRD.[ChildSubjectTypeID]
 	LEFT JOIN [dbo].[Tbl_DistrictMaster] DM WITH (NOLOCK) ON DM.[ID] = SPRD.[DistrictID]
 	LEFT JOIN [dbo].[Tbl_CHCMaster] CM WITH (NOLOCK) ON CM.[ID] = SPRD.[CHCID]
 	LEFT JOIN [dbo].[Tbl_PHCMaster] PM WITH (NOLOCK) ON PM.[ID] = SPRD.[PHCID]

@@ -23,5 +23,5 @@ BEGIN
       ,(CONVERT(VARCHAR,SC.[SampleCollectionDate],105) + ' ' + CONVERT(VARCHAR(5),SC.[SampleCollectionTime])) AS SampleDateTime
        FROM Tbl_SampleCollection SC
        LEFT JOIN Tbl_SubjectPrimaryDetail SP WITH (NOLOCK) ON SP.ID = SC.SubjectID
-       WHERE SC.CollectedBy = @ANMID AND SC.ID NOT IN (SELECT SampleCollectionID from Tbl_Shipment)
+       WHERE SC.CollectedBy = @ANMID AND SC.ID NOT IN (SELECT SampleCollectionID from Tbl_ANMShipment)
 END

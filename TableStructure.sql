@@ -177,6 +177,7 @@ PRIMARY KEY CLUSTERED
 END
 ----------------------------------------------------------------------------------------------------------------------------------
 
+
 USE [Eduquaydb]
 GO
 
@@ -732,6 +733,7 @@ BEGIN
 CREATE TABLE [dbo].[Tbl_SubjectPrimaryDetail](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
 	[SubjectTypeID] [int] NOT NULL,
+	[ChildSubjectTypeID][int] NOT NULL,
 	[UniqueSubjectID] [varchar](200) NOT NULL,
 	[DistrictID] [int] NOT NULL,
 	[CHCID] [int] NOT NULL,
@@ -956,30 +958,36 @@ GO
 SET ANSI_NULLS ON
 GO
 
-SET QUOTED_IDENTIFIER ON
+SET QUOTED_IDENTIFIER ON  
 GO
 
-IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_Shipment' AND [type] = 'U')
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_ANMShipment' AND [type] = 'U')
 BEGIN
 
-CREATE TABLE [dbo].[Tbl_Shipment](
+CREATE TABLE [dbo].[Tbl_ANMShipment](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
 	[SubjectID] [int] NOT NULL,
 	[UniqueSubjectID] [varchar](200) NOT NULL,
 	[SampleCollectionID] [int] NOT NULL,
-	[ShipmentType] [int] NOT NULL,
+	[ShipmentFrom] [varchar](20) NOT NULL,	
 	[ShipmentID] [varchar](200) NOT NULL,
 	[ANM_ID] [int] NULL,
 	[TestingCHCID][int] NULL,
 	[RIID] [int] NULL,
-	[ILR_ID] [int] NULL,
+	[ILR_ID] [int] NULL,	
 	[AVDID] [int] NULL,
 	[ContactNo] [varchar] (150) NULL,
 	[DateofShipment][date] NULL,
 	[TimeofShipment] [time](2)NULL,
+	[ReceivedDate] [date] NULL,
+	[TimeofTest] [time](2) NULL,
+	[ILR_InTime] [time](2) NULL,
+	[ILR_OutTime] [time](2) NULL,
+	[SampleStatus] [int] NULL,
 	[CreatedBy] [int] NULL,
 	[CreatedOn] [datetime] NULL,
-	
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
 	
 PRIMARY KEY CLUSTERED 
 (
@@ -1004,7 +1012,8 @@ BEGIN
 
 CREATE TABLE [dbo].[Tbl_ConstantValues](
 	[ID] [int] IDENTITY(1,1) NOT NULL,	
-	[Name] [varchar] (200) NOT NULL,	
+	[CommonName] [varchar] (200) NOT NULL,
+	[comments][varchar] (150) NULL,	
 	[CreatedOn] [datetime] NULL,
 	
 PRIMARY KEY CLUSTERED 
@@ -1076,3 +1085,100 @@ PRIMARY KEY CLUSTERED
 END
 
 ----------------------------------------------------------------------------------------
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO  
+
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_HPLCMaster' AND [type] = 'U')
+BEGIN
+
+CREATE TABLE [dbo].[Tbl_HPLCMaster](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[DistrictID] [int] NOT NULL,
+	[HPLCCode] [varchar](100) NOT NULL,
+	[HPLCName] [varchar](100) NOT NULL,
+	[Pincode] [varchar](150) NULL,
+	[CreatedOn] [datetime] NULL,
+	[CreatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+	[Comments] [varchar](max) NULL,
+	[IsActive] [bit] NULL,
+	[Latitude] [varchar](150) NULL,
+	[Longitude] [varchar](150) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+END
+
+-----------------------------------------------------------------------------------------------------------
+
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO  
+
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_MolecularLabMaster' AND [type] = 'U')
+BEGIN
+
+CREATE TABLE [dbo].[Tbl_MolecularLabMaster](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[DistrictID] [int] NOT NULL,
+	[MLabCode] [varchar](100) NOT NULL,
+	[MLabName] [varchar](100) NOT NULL,
+	[Pincode] [varchar](150) NULL,
+	[CreatedOn] [datetime] NULL,
+	[CreatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+	[Comments] [varchar](max) NULL,
+	[IsActive] [bit] NULL,
+	
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+END
+---------------------------------------------------------------------------------------------------------------
+
+
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO  
+
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_CBCandSSTestResult' AND [type] = 'U')
+BEGIN
+CREATE TABLE [dbo].[Tbl_CBCandSSTestResult](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[SubjectID] [int] NOT NULL,
+	[UniqueSubjectID] [varchar](200) NOT NULL,
+	[SampleCollectionID] [int] NOT NULL,
+	[BarcodeNo] [varchar] (200) NOT NULL,
+	[Hb] [decimal](18,2) NOT NULL,
+	[MVC] [decimal](18,2) NOT NULL,
+	[MCH] [decimal](18,2) NOT NULL,
+	[RDW] [decimal](18,2) NOT NULL,
+	[CBCResult] [varchar] (max)  NULL,
+	[SSTStatus] [char] (1) NULL
+	
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+END
+-------------------------------------------------------------------------------------------------------------

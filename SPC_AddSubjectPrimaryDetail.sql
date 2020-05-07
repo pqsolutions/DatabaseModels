@@ -13,6 +13,7 @@ GO
 CREATE PROCEDURE [dbo].[SPC_AddSubjectPrimaryDetail]
 (
       @SubjectTypeID INT
+      ,@ChildSubjectTypeID INT
       ,@DistrictID INT
       ,@CHCID INT
       ,@PHCID INT
@@ -57,6 +58,7 @@ BEGIN
 			 BEGIN
 				 INSERT INTO [dbo].[Tbl_SubjectPrimaryDetail]
 						   (SubjectTypeID
+						   ,ChildSubjectTypeID
 						   ,UniqueSubjectID
 						   ,DistrictID
 						   ,CHCID
@@ -89,6 +91,7 @@ BEGIN
 						   ,IsActive)
 					 VALUES
 						   (@SubjectTypeID
+						   ,@ChildSubjectTypeID 
 						   ,@UniqueSubjectID
 						   ,@DistrictID
 						   ,@CHCID
@@ -126,7 +129,8 @@ BEGIN
 		BEGIN
 			SET @ID = (SELECT ID FROM Tbl_SubjectPrimaryDetail WHERE UniqueSubjectID = @UniqueSubjectID) 
 			UPDATE [dbo].[Tbl_SubjectPrimaryDetail]
-				   SET SubjectTypeID = @SubjectTypeID					  
+				   SET SubjectTypeID = @SubjectTypeID	
+					  ,ChildSubjectTypeID = @ChildSubjectTypeID				  
 					  ,DistrictID = @DistrictID
 					  ,CHCID = @CHCID
 					  ,PHCID = @PHCID
