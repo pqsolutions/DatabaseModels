@@ -8,6 +8,12 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
+IF EXISTS (Select 1 from sys.objects where name='SPC_FindUserByEmail' and [type] = 'p')
+Begin
+	DROP PROCEDURE SPC_FindUserByEmail
+End
+GO
+
 
 CREATE Procedure [dbo].[SPC_FindUserByEmail] (@USEREMAIL varchar(200))
 As
