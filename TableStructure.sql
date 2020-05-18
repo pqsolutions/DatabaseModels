@@ -939,9 +939,13 @@ CREATE TABLE [dbo].[Tbl_SampleCollection](
 	[Reason_Id] [int] NOT NULL,
 	[CollectionFrom] [int] NULL,
 	[CollectedBy] [int] NULL,
+	[NotifiedStatus] [bit] NULL,
+	[NotifiedOn][datetime] NULL,
+	[IsRecollected] [char](1) NULL,
 	[CreatedBy] [int] NULL,
 	[CreatedOn] [datetime] NULL,
-	
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
 	
 PRIMARY KEY CLUSTERED 
 (
