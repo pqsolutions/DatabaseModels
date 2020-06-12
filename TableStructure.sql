@@ -557,7 +557,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_ReligionMaster' AND [type] = 'U')
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_CasteMaster' AND [type] = 'U')
 BEGIN
 
 CREATE TABLE [dbo].[Tbl_CasteMaster](
@@ -750,15 +750,18 @@ CREATE TABLE [dbo].[Tbl_SubjectPrimaryDetail](
 	[MaritalStatus] [bit] NULL,
 	[MobileNo] [varchar] (150) NULL,
 	[EmailId] [varchar](200) NULL,
+	[GovIdType_ID] [int] NULL,
+	[GovIdDetail] [varchar] (150) NULL,
 	[SpouseSubjectID] [varchar](200)  NULL,
 	[Spouse_FirstName] [varchar] (150) NULL,
 	[Spouse_MiddleName] [varchar] (150) NULL,
 	[Spouse_LastName] [varchar] (150) NULL,
 	[Spouse_ContactNo] [varchar] (150) NULL,
-	[GovIdType_ID] [int] NULL,
-	[GovIdDetail] [varchar] (150) NULL,
+	[Spouse_GovIdType_ID] [int] NULL,
+	[Spouse_GovIdDetail] [varchar] (150) NULL,
 	[AssignANM_ID] [int] NULL,
 	[DateofRegister] [datetime] NULL,
+	[RegisteredFrom] [int] NULL,
 	[CreatedBy] [int] NOT NULL,
 	[CreatedOn] [datetime] NULL,
 	[UpdatedBy] [int] NULL,
@@ -800,6 +803,7 @@ CREATE TABLE [dbo].[Tbl_SubjectAddressDetail](
 	[Address2] [varchar] (150) NULL,
 	[Address3] [varchar] (150) NULL,
 	[Pincode] [varchar] (150) NULL,
+	[StateName] [varchar] (150) NULL,
 	[UpdatedBy] [int] NULL,
 	[UpdatedOn] [datetime] NULL,
 	
@@ -878,16 +882,20 @@ CREATE TABLE [dbo].[Tbl_SubjectParentDetail](
 	[Mother_FirstName] [varchar] (150) NULL,
 	[Mother_MiddleName] [varchar] (150) NULL,
 	[Mother_LastName] [varchar] (150) NULL,	
-	[Mother_UniquetID] [varchar](200)  NULL,	
+	[Mother_GovIdType_ID] [int] NULL,
+	[Mother_GovIdDetail] [varchar] (150) NULL,	
 	[Mother_ContactNo] [varchar] (150) NULL,
 	[Father_FirstName] [varchar] (150) NULL,
 	[Father_MiddleName] [varchar] (150) NULL,
 	[Father_LastName] [varchar] (150) NULL,	
-	[Father_UniquetID] [varchar](200)  NULL,	
+	[Father_GovIdType_ID] [int] NULL,
+	[Father_GovIdDetail] [varchar] (150) NULL,
 	[Father_ContactNo] [varchar] (150) NULL,
 	[Gaurdian_FirstName] [varchar] (150) NULL,
 	[Gaurdian_MiddleName] [varchar] (150) NULL,
-	[Gaurdian_LastName] [varchar] (150) NULL,	
+	[Gaurdian_LastName] [varchar] (150) NULL,
+	[Guardian_GovIdType_ID] [int] NULL,
+	[Guardian_GovIdDetail] [varchar] (150) NULL,	
 	[Gaurdian_ContactNo] [varchar] (150) NULL,
 	[RBSKId] [varchar] (150) NULL,
 	[SchoolName] [varchar] (150) NULL,
@@ -896,7 +904,7 @@ CREATE TABLE [dbo].[Tbl_SubjectParentDetail](
 	[SchoolAddress3] [varchar] (250) NULL,
 	[SchoolPincode] [varchar] (250) NULL,
 	[SchoolCity] [varchar] (200) NULL,
-	[SchoolState] [int] NULL,
+	[SchoolState] [varchar] (150) NULL,
 	[Standard] [varchar] (10) NULL,
 	[Section] [varchar](5) NULL,
 	[RollNo] [varchar] (50) NULL,	
@@ -984,7 +992,7 @@ CREATE TABLE [dbo].[Tbl_ANMShipment](
 	[DateofShipment][date] NULL,
 	[TimeofShipment] [time](2)NULL,
 	[ReceivedDate] [date] NULL,
-	[TimeofTest] [time](2) NULL,
+	[ProcessingDateTime] [datetime] NULL,
 	[ILR_InTime] [time](2) NULL,
 	[ILR_OutTime] [time](2) NULL,
 	[SampleStatus] [int] NULL,
@@ -1001,7 +1009,56 @@ PRIMARY KEY CLUSTERED
 
 END
 
---------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------
+
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON  
+GO
+
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_ANMCHCShipment' AND [type] = 'U')
+BEGIN
+
+CREATE TABLE [dbo].[Tbl_ANMCHCShipment](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[SubjectID] [int] NOT NULL,
+	[UniqueSubjectID] [varchar](200) NOT NULL,
+	[SampleCollectionID] [int] NOT NULL,
+	[ShipmentFrom] [varchar](20) NOT NULL,	
+	[ShipmentID] [varchar](200) NOT NULL,
+	[ANM_ID] [int] NULL,
+	[TestingCHCID][int] NULL,
+	[RIID] [int] NULL,
+	[ILR_ID] [int] NULL,	
+	[AVDID] [int] NULL,
+	[DeliveryExecutiveName] [varchar] (250) NULL,
+	[ContactNo] [varchar] (150) NULL,
+	[DateofShipment][date] NULL,
+	[TimeofShipment] [time](2)NULL,
+	[ReceivedDate] [date] NULL,
+	[ProcessingDateTime] [datetime] NULL,
+	[ILR_InTime] [time](2) NULL,
+	[ILR_OutTime] [time](2) NULL,
+	[SampleStatus] [int] NULL,
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
+	
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END
+
+-------------------------------------------------------------------------------------------------
 USE [Eduquaydb]
 GO
 
@@ -1049,7 +1106,9 @@ CREATE TABLE [dbo].[Tbl_ILRMaster](
 	[CreatedBy][int] NULL,
 	[CreatedOn] [datetime] NULL,
 	[UpdatedBy] [int] NULL,
-	[UpdatedOn][datetime] NULL	
+	[UpdatedOn][datetime] NULL,
+	[Comments] [varchar] (max) NULL,
+	[IsActive] [bit] NULL
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
@@ -1059,6 +1118,36 @@ PRIMARY KEY CLUSTERED
 END
 
 --------------------------------------------------------------------------------------------------------------------------
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_LogisticsProviderMaster' AND [type] = 'U')
+BEGIN
+
+CREATE TABLE [dbo].[Tbl_LogisticsProviderMaster](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[ProviderName] [varchar] (200) NOT NULL,	
+	[CreatedBy][int] NULL,
+	[CreatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn][datetime] NULL,
+	[Comments] [varchar] (max) NULL,
+	[IsActive] [bit] NULL
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END
+------------------------------------------------------------------------------------------------------------------------------------------------
+
 
 USE [Eduquaydb]
 GO
@@ -1079,7 +1168,9 @@ CREATE TABLE [dbo].[Tbl_AVDMaster](
 	[CreatedBy][int] NULL,
 	[CreatedOn] [datetime] NULL,
 	[UpdatedBy] [int] NULL,
-	[UpdatedOn][datetime] NULL	
+	[UpdatedOn][datetime] NULL,
+	[Comments] [varchar] (max) NULL,
+	[IsActive] [bit] NULL	
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
@@ -1172,12 +1263,20 @@ CREATE TABLE [dbo].[Tbl_CBCandSSTestResult](
 	[UniqueSubjectID] [varchar](200) NOT NULL,
 	[SampleCollectionID] [int] NOT NULL,
 	[BarcodeNo] [varchar] (200) NOT NULL,
-	[Hb] [decimal](18,2) NOT NULL,
-	[MVC] [decimal](18,2) NOT NULL,
-	[MCH] [decimal](18,2) NOT NULL,
-	[RDW] [decimal](18,2) NOT NULL,
+	[Hb] [decimal](18,2) NULL,
+	[MVC] [decimal](18,2) NULL,
+	[MCH] [decimal](18,2) NULL,
+	[RDW] [decimal](18,2) NULL,
 	[CBCResult] [varchar] (max)  NULL,
-	[SSTStatus] [char] (1) NULL
+	[CBCStatus] [char] (1) NULL,
+	[CBCTestComplete] [bit] NULL,
+	[CBC_UpdatedBy] [int] NULL,
+	[CBC_UpdatedOn] [datetime] NULL,
+	[SSTStatus] [char] (1) NULL,
+	[SSTComplete] [bit] NULL,
+	[SST_UpdatedBy] [int] NULL,
+	[SST_UpdatedOn] [datetime] NULL
+	
 	
 PRIMARY KEY CLUSTERED 
 (

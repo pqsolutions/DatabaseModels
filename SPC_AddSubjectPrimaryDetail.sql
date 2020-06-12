@@ -29,20 +29,23 @@ CREATE PROCEDURE [dbo].[SPC_AddSubjectPrimaryDetail]
       ,@MaritalStatus BIT
       ,@MobileNo VARCHAR(150)
       ,@EmailId VARCHAR(200)
+      ,@GovIdType_ID INT
+      ,@GovIdDetail VARCHAR(150)
       ,@SpouseSubjectID VARCHAR(200)
       ,@Spouse_FirstName VARCHAR(150)
       ,@Spouse_MiddleName VARCHAR(150)
       ,@Spouse_LastName VARCHAR(150)
       ,@Spouse_ContactNo VARCHAR(150)
-      ,@GovIdType_ID INT
-      ,@GovIdDetail VARCHAR(150)
+      ,@Spouse_GovIdType_ID INT
+      ,@Spouse_GovIdDetail VARCHAR(150)
       ,@AssignANM_ID INT
       ,@DateofRegister DATETIME
+      ,@RegisteredFrom INT
       ,@CreatedBy INT     
       ,@UpdatedBy INT     
       ,@IsActive BIT
 	  ,@uniqueSubjectId VARCHAR(200)
-	  ,@Source CHAR(1)
+	  ,@Source CHAR(1) -- N/F/M (N-Online, F-Offline, M-Manual)
 	  
 )AS
 DECLARE 
@@ -75,15 +78,18 @@ BEGIN
 						   ,MaritalStatus
 						   ,MobileNo
 						   ,EmailId
+						   ,GovIdType_ID
+						   ,GovIdDetail
 						   ,SpouseSubjectID
 						   ,Spouse_FirstName
 						   ,Spouse_MiddleName
 						   ,Spouse_LastName
 						   ,Spouse_ContactNo
-						   ,GovIdType_ID
-						   ,GovIdDetail
+						   ,Spouse_GovIdType_ID
+						   ,Spouse_GovIdDetail
 						   ,AssignANM_ID
 						   ,DateofRegister
+						   ,RegisteredFrom
 						   ,CreatedBy
 						   ,CreatedOn
 						   ,UpdatedBy
@@ -108,15 +114,18 @@ BEGIN
 						   ,@MaritalStatus
 						   ,@MobileNo
 						   ,@EmailId
+						   ,@GovIdType_ID
+						   ,@GovIdDetail
 						   ,@SpouseSubjectID
 						   ,@Spouse_FirstName
 						   ,@Spouse_MiddleName
 						   ,@Spouse_LastName
 						   ,@Spouse_ContactNo
-						   ,@GovIdType_ID
-						   ,@GovIdDetail
+						   ,@Spouse_GovIdType_ID
+						   ,@Spouse_GovIdDetail
 						   ,@AssignANM_ID
 						   ,@DateofRegister
+						   ,@RegisteredFrom
 						   ,@CreatedBy
 						   ,GETDATE()
 						   ,@UpdatedBy
@@ -146,15 +155,18 @@ BEGIN
 					  ,MaritalStatus = @MaritalStatus
 					  ,MobileNo = @MobileNo
 					  ,EmailId = @EmailId
+					  ,GovIdType_ID = @GovIdType_ID
+					  ,GovIdDetail = @GovIdDetail
 					  ,SpouseSubjectID = @SpouseSubjectID
 					  ,Spouse_FirstName = @Spouse_FirstName
 					  ,Spouse_MiddleName = @Spouse_MiddleName
 					  ,Spouse_LastName = @Spouse_LastName
 					  ,Spouse_ContactNo = @Spouse_ContactNo
-					  ,GovIdType_ID = @GovIdType_ID
-					  ,GovIdDetail = @GovIdDetail
+					  ,Spouse_GovIdType_ID = @Spouse_GovIdType_ID
+					  ,Spouse_GovIdDetail = @Spouse_GovIdDetail
 					  ,AssignANM_ID = @AssignANM_ID
-					  ,DateofRegister = @DateofRegister					  				 
+					  ,DateofRegister = @DateofRegister	
+					  ,RegisteredFrom = @RegisteredFrom 				  				 
 					  ,UpdatedBy = @UpdatedBy
 					  ,UpdatedOn = GETDATE()
 					  ,IsActive = @IsActive

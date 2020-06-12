@@ -20,6 +20,7 @@ CREATE PROCEDURE [dbo].[SPC_AddSubjectAddressDetail]
 	,@Address2 VARCHAR(150)
 	,@Address3 VARCHAR(150)
 	,@Pincode  VARCHAR(150)
+	,@StateName  VARCHAR(150)
 	,@UpdatedBy INT
 	,@Scope_output INT OUTPUT
 ) AS
@@ -45,6 +46,7 @@ BEGIN
 						   ,Address2
 						   ,Address3
 						   ,Pincode
+						   ,StateName
 						   ,UpdatedBy
 						   ,UpdatedOn)
 					 VALUES
@@ -57,6 +59,7 @@ BEGIN
 						   ,@Address2
 						   ,@Address3
 						   ,@Pincode
+						   ,@StateName
 						   ,@UpdatedBy
 						   ,GETDATE())
 				SET @tempUserId = IDENT_CURRENT('Tbl_SubjectAddressDetail')
@@ -72,6 +75,7 @@ BEGIN
 					  ,Address2 = @Address2
 					  ,Address3 = @Address3
 					  ,Pincode = @Pincode
+					  ,StateName = @StateName 
 					  ,UpdatedBy = @UpdatedBy
 					  ,UpdatedOn = GETDATE()
 				WHERE UniqueSubjectID = @UniqueSubjectID

@@ -27,7 +27,7 @@ BEGIN
 	LEFT JOIN [dbo].[Tbl_AVDMaster] AM WITH (NOLOCK) ON AM.ID = S.AVDID
 	LEFT JOIN [dbo].[Tbl_ILRMaster] IM WITH (NOLOCK) ON IM.ID = S.ILR_ID
 	WHERE S.[ANM_ID] = @ANMID
-	GROUP BY  S.[ShipmentID],S.ANM_ID,(UM.[FirstName] + ' ' + UM.[MiddleName] + ' ' + UM.[LastName])
+	GROUP BY  S.[ShipmentID],(UM.[FirstName] + ' ' + UM.[MiddleName] + ' ' + UM.[LastName])
 		,CM.[CHCname],AM.[AVDName],IM.[ILRPoint],S.[DateofShipment]
 	ORDER BY S.[DateofShipment] DESC  
 END

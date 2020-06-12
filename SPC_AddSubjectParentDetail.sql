@@ -16,16 +16,20 @@ CREATE PROCEDURE [dbo].[SPC_AddSubjectParentDetail]
 	,@Mother_FirstName VARCHAR(150)
 	,@Mother_MiddleName VARCHAR(150)
 	,@Mother_LastName VARCHAR(150)
-	,@Mother_UniquetID VARCHAR(200)
+	,@Mother_GovIdType_ID INT
+	,@Mother_GovIdDetail VARCHAR(200)
 	,@Mother_ContactNo VARCHAR(150)
 	,@Father_FirstName VARCHAR(150)
 	,@Father_MiddleName VARCHAR(150)
 	,@Father_LastName VARCHAR(150)
-	,@Father_UniquetID VARCHAR(200)
+	,@Father_GovIdType_ID INT
+	,@Father_GovIdDetail VARCHAR(200)
 	,@Father_ContactNo VARCHAR(150)
 	,@Gaurdian_FirstName VARCHAR(150)
 	,@Gaurdian_MiddleName VARCHAR(150)
 	,@Gaurdian_LastName VARCHAR(150)
+	,@Guardian_GovIdType_ID INT
+	,@Guardian_GovIdDetail VARCHAR(200)
 	,@Gaurdian_ContactNo VARCHAR(150)
 	,@RBSKId VARCHAR(150)
 	,@SchoolName VARCHAR(150)
@@ -34,7 +38,7 @@ CREATE PROCEDURE [dbo].[SPC_AddSubjectParentDetail]
 	,@SchoolAddress3 VARCHAR(250)
 	,@SchoolPincode VARCHAR(250)
 	,@SchoolCity VARCHAR(200)
-	,@SchoolState  INT
+	,@SchoolState  VARCHAR(200)
 	,@Standard VARCHAR(10)
 	,@Section VARCHAR(5)
 	,@RollNo VARCHAR(50)
@@ -59,16 +63,20 @@ BEGIN
 					,Mother_FirstName
 					,Mother_MiddleName
 					,Mother_LastName
-					,Mother_UniquetID
+					,Mother_GovIdType_ID
+					,Mother_GovIdDetail
 					,Mother_ContactNo
 					,Father_FirstName
 					,Father_MiddleName
 					,Father_LastName
-					,Father_UniquetID
+					,Father_GovIdType_ID
+					,Father_GovIdDetail
 					,Father_ContactNo
 					,Gaurdian_FirstName
 					,Gaurdian_MiddleName
 					,Gaurdian_LastName
+					,Guardian_GovIdType_ID
+					,Guardian_GovIdDetail
 					,Gaurdian_ContactNo
 					,RBSKId
 					,SchoolName
@@ -89,16 +97,20 @@ BEGIN
 					,@Mother_FirstName 
 					,@Mother_MiddleName 
 					,@Mother_LastName 
-					,@Mother_UniquetID 
+					,@Mother_GovIdType_ID
+					,@Mother_GovIdDetail 
 					,@Mother_ContactNo 
 					,@Father_FirstName 
 					,@Father_MiddleName 
 					,@Father_LastName 
-					,@Father_UniquetID 
+					,@Father_GovIdType_ID
+					,@Father_GovIdDetail 
 					,@Father_ContactNo 
 					,@Gaurdian_FirstName 
 					,@Gaurdian_MiddleName 
-					,@Gaurdian_LastName 
+					,@Gaurdian_LastName
+					,@Guardian_GovIdType_ID
+					,@Guardian_GovIdDetail 
 					,@Gaurdian_ContactNo 
 					,@RBSKId 
 					,@SchoolName 
@@ -122,16 +134,20 @@ BEGIN
 				   SET Mother_FirstName = @Mother_FirstName
 						,Mother_MiddleName = @Mother_MiddleName
 						,Mother_LastName = @Mother_LastName
-						,Mother_UniquetID = @Mother_UniquetID
+						,Mother_GovIdType_ID = @Mother_GovIdType_ID
+						,Mother_GovIdDetail = @Mother_GovIdDetail
 						,Mother_ContactNo = @Mother_ContactNo
 						,Father_FirstName = @Father_FirstName
 						,Father_MiddleName = @Father_MiddleName
 						,Father_LastName = @Father_LastName
-						,Father_UniquetID = @Father_UniquetID
+						,Father_GovIdType_ID = @Father_GovIdType_ID
+						,Father_GovIdDetail = @Father_GovIdDetail
 						,Father_ContactNo = @Father_ContactNo
 						,Gaurdian_FirstName = @Gaurdian_FirstName
 						,Gaurdian_MiddleName = @Gaurdian_MiddleName
 						,Gaurdian_LastName = @Gaurdian_LastName
+						,Guardian_GovIdType_ID = @Guardian_GovIdType_ID
+						,Guardian_GovIdDetail = @Guardian_GovIdDetail
 						,Gaurdian_ContactNo = @Gaurdian_ContactNo
 						,RBSKId = @RBSKId
 						,SchoolName = @SchoolName

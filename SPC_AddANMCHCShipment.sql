@@ -6,12 +6,12 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_AddANMShipment' AND [type] = 'p')
+IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_AddANMCHCShipment' AND [type] = 'p')
 BEGIN
-	DROP PROCEDURE SPC_AddANMShipment
+	DROP PROCEDURE SPC_AddANMCHCShipment
 END
 GO
-CREATE PROCEDURE [dbo].[SPC_AddANMShipment]
+CREATE PROCEDURE [dbo].[SPC_AddANMCHCShipment]
 (	
 	@SubjectID INT
 	,@UniqueSubjectID VARCHAR(200)
@@ -23,6 +23,7 @@ CREATE PROCEDURE [dbo].[SPC_AddANMShipment]
 	,@RIID INT
 	,@ILR_ID INT
 	,@AVDID INT
+	,@DeliveryExecutiveName VARCHAR(200)
 	,@ContactNo VARCHAR(150)
 	,@DateofShipment VARCHAR(100)
 	,@TimeofShipment VARCHAR(100)
@@ -36,13 +37,13 @@ BEGIN
 	BEGIN TRY
 		IF @SubjectID != 0 OR @SubjectID IS NOT NULL OR @ShipmentID != '' OR @ShipmentID IS NOT NULL
 		BEGIN
-			SELECT @sCount =  count(ID) FROM Tbl_ANMShipment 
+			SELECT @sCount =  count(ID) FROM Tbl_ANMCHCShipment 
 			WHERE SubjectID = @SubjectID AND SampleCollectionID = @SampleCollectionID 
 			AND ShipmentFrom = @ShipmentFrom AND ShipmentID = @ShipmentID
 			
 			IF(@sCount <= 0)
 			BEGIN
-				INSERT INTO Tbl_ANMShipment
+				INSERT INTO Tbl_ANMCHCShipment
 					  (SubjectID
 					  ,UniqueSubjectID
 					  ,SampleCollectionID
@@ -53,6 +54,7 @@ BEGIN
 					  ,RIID
 					  ,ILR_ID
 					  ,AVDID
+					  ,DeliveryExecutiveName
 					  ,ContactNo
 					  ,DateofShipment
 					  ,TimeofShipment
@@ -69,12 +71,13 @@ BEGIN
 					  ,@RIID
 					  ,@ILR_ID 
 					  ,@AVDID
+					  ,@DeliveryExecutiveName
 					  ,@ContactNo
 					  ,CONVERT(DATE,@DateofShipment,103)
 					  ,CONVERT(TIME(0),@TimeofShipment)
 					  ,@CreatedBy
 					  ,GETDATE())
-				SET @tempId = IDENT_CURRENT('Tbl_ANMShipment')
+				SET @tempId = IDENT_CURRENT('Tbl_ANMCHCShipment')
 				SET @Scope_output = 1
 			END
 		END

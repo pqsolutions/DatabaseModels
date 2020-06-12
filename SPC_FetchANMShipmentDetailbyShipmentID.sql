@@ -6,6 +6,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
+--Fetch Samples detail of particular shipment of ANM user 
 IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_FetchANMShipmentDetailbyShipmentID' AND [type] = 'p')
 BEGIN
 	DROP PROCEDURE SPC_FetchANMShipmentDetailbyShipmentID
