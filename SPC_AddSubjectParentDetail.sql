@@ -12,7 +12,7 @@ End
 GO
 CREATE PROCEDURE [dbo].[SPC_AddSubjectParentDetail]
 (
-	@SubjectID  INT	
+	@UniqueSubjectID  VARCHAR(250)	
 	,@Mother_FirstName VARCHAR(150)
 	,@Mother_MiddleName VARCHAR(150)
 	,@Mother_LastName VARCHAR(150)
@@ -47,14 +47,14 @@ CREATE PROCEDURE [dbo].[SPC_AddSubjectParentDetail]
 ) AS
 DECLARE
 	@SubCount INT
-	,@UniqueSubjectID VARCHAR(200)
+	,@SubjectID INT
 	,@tempUserId INT
 BEGIN
 	BEGIN TRY
 		IF @SubjectID IS NOT NULL
 		BEGIN
-			SELECT @SubCount =  count(ID) from Tbl_SubjectParentDetail where SubjectID = @SubjectID
-			SELECT @UniqueSubjectID =   UniqueSubjectID FROM Tbl_SubjectPrimaryDetail WHERE ID = @SubjectID
+			SELECT @SubCount =  count(ID) from Tbl_SubjectParentDetail where UniqueSubjectID = @UniqueSubjectID
+			SELECT @SubjectID =   ID FROM Tbl_SubjectPrimaryDetail WHERE UniqueSubjectID = @UniqueSubjectID
 			IF (@SubCount <= 0) 
 			BEGIN
 				INSERT INTO [dbo].[Tbl_SubjectParentDetail]

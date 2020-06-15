@@ -44,7 +44,7 @@ CREATE PROCEDURE [dbo].[SPC_AddSubjectPrimaryDetail]
       ,@CreatedBy INT     
       ,@UpdatedBy INT     
       ,@IsActive BIT
-	  ,@uniqueSubjectId VARCHAR(200)
+	  ,@UniqueSubjectId VARCHAR(200)
 	  ,@Source CHAR(1) -- N/F/M (N-Online, F-Offline, M-Manual)
 	  
 )AS
@@ -53,10 +53,10 @@ DECLARE
 	,@Count int
 BEGIN
 	BEGIN TRY
-		IF @uniqueSubjectId = '' OR @uniqueSubjectId IS NULL
+		IF @UniqueSubjectId = '' OR @UniqueSubjectId IS NULL
 		BEGIN
 			 SET @uniqueSubjectId = (Select [dbo].[FN_GenerateUniqueSubjectId](@AssignANM_ID,@Source))
-			 SELECT @Count =  count(ID) FROM Tbl_SubjectPrimaryDetail WHERE uniqueSubjectId = @uniqueSubjectId
+			 SELECT @Count =  count(ID) FROM Tbl_SubjectPrimaryDetail WHERE UniqueSubjectID = @UniqueSubjectId
 			 IF (@Count <= 0)
 			 BEGIN
 				 INSERT INTO [dbo].[Tbl_SubjectPrimaryDetail]

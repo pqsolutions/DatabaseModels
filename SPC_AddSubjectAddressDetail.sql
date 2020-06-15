@@ -12,7 +12,7 @@ End
 GO
 CREATE PROCEDURE [dbo].[SPC_AddSubjectAddressDetail]
 (
-	@SubjectID  INT	
+	@UniqueSubjectID  VARCHAR(250)	
 	,@Religion_Id INT
 	,@Caste_Id INT
 	,@Community_Id INT
@@ -26,14 +26,14 @@ CREATE PROCEDURE [dbo].[SPC_AddSubjectAddressDetail]
 ) AS
 DECLARE
 	@SubCount INT
-	,@UniqueSubjectID VARCHAR(250)
+	,@SubjectId INT
 	,@tempUserId INT
 BEGIN
 	BEGIN TRY
-		IF  @SubjectID IS NOT NULL
+		IF  @UniqueSubjectID IS NOT NULL
 		BEGIN
-			SELECT @SubCount =  count(ID) FROM Tbl_SubjectAddressDetail WHERE SubjectID = @SubjectID
-			SELECT @UniqueSubjectID =   UniqueSubjectID FROM Tbl_SubjectPrimaryDetail WHERE ID = @SubjectID
+			SELECT @SubCount =  count(ID) FROM Tbl_SubjectAddressDetail WHERE UniqueSubjectID = @UniqueSubjectID
+			SELECT @SubjectID =   ID FROM Tbl_SubjectPrimaryDetail WHERE UniqueSubjectID = UniqueSubjectID
 			IF (@SubCount <= 0) 
 			BEGIN
 				INSERT INTO [dbo].[Tbl_SubjectAddressDetail]

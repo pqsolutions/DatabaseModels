@@ -12,7 +12,7 @@ End
 GO
 CREATE PROCEDURE [dbo].[SPC_AddSubjectPregnancyDetail]
 (
-	@SubjectID INT
+	@UniqueSubjectID VARCHAR(200)
 	,@RCHID  VARCHAR(150)
 	,@ECNumber  VARCHAR(150)
 	,@LMP_Date  DATETIME
@@ -26,14 +26,14 @@ CREATE PROCEDURE [dbo].[SPC_AddSubjectPregnancyDetail]
 ) AS
 DECLARE
 	@SubCount INT
-	,@UniqueSubjectID  VARCHAR(200)
+	,@SubjectID  INT
 	,@tempUserId INT
 BEGIN
 	BEGIN TRY
 		IF @SubjectID IS NOT NULL
 		BEGIN
-			SELECT @SubCount =  count(ID) from Tbl_SubjectPregnancyDetail where SubjectID = @SubjectID
-			SELECT @UniqueSubjectID =   UniqueSubjectID FROM Tbl_SubjectPrimaryDetail WHERE ID = @SubjectID
+			SELECT @SubCount =  count(ID) from Tbl_SubjectPregnancyDetail where UniqueSubjectID = @UniqueSubjectID
+			SELECT @SubjectID =   ID FROM Tbl_SubjectPrimaryDetail WHERE UniqueSubjectID = @UniqueSubjectID
 			IF (@SubCount <= 0) 
 			BEGIN
 				INSERT INTO [dbo].[Tbl_SubjectPregnancyDetail]

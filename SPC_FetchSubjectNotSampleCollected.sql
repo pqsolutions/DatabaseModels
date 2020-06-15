@@ -42,7 +42,7 @@ BEGIN
 			,(SELECT [dbo].[FN_CalculateGestationalAge](SP.[ID])) AS GestationalAge
 			,(SELECT [dbo].[FN_FindSampleType](SP.[ID])) AS SampleType
 		FROM Tbl_SubjectPrimaryDetail SP
-		LEFT JOIN Tbl_SubjectPregnancyDetail SPR WITH (NOLOCK) ON SPR.SubjectID = SP.ID
+		LEFT JOIN Tbl_SubjectPregnancyDetail SPR WITH (NOLOCK) ON SPR.ID  = SP.ID 
 		LEFT JOIN Tbl_SubjectTypeMaster ST WITH (NOLOCK) ON ST.ID = SP.SubjectTypeID 
 		WHERE SP.[AssignANM_ID] = @UserID  
 			AND (SP.[DateofRegister] BETWEEN CONVERT(DATE,@FromDate,103) AND CONVERT(DATE,@ToDate,103))
@@ -64,7 +64,7 @@ BEGIN
 			,(SELECT [dbo].[FN_CalculateGestationalAge](SP.[ID])) AS GestationalAge
 			,(SELECT [dbo].[FN_FindSampleType](SP.[ID])) AS SampleType
 		FROM Tbl_SubjectPrimaryDetail SP
-		LEFT JOIN Tbl_SubjectPregnancyDetail SPR WITH (NOLOCK) ON SPR.SubjectID = SP.ID
+		LEFT JOIN Tbl_SubjectPregnancyDetail SPR WITH (NOLOCK) ON SPR.ID  = SP.ID
 		LEFT JOIN Tbl_SubjectTypeMaster ST WITH (NOLOCK) ON ST.ID = SP.SubjectTypeID 
 		WHERE SP.CHCID = @CHCID 
 			AND (SP.[DateofRegister] BETWEEN CONVERT(DATE,@FromDate,103) AND CONVERT(DATE,@ToDate,103))
