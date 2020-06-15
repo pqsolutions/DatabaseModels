@@ -6,21 +6,23 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
---Fetch Subject Details  which are Damaged Sample or Timout Expiry Samples of particular ANM in Notification
+--Fetch Subject Details  which are Damaged Sample or Timout Expiry Samples of particular CHC in Notification
 
-IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_FetchANMNotificationSamples' AND [type] = 'p')
+IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_FetchCHCNotificationSamples' AND [type] = 'p')
 BEGIN
-	DROP PROCEDURE SPC_FetchANMNotificationSamples
+	DROP PROCEDURE SPC_FetchCHCNotificationSamples
 END
 GO
-CREATE PROCEDURE [dbo].[SPC_FetchANMNotificationSamples] 
+CREATE PROCEDURE [dbo].[SPC_FetchCHCNotificationSamples] 
 (
-	@ANMID INT
+	@CHCID INT
 	,@Notification INT
 	,@SearchValue VARCHAR(MAX)
 )
 AS
 BEGIN
+	DECLARE @RegisterFrom INT
+	SET @RegisterFrom = (Select ID FROM Tbl_ConstantValues WHERE CommonName = 'CHC')
 	IF @Notification = 1
 	BEGIN
 		IF @SearchValue = '' OR LEN(@SearchValue) = 0	
@@ -38,10 +40,10 @@ BEGIN
 				,ISNULL(SC.[NotifiedStatus],0) AS NotifiedStatus
 				,(SELECT [dbo].[FN_CalculateGestationalAge](SP.[ID])) AS GestationalAge
 			FROM [dbo].[Tbl_SampleCollection] SC     
-			LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP WITH (NOLOCK) ON SP.[ID] = SC.[SubjectID] 
-			LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail]  SPR WITH (NOLOCK) ON SPR.[SubjectID] = SP.[ID]  
+			LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP WITH (NOLOCK) ON SP.[ID] = SC.[SubjectID]
+			LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail]  SPR WITH (NOLOCK) ON SPR.[SubjectID] = SP.[ID]   
 			LEFT JOIN [dbo].[Tbl_SubjectTypeMaster] ST WITH (NOLOCK) ON ST.[ID] = SP.[SubjectTypeID]    
-			WHERE SC.[CollectedBy] = @ANMID  AND SC.[SampleDamaged] = 1 AND SC.[IsRecollected] != 'Y' AND SC.[IsAccept] != 1
+			WHERE SP.[CHCID] = @CHCID  AND SP.[RegisteredFrom] = @RegisterFrom   AND SC.[SampleDamaged] = 1 AND SC.[IsRecollected] != 'Y' AND SC.[IsAccept] != 1
 		END
 		ELSE
 		BEGIN
@@ -59,9 +61,9 @@ BEGIN
 				,(SELECT [dbo].[FN_CalculateGestationalAge](SP.[ID])) AS GestationalAge
 			FROM [dbo].[Tbl_SampleCollection] SC     
 			LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP WITH (NOLOCK) ON SP.[ID] = SC.[SubjectID] 
-			LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail]  SPR WITH (NOLOCK) ON SPR.[SubjectID] = SP.[ID]   
+			LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail]  SPR WITH (NOLOCK) ON SPR.[SubjectID] = SP.[ID]  			 
 			LEFT JOIN [dbo].[Tbl_SubjectTypeMaster] ST WITH (NOLOCK) ON ST.[ID] = SP.[SubjectTypeID]    
-			WHERE SC.[CollectedBy] = @ANMID  AND SC.[SampleDamaged] = 1 AND SC.[IsRecollected] != 'Y' 
+			WHERE SP.[CHCID] = @CHCID  AND SP.[RegisteredFrom] = @RegisterFrom  AND SC.[SampleDamaged] = 1 AND SC.[IsRecollected] != 'Y' 
 			AND SC.[IsAccept] != 1 AND (SP.[UniqueSubjectID] = @SearchValue OR SC.[BarcodeNo] = @SearchValue  OR SP.[MobileNo] = @SearchValue
 			OR SC.[SampleCollectionDate] = CONVERT(DATE,@SearchValue,103) OR SP.[FirstName] Like @SearchValue+'%')		
 		END					
@@ -83,10 +85,10 @@ BEGIN
 				,ISNULL(SC.[NotifiedStatus],0) AS NotifiedStatus
 				,(SELECT [dbo].[FN_CalculateGestationalAge](SP.[ID])) AS GestationalAge
 			FROM [dbo].[Tbl_SampleCollection] SC     
-			LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP WITH (NOLOCK) ON SP.[ID] = SC.[SubjectID]  
-			LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail]  SPR WITH (NOLOCK) ON SPR.[SubjectID] = SP.[ID]  
+			LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP WITH (NOLOCK) ON SP.[ID] = SC.[SubjectID] 
+			LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail]  SPR WITH (NOLOCK) ON SPR.[SubjectID] = SP.[ID]  			  
 			LEFT JOIN [dbo].[Tbl_SubjectTypeMaster] ST WITH (NOLOCK) ON ST.[ID] = SP.[SubjectTypeID]  
-			WHERE SC.[CollectedBy] = @ANMID  AND SC.[SampleTimeoutExpiry] = 1 AND SC.[IsRecollected] != 'Y' AND ISNULL(SC.[IsAccept],0) != 1
+			WHERE SP.[CHCID] = @CHCID  AND SP.[RegisteredFrom] = @RegisterFrom  AND SC.[SampleTimeoutExpiry] = 1 AND SC.[IsRecollected] != 'Y' AND SC.[IsAccept] != 1
 		END
 		ELSE
 		BEGIN
@@ -104,9 +106,9 @@ BEGIN
 				,(SELECT [dbo].[FN_CalculateGestationalAge](SP.[ID])) AS GestationalAge
 			FROM [dbo].[Tbl_SampleCollection] SC     
 			LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP WITH (NOLOCK) ON SP.[ID] = SC.[SubjectID]
-			LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail]  SPR WITH (NOLOCK) ON SPR.[SubjectID] = SP.[ID]  
+			LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail]  SPR WITH (NOLOCK) ON SPR.[SubjectID] = SP.[ID]  			 
 			LEFT JOIN [dbo].[Tbl_SubjectTypeMaster] ST WITH (NOLOCK) ON ST.[ID] = SP.[SubjectTypeID]  
-			WHERE SC.[CollectedBy] = @ANMID  AND SC.[SampleTimeoutExpiry] = 1 AND SC.[IsRecollected] != 'Y' 
+			WHERE SP.[CHCID] = @CHCID  AND SP.[RegisteredFrom] = @RegisterFrom  AND SC.[SampleTimeoutExpiry] = 1 AND SC.[IsRecollected] != 'Y' 
 			AND SC.[IsAccept] != 1 AND (SP.[UniqueSubjectID] = @SearchValue OR SC.[BarcodeNo] = @SearchValue  OR SP.[MobileNo] = @SearchValue
 			OR SC.[SampleCollectionDate] = CONVERT(DATE,@SearchValue,103) OR SP.[FirstName] Like @SearchValue+'%')		
 		END					

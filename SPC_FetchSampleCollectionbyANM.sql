@@ -19,6 +19,7 @@ BEGIN
 	SELECT SC.[SubjectID]
       ,SC.[UniqueSubjectID]
       ,(SP.[FirstName] + ' ' + SP.[MiddleName] + ' ' + SP.[LastName]) AS SubjectName
+      ,SC.[ID] AS SampleCollectionID
       ,SC.[BarcodeNo]
       ,(CONVERT(VARCHAR,SC.[SampleCollectionDate],105) + ' ' + CONVERT(VARCHAR(5),SC.[SampleCollectionTime])) AS SampleDateTime
        FROM Tbl_SampleCollection SC

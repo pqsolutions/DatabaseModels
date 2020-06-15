@@ -27,6 +27,7 @@ BEGIN
 	BEGIN 
 		SELECT SC.[SubjectID]
 		  ,SC.[UniqueSubjectID]
+		  ,SC.[ID] AS SampleCollectionID
 		  ,(SP.[FirstName] + ' ' + SP.[MiddleName] + ' ' + SP.[LastName]) AS SubjectName
 		  ,SPR.[RCHID] 
 		  ,SC.[BarcodeNo]
@@ -40,6 +41,7 @@ BEGIN
     BEGIN
 		SELECT SC.[SubjectID]
 		  ,SC.[UniqueSubjectID]
+		  ,SC.[ID] AS SampleCollectionID
 		  ,(SP.[FirstName] + ' ' + SP.[MiddleName] + ' ' + SP.[LastName]) AS SubjectName
 		  ,SPR.[RCHID] 
 		  ,SC.[BarcodeNo]
