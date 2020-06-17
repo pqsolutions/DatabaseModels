@@ -206,6 +206,7 @@ CREATE TABLE [dbo].[Tbl_CHCMaster](
 	[Isactive] [bit] NULL,
 	[Latitude] [varchar](150) NULL,
 	[Longitude] [varchar](150) NULL,
+	[AssociatedCHCID] [int] NULL
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC

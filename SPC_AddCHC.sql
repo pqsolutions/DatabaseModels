@@ -23,6 +23,7 @@ CREATE procedure [dbo].[SPC_AddCHC]
 	,@CHC_gov_code varchar(50)	
 	,@CHCname varchar(100)
 	,@Istestingfacility  Bit
+	,@AssociatedCHCID int
 	,@Pincode varchar(150)
 	,@Isactive  Bit
 	,@Latitude varchar(150)
@@ -50,6 +51,7 @@ Begin
 					,CHC_gov_code					
 					,CHCname
 					,Istestingfacility
+					,AssociatedCHCID
 					,HNIN_ID
 					,Pincode
 					,Isactive
@@ -67,6 +69,7 @@ Begin
 				,@CHC_gov_code				
 				,@CHCname
 				,@Istestingfacility
+				,@AssociatedCHCID
 				,@HNIN_ID
 				,@Pincode
 				,@Isactive
@@ -89,6 +92,7 @@ Begin
 				,CHC_gov_code = @CHC_gov_code				
 				,CHCname = @CHCname
 				,Istestingfacility = @Istestingfacility
+				,AssociatedCHCID = @AssociatedCHCID
 				,HNIN_ID = @HNIN_ID
 				,Pincode = @Pincode
 				,Isactive = @Isactive
