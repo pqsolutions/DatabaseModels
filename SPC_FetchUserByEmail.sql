@@ -23,6 +23,7 @@ Begin
 			,um.[Username]  
 			,um.[Password]
 			,um.[StateID]
+			,s.[Shortname] 
 			,s.[Statename]
 			,um.[DistrictID]
 			,d.[Districtname] 

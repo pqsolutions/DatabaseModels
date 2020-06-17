@@ -24,6 +24,7 @@ Begin
 			,um.[Password]
 			,um.[StateID]
 			,s.[Statename]
+			,s.[Shortname] 
 			,um.[DistrictID]
 			,d.[Districtname] 
 			,ISNULL(um.[BlockId],0)AS BlockID

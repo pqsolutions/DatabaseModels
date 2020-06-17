@@ -15,7 +15,8 @@ CREATE Procedure [dbo].[SPC_FetchCHCByDistrict] (@Id INT)
 AS
 BEGIN
 	SELECT C.[ID]
-		,C.[CHCname]
+		,(C.[CHC_gov_code] + ' - ' +  C.[CHCname] )AS [CHCname]
+		,C.[CHC_gov_code]
 	FROM [dbo].[Tbl_CHCMaster] C
 	LEFT JOIN [dbo].[Tbl_DistrictMaster] D WITH (NOLOCK) ON C.DistrictID  = D.ID
 	WHERE C.DistrictID = @Id AND C.[Isactive] = 1

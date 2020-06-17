@@ -15,7 +15,8 @@ CREATE Procedure [dbo].[SPC_FetchCHCByUser] (@UserId INT)
 AS
 BEGIN
 	SELECT C.[ID]
-		,C.[CHCname]
+		,(C.[CHC_gov_code] + ' - ' +  C.[CHCname] )AS [CHCname]
+		,C.[CHC_gov_code]
 	FROM [dbo].[Tbl_CHCMaster] C
 	LEFT JOIN [dbo].[Tbl_UserMaster] U WITH (NOLOCK) ON U.CHCID = C.ID
 	WHERE U.ID = @UserId AND C.[Isactive] = 1
