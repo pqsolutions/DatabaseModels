@@ -130,7 +130,56 @@ BEGIN
 				   ,@UpdatedBy
 				   ,GETDATE()
 				   ,@IsActive)
+		
+			IF @SubjectTypeID = 2 
+			BEGIN
 						
+					UPDATE Tbl_SubjectPrimaryDetail  SET SpouseSubjectID = @UniqueSubjectId    WHERE  UniqueSubjectID  = @SpouseSubjectID 
+			END
+						
+		END
+		ELSE
+		BEGIN
+		
+		SET @ID = (SELECT ID FROM Tbl_SubjectPrimaryDetail WHERE UniqueSubjectID = @UniqueSubjectID) 
+			UPDATE [dbo].[Tbl_SubjectPrimaryDetail]
+				   SET SubjectTypeID = @SubjectTypeID	
+					  ,ChildSubjectTypeID = @ChildSubjectTypeID				  
+					  ,DistrictID = @DistrictID
+					  ,CHCID = @CHCID
+					  ,PHCID = @PHCID
+					  ,SCID = @SCID
+					  ,RIID = @RIID
+					  ,SubjectTitle = @SubjectTitle
+					  ,FirstName = @FirstName
+					  ,MiddleName = @MiddleName
+					  ,LastName = @LastName
+					  ,DOB = @DOB
+					  ,Age = @Age
+					  ,Gender = @Gender
+					  ,MaritalStatus = @MaritalStatus
+					  ,MobileNo = @MobileNo
+					  ,EmailId = @EmailId
+					  ,GovIdType_ID = @GovIdType_ID
+					  ,GovIdDetail = @GovIdDetail
+					  ,SpouseSubjectID = @SpouseSubjectID
+					  ,Spouse_FirstName = @Spouse_FirstName
+					  ,Spouse_MiddleName = @Spouse_MiddleName
+					  ,Spouse_LastName = @Spouse_LastName
+					  ,Spouse_ContactNo = @Spouse_ContactNo
+					  ,Spouse_GovIdType_ID = @Spouse_GovIdType_ID
+					  ,Spouse_GovIdDetail = @Spouse_GovIdDetail
+					  ,AssignANM_ID = @AssignANM_ID
+					  ,DateofRegister = @DateofRegister	
+					  ,RegisteredFrom = @RegisteredFrom 				  				 
+					  ,UpdatedBy = @UpdatedBy
+					  ,UpdatedOn = GETDATE()
+					  ,IsActive = @IsActive
+					WHERE ID = @ID
+			IF @SubjectTypeID = 2 OR @ChildSubjectTypeID = 2 
+			BEGIN
+				UPDATE Tbl_SubjectPrimaryDetail  SET SpouseSubjectID = @UniqueSubjectId    WHERE  UniqueSubjectID  = @SpouseSubjectID 
+			END
 		END
 	END TRY
 	BEGIN CATCH

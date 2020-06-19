@@ -16,7 +16,7 @@ CREATE PROCEDURE [dbo].[SPC_AddSubjectPregnancyDetail]
 	,@RCHID  VARCHAR(150)
 	,@ECNumber  VARCHAR(150)
 	,@LMP_Date  DATETIME
-	,@Gestational_period DECIMAL(18,2)
+	--,@Gestational_period DECIMAL(18,2)
 	,@G INT
 	,@P INT
 	,@L INT
@@ -42,7 +42,7 @@ BEGIN
 					,RCHID
 					,ECNumber
 					,LMP_Date
-					,Gestational_period
+				--	,Gestational_period
 					,G
 					,P
 					,L
@@ -55,7 +55,7 @@ BEGIN
 					,@RCHID
 					,@ECNumber
 					,@LMP_Date
-					,@Gestational_period
+					--,@Gestational_period
 					,@G  
 					,@P  
 					,@L  
@@ -71,7 +71,7 @@ BEGIN
 				   SET RCHID = @RCHID
 					  ,ECNumber = @ECNumber
 					  ,LMP_Date = @LMP_Date
-					  ,Gestational_period = @Gestational_period
+					 -- ,Gestational_period = @Gestational_period
 					  ,G = @G
 					  ,P = @P
 					  ,L = @L

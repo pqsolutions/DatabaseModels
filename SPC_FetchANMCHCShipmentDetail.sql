@@ -21,6 +21,7 @@ CREATE PROCEDURE [dbo].[SPC_FetchANMCHCShipmentDetail]
 AS
 BEGIN
 
+	SET @ShipmentFrom = UPPER(@ShipmentFrom)
 	IF @ShipmentFrom = 'ANM'
 	BEGIN
 		SELECT 

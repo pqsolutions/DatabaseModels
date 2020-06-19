@@ -132,6 +132,10 @@ BEGIN
 						   ,GETDATE()
 						   ,@IsActive)
 					SELECT  @UniqueSubjectID as UniqueSubjectID, SCOPE_IDENTITY() AS ID
+					IF @SubjectTypeID = 2 OR @ChildSubjectTypeID = 2 
+					BEGIN
+						UPDATE Tbl_SubjectPrimaryDetail  SET SpouseSubjectID = @UniqueSubjectId    WHERE  UniqueSubjectID  = @SpouseSubjectID 
+					END
 				END
 		END
 		ELSE
@@ -171,7 +175,10 @@ BEGIN
 					  ,UpdatedOn = GETDATE()
 					  ,IsActive = @IsActive
 					WHERE ID = @ID
-					
+				IF @SubjectTypeID = 2 OR @ChildSubjectTypeID = 2 
+				BEGIN
+					UPDATE Tbl_SubjectPrimaryDetail  SET SpouseSubjectID = @UniqueSubjectId    WHERE  UniqueSubjectID  = @SpouseSubjectID 
+				END
 				SELECT  @UniqueSubjectID AS UniqueSubjectID, @ID AS ID
 							
 		END
