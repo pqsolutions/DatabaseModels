@@ -19,16 +19,31 @@ CREATE PROCEDURE [dbo].[SPC_FetchSubjectNotSampleCollected]
 	,@FromDate VARCHAR(50)
 	,@ToDate VARCHAR(50)
 	,@SubjectType INT
-	,@RegisteredFrom VARCHAR(10)
+	,@RegisteredFrom INT
 )
 AS
 BEGIN
-
-	DECLARE @RegisterFrom INT,@CHCID INT
-	SET @RegisterFrom = (SELECT ID FROM Tbl_ConstantValues WHERE CommonName = @RegisteredFrom AND comments='RegisterFrom')
+	DECLARE @RegisterFrom VARCHAR(10), @CHCID INT, @StartDate VARCHAR(50), @EndDate VARCHAR(50)
+	IF @FromDate = NULL OR @FromDate = ''
+	BEGIN
+		SET @StartDate = (SELECT CONVERT(VARCHAR,DATEADD(DAY ,-5,GETDATE()),103))
+	END
+	ELSE
+	BEGIN
+		SET @StartDate = @FromDate
+	END
+	IF @ToDate = NULL OR @ToDate = ''
+	BEGIN
+		SET @EndDate = (SELECT CONVERT(VARCHAR,GETDATE(),103))
+	END
+	ELSE
+	BEGIN
+		SET @EndDate = @ToDate
+	END
+	SET @RegisterFrom = (SELECT CommonName FROM Tbl_ConstantValues WHERE   ID = @RegisteredFrom)
 	SET @CHCID = (SELECT CHCID FROM Tbl_UserMaster WHERE ID = @UserID)
 	
-	IF @RegisteredFrom = 'ANM'
+	IF @RegisterFrom = 'ANM'
 	BEGIN
 		SELECT SP.[ID]
 			,SP.[UniqueSubjectID]
@@ -37,20 +52,26 @@ BEGIN
 			,SP.[SubjectTypeID]
 			,ST.[SubjectType]  
 			,(SP.[Spouse_FirstName] + ' ' + SP.[Spouse_MiddleName] + ' ' + SP.[Spouse_LastName]) AS SpouseName
-			,(CONVERT(VARCHAR,SP.[DateofRegister],105)) AS  DateofRegister
+			,(CONVERT(VARCHAR,SP.[DateofRegister],103)) AS  DateofRegister
 			,SP.[MobileNo] AS ContactNo
 			,(SELECT [dbo].[FN_CalculateGestationalAge](SP.[ID])) AS GestationalAge
 			,(SELECT [dbo].[FN_FindSampleType](SP.[ID])) AS SampleType
+			,@StartDate AS FromDate
+			,@EndDate AS ToDate
 		FROM Tbl_SubjectPrimaryDetail SP
-		LEFT JOIN Tbl_SubjectPregnancyDetail SPR WITH (NOLOCK) ON SPR.ID  = SP.ID 
+		LEFT JOIN Tbl_SubjectPregnancyDetail SPR WITH (NOLOCK) ON SPR.UniqueSubjectID  = SP.UniqueSubjectID 
 		LEFT JOIN Tbl_SubjectTypeMaster ST WITH (NOLOCK) ON ST.ID = SP.SubjectTypeID 
 		WHERE SP.[AssignANM_ID] = @UserID  
-			AND (SP.[DateofRegister] BETWEEN CONVERT(DATE,@FromDate,103) AND CONVERT(DATE,@ToDate,103))
+			AND (CONVERT(DATE,SP.[DateofRegister],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103))
 			AND (@SubjectType = 0 OR SP.[SubjectTypeID] = @SubjectType)
-			AND SP.[RegisteredFrom] = @RegisterFrom
+			AND SP.[RegisteredFrom] = @RegisteredFrom
+			AND SP.[ID]  IN (SELECT TOP 1 SubjectID  FROM Tbl_SubjectAddressDetail WHERE SubjectID = SP.ID)
+			AND SP.[ID]  IN (SELECT TOP 1 SubjectID FROM Tbl_SubjectPregnancyDetail  WHERE SubjectID = SP.ID) 
+			AND SP.[ID]  IN (SELECT TOP 1 SubjectID FROM Tbl_SubjectParentDetail   WHERE SubjectID  = SP.ID)
 			AND SP.[ID] NOT IN (SELECT SubjectID FROM Tbl_SampleCollection WHERE SampleDamaged != 1 AND SampleTimeoutExpiry != 1)
+			
 	END
-	ELSE IF @RegisteredFrom = 'CHC'
+	ELSE IF @RegisterFrom = 'CHC'
     BEGIN
 		SELECT SP.[ID]
 			,SP.[UniqueSubjectID]
@@ -63,13 +84,18 @@ BEGIN
 			,SP.[MobileNo] AS ContactNo
 			,(SELECT [dbo].[FN_CalculateGestationalAge](SP.[ID])) AS GestationalAge
 			,(SELECT [dbo].[FN_FindSampleType](SP.[ID])) AS SampleType
+			,@StartDate AS FromDate
+			,@EndDate AS ToDate
 		FROM Tbl_SubjectPrimaryDetail SP
-		LEFT JOIN Tbl_SubjectPregnancyDetail SPR WITH (NOLOCK) ON SPR.ID  = SP.ID
+		LEFT JOIN Tbl_SubjectPregnancyDetail SPR WITH (NOLOCK) ON SPR.UniqueSubjectID  = SP.UniqueSubjectID 
 		LEFT JOIN Tbl_SubjectTypeMaster ST WITH (NOLOCK) ON ST.ID = SP.SubjectTypeID 
 		WHERE SP.CHCID = @CHCID 
-			AND (SP.[DateofRegister] BETWEEN CONVERT(DATE,@FromDate,103) AND CONVERT(DATE,@ToDate,103))
+			AND (CONVERT(DATE,SP.[DateofRegister],103) BETWEEN CONVERT(DATE,@StartDate ,103) AND CONVERT(DATE,@EndDate,103))
 			AND (@SubjectType = 0 OR SP.[ChildSubjectTypeID] = @SubjectType)
-			AND SP.[RegisteredFrom] = @RegisterFrom
+			AND SP.[RegisteredFrom] = @RegisteredFrom
+			AND SP.[ID]  IN (SELECT TOP 1 SubjectID  FROM Tbl_SubjectAddressDetail WHERE SubjectID = SP.ID)
+			AND SP.[ID]  IN (SELECT TOP 1 SubjectID FROM Tbl_SubjectPregnancyDetail  WHERE SubjectID = SP.ID) 
+			AND SP.[ID]  IN (SELECT TOP 1 SubjectID FROM Tbl_SubjectParentDetail   WHERE SubjectID  = SP.ID)
 			AND SP.[ID] NOT IN (SELECT SubjectID FROM Tbl_SampleCollection WHERE SampleDamaged != 1 AND SampleTimeoutExpiry != 1)
 	END
 END

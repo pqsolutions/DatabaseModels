@@ -13,24 +13,26 @@ END
 GO
 CREATE PROCEDURE [dbo].[SPC_AddSampleCollection]
 (	
-	@SubjectID INT 
-	,@UniqueSubjectID VARCHAR(200)
+	@UniqueSubjectID VARCHAR(200)
 	,@BarcodeNo VARCHAR(200)
 	,@SampleCollectionDate VARCHAR(100)
 	,@SampleCollectionTime VARCHAR(100)
-	,@Reason_Id INT
+	,@Reason VARCHAR(50)
 	,@CollectionFrom INT
 	,@CollectedBy INT
-	,@CreatedBy INT
 	,@Scope_output INT OUTPUT
 ) AS
 DECLARE
 	@sCount INT
 	,@tempId int
+	,@Reason_Id INT
+	,@SubjectId INT
 BEGIN
 	BEGIN TRY
-		IF @SubjectID != 0 OR @SubjectID IS NOT NULL
+		IF @UniqueSubjectID IS NOT NULL
 		BEGIN
+			SELECT @SubjectId = ID FROM Tbl_SubjectPrimaryDetail WHERE UniqueSubjectID = @SubjectId
+			SELECT @Reason_Id = ID FROM Tbl_ConstantValues WHERE CommonName = @Reason AND comments =  'SampleCollectionType' 
 			SELECT @sCount =  count(ID) FROM Tbl_SampleCollection WHERE SubjectID = @SubjectID AND BarcodeNo = @BarcodeNo
 			IF(@sCount <= 0)
 			BEGIN
@@ -58,7 +60,7 @@ BEGIN
 					  ,@Reason_Id
 					  ,@CollectionFrom
 					  ,@CollectedBy
-					  ,@CreatedBy
+					  ,@CollectedBy 
 					  ,GETDATE()
 					  ,0
 					  ,0

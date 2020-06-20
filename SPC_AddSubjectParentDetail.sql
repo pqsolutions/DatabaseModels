@@ -10,7 +10,7 @@ Begin
 	DROP PROCEDURE SPC_AddSubjectParentDetail
 End
 GO
-CREATE PROCEDURE [dbo].[SPC_AddSubjectParentDetail]
+CREATE PROCEDURE [dbo].[SPC_AddSubjectParentDetail] '
 (
 	@UniqueSubjectID  VARCHAR(250)	
 	,@Mother_FirstName VARCHAR(150)
@@ -51,7 +51,7 @@ DECLARE
 	,@tempUserId INT
 BEGIN
 	BEGIN TRY
-		IF @SubjectID IS NOT NULL
+		IF @UniqueSubjectID IS NOT NULL
 		BEGIN
 			SELECT @SubCount =  count(ID) from Tbl_SubjectParentDetail where UniqueSubjectID = @UniqueSubjectID
 			SELECT @SubjectID =   ID FROM Tbl_SubjectPrimaryDetail WHERE UniqueSubjectID = @UniqueSubjectID
@@ -163,7 +163,7 @@ BEGIN
 						,UpdatedBy = @UpdatedBy
 						,UpdatedOn = GETDATE()
 				WHERE UniqueSubjectID = @UniqueSubjectID
-			
+				SET @Scope_output = 1
 			END
 		END
 		ELSE

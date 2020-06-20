@@ -14,24 +14,41 @@ END
 GO
 CREATE PROCEDURE [dbo].[SPC_FetchANMCHCSampleSubjectDetail]
 (	
-	@ID INT
+	@UniqueSubjectId VARCHAR(200)
+	,@SampleType VARCHAR(5)
 )
 AS
 DECLARE 
-	@ReasonId INT
-	,@Reason VARCHAR(100)
+	@Reason VARCHAR(100)
+	,@Damaged BIT
+	,@Timeout BIT
 BEGIN
-	SET @Reason = 'First Time Collection'
-	SET @ReasonId = (SELECT ID FROM  Tbl_ConstantValues WHERE CommonName = @Reason)
-	
-	
-	SELECT SP.[ID] 
-		   ,SP.[UniqueSubjectID] 
+	IF @SampleType = 'F'
+	BEGIN
+		SET @Reason = 'First Time Collection'
+	END 
+	ELSE IF @SampleType = 'R'
+	BEGIN
+		SET @Damaged = (SELECT TOP 1 SampleDamaged  FROM Tbl_SampleCollection ORDER BY ID DESC)
+		SET @Timeout = (SELECT TOP 1 SampleTimeoutExpiry   FROM Tbl_SampleCollection ORDER BY ID DESC)
+		IF @Damaged = 1 AND @Timeout = 1
+		BEGIN
+			SET @Reason = 'Damaged Sample'
+		END
+		ELSE IF @Damaged = 1 AND @Timeout = 0
+		BEGIN
+			SET @Reason = 'Damaged Sample'
+		END
+		ELSE IF @Damaged = 0 AND @Timeout = 1
+		BEGIN
+			SET @Reason = 'Sample Timeout'
+		END
+	END
+	SELECT SP.[UniqueSubjectID] 
 		   ,(SP.[FirstName] + ' ' + SP.[MiddleName] + ' ' + SP.[LastName]) AS SubjectName
 		   ,SPR.[RCHID]
-		   ,@ReasonId AS ReasonId
 		   ,@Reason AS Reason
 	FROM  Tbl_SubjectPrimaryDetail SP
-	LEFT JOIN Tbl_SubjectPregnancyDetail SPR WITH (NOLOCK) ON SPR.ID = SP.ID	
-	WHERE SP.[ID]  = @ID
+	LEFT JOIN Tbl_SubjectPregnancyDetail SPR WITH (NOLOCK) ON SPR.UniqueSubjectID  = SP.UniqueSubjectID 	
+	WHERE SP.[UniqueSubjectID]   = @UniqueSubjectId 
 END

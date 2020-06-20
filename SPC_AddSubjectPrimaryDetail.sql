@@ -23,7 +23,7 @@ CREATE PROCEDURE [dbo].[SPC_AddSubjectPrimaryDetail]
       ,@FirstName VARCHAR(150)
       ,@MiddleName VARCHAR(150)
       ,@LastName VARCHAR(150)
-      ,@DOB DATETIME
+      ,@DOB VARCHAR(150)
       ,@Age INT
       ,@Gender VARCHAR(20)
       ,@MaritalStatus BIT
@@ -39,7 +39,7 @@ CREATE PROCEDURE [dbo].[SPC_AddSubjectPrimaryDetail]
       ,@Spouse_GovIdType_ID INT
       ,@Spouse_GovIdDetail VARCHAR(150)
       ,@AssignANM_ID INT
-      ,@DateofRegister DATETIME
+      ,@DateofRegister VARCHAR(150)
       ,@RegisteredFrom INT
       ,@CreatedBy INT     
       ,@UpdatedBy INT     
@@ -51,14 +51,13 @@ CREATE PROCEDURE [dbo].[SPC_AddSubjectPrimaryDetail]
 DECLARE 
 	@ID INT
 	,@Count int
+	,@NewUniqueSubjectID VARCHAR(200)
 BEGIN
 	BEGIN TRY
-		IF @UniqueSubjectId = '' OR @UniqueSubjectId IS NULL
-		BEGIN
-			 SET @uniqueSubjectId = (Select [dbo].[FN_GenerateUniqueSubjectId](@AssignANM_ID,@Source))
 			 SELECT @Count =  count(ID) FROM Tbl_SubjectPrimaryDetail WHERE UniqueSubjectID = @UniqueSubjectId
 			 IF (@Count <= 0)
 			 BEGIN
+				 SET @NewUniqueSubjectId = (Select [dbo].[FN_GenerateUniqueSubjectId](@AssignANM_ID,@Source))
 				 INSERT INTO [dbo].[Tbl_SubjectPrimaryDetail]
 						   (SubjectTypeID
 						   ,ChildSubjectTypeID
@@ -98,7 +97,7 @@ BEGIN
 					 VALUES
 						   (@SubjectTypeID
 						   ,@ChildSubjectTypeID 
-						   ,@UniqueSubjectID
+						   ,@NewUniqueSubjectId
 						   ,@DistrictID
 						   ,@CHCID
 						   ,@PHCID
@@ -108,7 +107,7 @@ BEGIN
 						   ,@FirstName
 						   ,@MiddleName
 						   ,@LastName
-						   ,@DOB
+						   ,CONVERT(DATE,@DOB,103)
 						   ,@Age
 						   ,@Gender
 						   ,@MaritalStatus
@@ -124,25 +123,24 @@ BEGIN
 						   ,@Spouse_GovIdType_ID
 						   ,@Spouse_GovIdDetail
 						   ,@AssignANM_ID
-						   ,@DateofRegister
+						   ,CONVERT(DATE,@DateofRegister,103)
 						   ,@RegisteredFrom
 						   ,@CreatedBy
 						   ,GETDATE()
 						   ,@UpdatedBy
 						   ,GETDATE()
 						   ,@IsActive)
-					SELECT  @UniqueSubjectID as UniqueSubjectID, SCOPE_IDENTITY() AS ID
+					SELECT  @NewUniqueSubjectID  as UniqueSubjectID, SCOPE_IDENTITY() AS ID
 					IF @SubjectTypeID = 2 OR @ChildSubjectTypeID = 2 
 					BEGIN
-						UPDATE Tbl_SubjectPrimaryDetail  SET SpouseSubjectID = @UniqueSubjectId    WHERE  UniqueSubjectID  = @SpouseSubjectID 
+						UPDATE Tbl_SubjectPrimaryDetail  SET SpouseSubjectID = @NewUniqueSubjectID  WHERE  UniqueSubjectID  = @SpouseSubjectID 
 					END
 				END
-		END
-		ELSE
-		BEGIN
-			SET @ID = (SELECT ID FROM Tbl_SubjectPrimaryDetail WHERE UniqueSubjectID = @UniqueSubjectID) 
-			UPDATE [dbo].[Tbl_SubjectPrimaryDetail]
-				   SET SubjectTypeID = @SubjectTypeID	
+				ELSE
+				BEGIN
+					SET @ID = (SELECT ID FROM Tbl_SubjectPrimaryDetail WHERE UniqueSubjectID = @UniqueSubjectID) 
+					UPDATE [dbo].[Tbl_SubjectPrimaryDetail]
+					SET SubjectTypeID = @SubjectTypeID	
 					  ,ChildSubjectTypeID = @ChildSubjectTypeID				  
 					  ,DistrictID = @DistrictID
 					  ,CHCID = @CHCID
@@ -153,7 +151,7 @@ BEGIN
 					  ,FirstName = @FirstName
 					  ,MiddleName = @MiddleName
 					  ,LastName = @LastName
-					  ,DOB = @DOB
+					  ,DOB = CONVERT(DATE,@DOB,103)
 					  ,Age = @Age
 					  ,Gender = @Gender
 					  ,MaritalStatus = @MaritalStatus
@@ -169,7 +167,7 @@ BEGIN
 					  ,Spouse_GovIdType_ID = @Spouse_GovIdType_ID
 					  ,Spouse_GovIdDetail = @Spouse_GovIdDetail
 					  ,AssignANM_ID = @AssignANM_ID
-					  ,DateofRegister = @DateofRegister	
+					  ,DateofRegister = CONVERT(DATE,@DateofRegister,103)		
 					  ,RegisteredFrom = @RegisteredFrom 				  				 
 					  ,UpdatedBy = @UpdatedBy
 					  ,UpdatedOn = GETDATE()
@@ -180,8 +178,7 @@ BEGIN
 					UPDATE Tbl_SubjectPrimaryDetail  SET SpouseSubjectID = @UniqueSubjectId    WHERE  UniqueSubjectID  = @SpouseSubjectID 
 				END
 				SELECT  @UniqueSubjectID AS UniqueSubjectID, @ID AS ID
-							
-		END
+				END
 	END TRY
 	BEGIN CATCH
 		IF @@TRANCOUNT > 0

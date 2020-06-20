@@ -33,7 +33,7 @@ BEGIN
 		IF  @UniqueSubjectID IS NOT NULL
 		BEGIN
 			SELECT @SubCount =  count(ID) FROM Tbl_SubjectAddressDetail WHERE UniqueSubjectID = @UniqueSubjectID
-			SELECT @SubjectID =   ID FROM Tbl_SubjectPrimaryDetail WHERE UniqueSubjectID = UniqueSubjectID
+			SELECT @SubjectID = ID FROM Tbl_SubjectPrimaryDetail WHERE UniqueSubjectID = UniqueSubjectID
 			IF (@SubCount <= 0) 
 			BEGIN
 				INSERT INTO [dbo].[Tbl_SubjectAddressDetail]
@@ -79,7 +79,7 @@ BEGIN
 					  ,UpdatedBy = @UpdatedBy
 					  ,UpdatedOn = GETDATE()
 				WHERE UniqueSubjectID = @UniqueSubjectID
-			
+				SET @Scope_output = 1
 			END
 		END
 		ELSE

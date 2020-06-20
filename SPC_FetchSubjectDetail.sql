@@ -73,17 +73,18 @@ BEGIN
 			,SPAD.[Mother_FirstName]
 			,SPAD.[Mother_MiddleName]
 			,SPAD.[Mother_LastName]
-			,SPAD.[Mother_UniquetID]
 			,SPAD.[Mother_ContactNo]
+			,GIMM.[GovIDType] AS [Mother_GovID]
 			,SPAD.[Father_FirstName]
 			,SPAD.[Father_MiddleName]
 			,SPAD.[Father_LastName]
-			,SPAD.[Father_UniquetID]
 			,SPAD.[Father_ContactNo]
+			,GIMF.[GovIDType] AS [Father_GovID]
 			,SPAD.[Gaurdian_FirstName]
 			,SPAD.[Gaurdian_MiddleName]
 			,SPAD.[Gaurdian_LastName]
 			,SPAD.[Gaurdian_ContactNo]
+			,GIMG.[GovIDType] AS [Gaurdian_GovID]
 			,SPAD.[RBSKId]
 			,SPAD.[SchoolName]
 			,SPAD.[SchoolAddress1]
@@ -112,7 +113,10 @@ BEGIN
 	LEFT JOIN [dbo].[Tbl_ReligionMaster] RM WITH (NOLOCK) ON RM.[ID] = SAD.[Religion_Id]  
 	LEFT JOIN [dbo].[Tbl_CasteMaster] CAM WITH (NOLOCK) ON CAM.[ID] = SAD.[Caste_Id]   
 	LEFT JOIN [dbo].[Tbl_Gov_IDTypeMaster] GIM WITH (NOLOCK) ON GIM.[ID] = SPRD.[GovIdType_ID]    
+	LEFT JOIN [dbo].[Tbl_Gov_IDTypeMaster] GIMF WITH (NOLOCK) ON GIMF.[ID] = SPAD.[Father_GovIdType_ID]  
+	LEFT JOIN [dbo].[Tbl_Gov_IDTypeMaster] GIMM WITH (NOLOCK) ON GIMM.[ID] = SPAD.[Mother_GovIdType_ID]      
+	LEFT JOIN [dbo].[Tbl_Gov_IDTypeMaster] GIMG WITH (NOLOCK) ON GIMG.[ID] = SPAD.[Guardian_GovIdType_ID]       
 	LEFT JOIN [dbo].[Tbl_CommunityMaster] COM WITH (NOLOCK) ON COM.[ID] = SAD.[Community_Id]    
 	
-	WHERE  SPRD.[UniqueSubjectID] = @UniqueSubjectID	
+	WHERE  (SPRD.[UniqueSubjectID] = @UniqueSubjectID OR SPRD.[MobileNo] = @UniqueSubjectID OR SPRD.[GovIdDetail] = @UniqueSubjectID  OR SPD.[RCHID]  = @UniqueSubjectID)
 END

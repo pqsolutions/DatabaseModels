@@ -23,7 +23,7 @@ CREATE PROCEDURE [dbo].[SPC_AddPrimaryDetail]
       ,@FirstName VARCHAR(150)
       ,@MiddleName VARCHAR(150)
       ,@LastName VARCHAR(150)
-      ,@DOB DATETIME
+      ,@DOB VARCHAR(150)
       ,@Age INT
       ,@Gender VARCHAR(20)
       ,@MaritalStatus BIT
@@ -39,7 +39,7 @@ CREATE PROCEDURE [dbo].[SPC_AddPrimaryDetail]
       ,@Spouse_GovIdType_ID INT
       ,@Spouse_GovIdDetail VARCHAR(150)
       ,@AssignANM_ID INT
-      ,@DateofRegister DATETIME
+      ,@DateofRegister VARCHAR(150)
       ,@RegisteredFrom INT
       ,@CreatedBy INT     
       ,@UpdatedBy INT     
@@ -107,7 +107,7 @@ BEGIN
 				   ,@FirstName
 				   ,@MiddleName
 				   ,@LastName
-				   ,@DOB
+				   ,CONVERT(DATE,@DOB,103)
 				   ,@Age
 				   ,@Gender
 				   ,@MaritalStatus
@@ -123,7 +123,7 @@ BEGIN
 				   ,@Spouse_GovIdType_ID
 				   ,@Spouse_GovIdDetail
 				   ,@AssignANM_ID
-				   ,@DateofRegister
+				   ,CONVERT(DATE,@DateofRegister,103)
 				   ,@RegisteredFrom
 				   ,@CreatedBy
 				   ,GETDATE()
@@ -131,7 +131,7 @@ BEGIN
 				   ,GETDATE()
 				   ,@IsActive)
 		
-			IF @SubjectTypeID = 2 
+			IF @SubjectTypeID = 2 OR @ChildSubjectTypeID = 2
 			BEGIN
 						
 					UPDATE Tbl_SubjectPrimaryDetail  SET SpouseSubjectID = @UniqueSubjectId    WHERE  UniqueSubjectID  = @SpouseSubjectID 
@@ -154,7 +154,7 @@ BEGIN
 					  ,FirstName = @FirstName
 					  ,MiddleName = @MiddleName
 					  ,LastName = @LastName
-					  ,DOB = @DOB
+					  ,DOB = CONVERT(DATE,@DOB,103)
 					  ,Age = @Age
 					  ,Gender = @Gender
 					  ,MaritalStatus = @MaritalStatus
@@ -170,7 +170,7 @@ BEGIN
 					  ,Spouse_GovIdType_ID = @Spouse_GovIdType_ID
 					  ,Spouse_GovIdDetail = @Spouse_GovIdDetail
 					  ,AssignANM_ID = @AssignANM_ID
-					  ,DateofRegister = @DateofRegister	
+					  ,DateofRegister = CONVERT(DATE,@DateofRegister,103)	
 					  ,RegisteredFrom = @RegisteredFrom 				  				 
 					  ,UpdatedBy = @UpdatedBy
 					  ,UpdatedOn = GETDATE()
