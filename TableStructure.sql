@@ -741,7 +741,7 @@ CREATE TABLE [dbo].[Tbl_SubjectPrimaryDetail](
 	[PHCID] [int] NOT NULL,
 	[SCID] [int] NOT NULL,
 	[RIID] [int] NOT NULL,
-	[SubjectTitle] [varchar] (50) NOT NULL,
+	[SubjectTitle] [varchar] (50) NULL,
 	[FirstName] [varchar] (150)NOT NULL,
 	[MiddleName] [varchar] (150) NULL,
 	[LastName] [varchar] (150) NULL,

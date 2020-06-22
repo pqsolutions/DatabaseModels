@@ -31,9 +31,9 @@ BEGIN
 	BEGIN TRY
 		IF @UniqueSubjectID IS NOT NULL
 		BEGIN
-			SELECT @SubjectId = ID FROM Tbl_SubjectPrimaryDetail WHERE UniqueSubjectID = @SubjectId
+			SELECT @SubjectId = ID FROM Tbl_SubjectPrimaryDetail WHERE UniqueSubjectID = @UniqueSubjectID
 			SELECT @Reason_Id = ID FROM Tbl_ConstantValues WHERE CommonName = @Reason AND comments =  'SampleCollectionType' 
-			SELECT @sCount =  count(ID) FROM Tbl_SampleCollection WHERE SubjectID = @SubjectID AND BarcodeNo = @BarcodeNo
+			SELECT @sCount =  COUNT(ID) FROM Tbl_SampleCollection WHERE SubjectID = @SubjectID OR BarcodeNo = @BarcodeNo
 			IF(@sCount <= 0)
 			BEGIN
 				INSERT INTO Tbl_SampleCollection

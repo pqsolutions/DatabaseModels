@@ -33,7 +33,7 @@ BEGIN
 	BEGIN TRY
 		IF @SubjectID != 0 OR @SubjectID IS NOT NULL
 		BEGIN
-			SELECT @sCount =  count(ID) FROM Tbl_SampleCollection WHERE SubjectID = @SubjectID AND BarcodeNo = @BarcodeNo
+			SELECT @sCount =  COUNT(ID) FROM Tbl_SampleCollection WHERE SubjectID = @SubjectID AND BarcodeNo = @BarcodeNo
 			IF(@sCount <= 0)
 			BEGIN
 				INSERT INTO Tbl_SampleCollection

@@ -29,8 +29,8 @@ BEGIN
 	END 
 	ELSE IF @SampleType = 'R'
 	BEGIN
-		SET @Damaged = (SELECT TOP 1 SampleDamaged  FROM Tbl_SampleCollection ORDER BY ID DESC)
-		SET @Timeout = (SELECT TOP 1 SampleTimeoutExpiry   FROM Tbl_SampleCollection ORDER BY ID DESC)
+		SET @Damaged = (SELECT TOP 1 SampleDamaged  FROM Tbl_SampleCollection WHERE  UniqueSubjectID = @UniqueSubjectId ORDER BY ID DESC)
+		SET @Timeout = (SELECT TOP 1 SampleTimeoutExpiry   FROM Tbl_SampleCollection WHERE  UniqueSubjectID = @UniqueSubjectId ORDER BY ID DESC)
 		IF @Damaged = 1 AND @Timeout = 1
 		BEGIN
 			SET @Reason = 'Damaged Sample'

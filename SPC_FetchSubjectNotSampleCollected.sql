@@ -40,8 +40,8 @@ BEGIN
 	BEGIN
 		SET @EndDate = @ToDate
 	END
-	SET @RegisterFrom = (SELECT CommonName FROM Tbl_ConstantValues WHERE   ID = @RegisteredFrom)
-	SET @CHCID = (SELECT CHCID FROM Tbl_UserMaster WHERE ID = @UserID)
+	SELECT  @RegisterFrom = CommonName FROM Tbl_ConstantValues WHERE   ID = @RegisteredFrom
+	SELECT  @CHCID = CHCID FROM Tbl_UserMaster WHERE ID = @UserID
 	
 	IF @RegisterFrom = 'ANM'
 	BEGIN
@@ -56,6 +56,7 @@ BEGIN
 			,SP.[MobileNo] AS ContactNo
 			,(SELECT [dbo].[FN_CalculateGestationalAge](SP.[ID])) AS GestationalAge
 			,(SELECT [dbo].[FN_FindSampleType](SP.[ID])) AS SampleType
+			,(SELECT [dbo].[FN_FindSampleTypeReason](SP.[ID])) AS Reason
 			,@StartDate AS FromDate
 			,@EndDate AS ToDate
 		FROM Tbl_SubjectPrimaryDetail SP
@@ -84,6 +85,7 @@ BEGIN
 			,SP.[MobileNo] AS ContactNo
 			,(SELECT [dbo].[FN_CalculateGestationalAge](SP.[ID])) AS GestationalAge
 			,(SELECT [dbo].[FN_FindSampleType](SP.[ID])) AS SampleType
+			,(SELECT [dbo].[FN_FindSampleTypeReason](SP.[ID])) AS Reason
 			,@StartDate AS FromDate
 			,@EndDate AS ToDate
 		FROM Tbl_SubjectPrimaryDetail SP

@@ -5,33 +5,24 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-IF EXISTS (SELECT 1 FROM sys.objects WHERE name='FN_FindSampleType' AND [type] = 'FN')
+IF EXISTS (SELECT 1 FROM sys.objects WHERE name='FN_FindSampleTypeReason' AND [type] = 'FN')
 BEGIN
-	DROP FUNCTION FN_FindSampleType
+	DROP FUNCTION FN_FindSampleTypeReason
 END
 GO
-CREATE FUNCTION [dbo].[FN_FindSampleType]   
+CREATE FUNCTION [dbo].[FN_FindSampleTypeReason]   
 (
 	@SubjectID INT	
 ) 
-RETURNS @OutTable TABLE (SampleType CHAR(1), Reason VARCHAR(105))
-
---RETURNS CHAR(1)        
+RETURNS VARCHAR(150)        
 AS    
 BEGIN
 	DECLARE
-		@SampleCount INT
-		,@SampleType CHAR(1)
-		,@Reason VARCHAR(100)
+		@Reason VARCHAR(100)
 		,@Damaged BIT
 		,@Timeout BIT
-		SET @SampleType = 'F'
 		SET @Reason = 'First Time Collection'
 		IF EXISTS(SELECT 1 FROM Tbl_SampleCollection WHERE SubjectID = @SubjectID)
-		BEGIN
-			SET @SampleType = 'R'
-		END
-		IF @SammpleType = 'R'
 		BEGIN
 			SELECT TOP 1 @Damaged = SampleDamaged, @Timeout = SampleTimeoutExpiry  FROM Tbl_SampleCollection WHERE SubjectID = @SubjectID ORDER BY ID DESC
 			IF @Damaged = 1 AND @Timeout = 1
@@ -47,8 +38,5 @@ BEGIN
 				SET @Reason = 'Sample Timeout'
 			END
 		END
-		
-		
-		
-	RETURN 	@SampleType
+	RETURN 	@Reason
 END

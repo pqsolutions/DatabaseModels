@@ -42,19 +42,29 @@ CREATE PROCEDURE [dbo].[SPC_AddSubjectPrimaryDetail]
       ,@DateofRegister VARCHAR(150)
       ,@RegisteredFrom INT
       ,@CreatedBy INT     
-      ,@UpdatedBy INT     
-      ,@IsActive BIT
-	  ,@UniqueSubjectId VARCHAR(200)
+	  ,@UniqueSubjectId VARCHAR(200) 
 	  ,@Source CHAR(1) -- N/F/M (N-Online, F-Offline, M-Manual)
 	  
 )AS
 DECLARE 
 	@ID INT
-	,@Count int
+	,@Count INT
+	,@DateOfBirth DATE
+	,@DateofReg DATE
 	,@NewUniqueSubjectID VARCHAR(200)
 BEGIN
 	BEGIN TRY
-			 SELECT @Count =  count(ID) FROM Tbl_SubjectPrimaryDetail WHERE UniqueSubjectID = @UniqueSubjectId
+			 SELECT @Count =  COUNT(ID) FROM Tbl_SubjectPrimaryDetail WHERE UniqueSubjectID = ISNULL(@UniqueSubjectId,'')
+			 SET @DateOfBirth = CONVERT(DATE,@DOB,103)
+			 SET @DateofReg  = CONVERT(DATE,@DateofRegister,103)
+			 IF ISNULL(@DOB,'') = ''
+			 BEGIN
+				SET @DateOfBirth = NULL
+			 END
+			IF ISNULL(@DateofRegister,'') = ''
+			 BEGIN
+				SET @DateofReg = (SELECT GETDATE())
+			 END
 			 IF (@Count <= 0)
 			 BEGIN
 				 SET @NewUniqueSubjectId = (Select [dbo].[FN_GenerateUniqueSubjectId](@AssignANM_ID,@Source))
@@ -107,7 +117,7 @@ BEGIN
 						   ,@FirstName
 						   ,@MiddleName
 						   ,@LastName
-						   ,CONVERT(DATE,@DOB,103)
+						   ,@DateOfBirth
 						   ,@Age
 						   ,@Gender
 						   ,@MaritalStatus
@@ -123,13 +133,13 @@ BEGIN
 						   ,@Spouse_GovIdType_ID
 						   ,@Spouse_GovIdDetail
 						   ,@AssignANM_ID
-						   ,CONVERT(DATE,@DateofRegister,103)
+						   ,@DateofReg
 						   ,@RegisteredFrom
 						   ,@CreatedBy
 						   ,GETDATE()
-						   ,@UpdatedBy
+						   ,@CreatedBy
 						   ,GETDATE()
-						   ,@IsActive)
+						   ,1)
 					SELECT  @NewUniqueSubjectID  as UniqueSubjectID, SCOPE_IDENTITY() AS ID
 					IF @SubjectTypeID = 2 OR @ChildSubjectTypeID = 2 
 					BEGIN
@@ -151,7 +161,7 @@ BEGIN
 					  ,FirstName = @FirstName
 					  ,MiddleName = @MiddleName
 					  ,LastName = @LastName
-					  ,DOB = CONVERT(DATE,@DOB,103)
+					  ,DOB = @DateOfBirth
 					  ,Age = @Age
 					  ,Gender = @Gender
 					  ,MaritalStatus = @MaritalStatus
@@ -167,11 +177,11 @@ BEGIN
 					  ,Spouse_GovIdType_ID = @Spouse_GovIdType_ID
 					  ,Spouse_GovIdDetail = @Spouse_GovIdDetail
 					  ,AssignANM_ID = @AssignANM_ID
-					  ,DateofRegister = CONVERT(DATE,@DateofRegister,103)		
+					  ,DateofRegister = @DateofReg		
 					  ,RegisteredFrom = @RegisteredFrom 				  				 
-					  ,UpdatedBy = @UpdatedBy
+					  ,UpdatedBy = @CreatedBy 
 					  ,UpdatedOn = GETDATE()
-					  ,IsActive = @IsActive
+					  ,IsActive = 1
 					WHERE ID = @ID
 				IF @SubjectTypeID = 2 OR @ChildSubjectTypeID = 2 
 				BEGIN

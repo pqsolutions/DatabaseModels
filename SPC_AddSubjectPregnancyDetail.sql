@@ -7,7 +7,7 @@ SET QUOTED_IDENTIFIER ON
 GO
 IF EXISTS (Select 1 from sys.objects where name='SPC_AddSubjectPregnancyDetail' and [type] = 'p')
 Begin
-	DROP PROCEDURE SPC_AddSubjectPregnancyDetail
+	DROP PROCEDURE SPC_AddSubjectPregnancyDetail 
 End
 GO
 CREATE PROCEDURE [dbo].[SPC_AddSubjectPregnancyDetail]
@@ -15,7 +15,7 @@ CREATE PROCEDURE [dbo].[SPC_AddSubjectPregnancyDetail]
 	@UniqueSubjectID VARCHAR(200)
 	,@RCHID  VARCHAR(150)
 	,@ECNumber  VARCHAR(150)
-	,@LMP_Date  DATETIME
+	,@LMP_Date  VARCHAR(150)
 	--,@Gestational_period DECIMAL(18,2)
 	,@G INT
 	,@P INT
@@ -28,12 +28,18 @@ DECLARE
 	@SubCount INT
 	,@SubjectID  INT
 	,@tempUserId INT
+	,@LMP DATE
 BEGIN
 	BEGIN TRY
 		IF @UniqueSubjectID IS NOT NULL
 		BEGIN
-			SELECT @SubCount =  count(ID) from Tbl_SubjectPregnancyDetail where UniqueSubjectID = @UniqueSubjectID
+			SELECT @SubCount =  COUNT(ID) from Tbl_SubjectPregnancyDetail where UniqueSubjectID = @UniqueSubjectID
 			SELECT @SubjectID =   ID FROM Tbl_SubjectPrimaryDetail WHERE UniqueSubjectID = @UniqueSubjectID
+			SET @LMP = CONVERT(DATE,@LMP_Date,103)
+			IF ISNULL(@LMP_Date,'')= ''
+			BEGIN
+				SET @LMP = NULL
+			END
 			IF (@SubCount <= 0) 
 			BEGIN
 				INSERT INTO [dbo].[Tbl_SubjectPregnancyDetail]
@@ -54,7 +60,7 @@ BEGIN
 					,@UniqueSubjectID 
 					,@RCHID
 					,@ECNumber
-					,@LMP_Date
+					,@LMP
 					--,@Gestational_period
 					,@G  
 					,@P  
@@ -70,7 +76,7 @@ BEGIN
 				UPDATE [dbo].[Tbl_SubjectPregnancyDetail]
 				   SET RCHID = @RCHID
 					  ,ECNumber = @ECNumber
-					  ,LMP_Date = @LMP_Date
+					  ,LMP_Date = @LMP
 					 -- ,Gestational_period = @Gestational_period
 					  ,G = @G
 					  ,P = @P

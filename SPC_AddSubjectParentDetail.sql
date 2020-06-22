@@ -10,7 +10,7 @@ Begin
 	DROP PROCEDURE SPC_AddSubjectParentDetail
 End
 GO
-CREATE PROCEDURE [dbo].[SPC_AddSubjectParentDetail] '
+CREATE PROCEDURE [dbo].[SPC_AddSubjectParentDetail] 
 (
 	@UniqueSubjectID  VARCHAR(250)	
 	,@Mother_FirstName VARCHAR(150)

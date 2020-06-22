@@ -51,11 +51,22 @@ CREATE PROCEDURE [dbo].[SPC_AddPrimaryDetail]
 DECLARE 
 	@ID INT
 	,@Count int
+	,@DateOfBirth DATE
+	,@DateofReg DATE
 BEGIN
 	BEGIN TRY
 		
-		SELECT @Count =  count(ID) FROM Tbl_SubjectPrimaryDetail WHERE UniqueSubjectID = @UniqueSubjectId
-	
+		SELECT @Count =  COUNT(ID) FROM Tbl_SubjectPrimaryDetail WHERE UniqueSubjectID = @UniqueSubjectId
+		SET @DateOfBirth = CONVERT(DATE,@DOB,103)
+		SET @DateofReg  = CONVERT(DATE,@DateofRegister,103)
+		IF ISNULL(@DOB,'') = ''
+		BEGIN
+			SET @DateOfBirth = NULL
+		END
+		IF ISNULL(@DateofRegister,'') = ''
+		BEGIN
+			SET @DateofReg = (SELECT GETDATE())
+		END
 		IF (@Count <= 0)
 		BEGIN
 			INSERT INTO [dbo].[Tbl_SubjectPrimaryDetail]
@@ -107,7 +118,7 @@ BEGIN
 				   ,@FirstName
 				   ,@MiddleName
 				   ,@LastName
-				   ,CONVERT(DATE,@DOB,103)
+				   ,@DateOfBirth
 				   ,@Age
 				   ,@Gender
 				   ,@MaritalStatus
@@ -123,7 +134,7 @@ BEGIN
 				   ,@Spouse_GovIdType_ID
 				   ,@Spouse_GovIdDetail
 				   ,@AssignANM_ID
-				   ,CONVERT(DATE,@DateofRegister,103)
+				   ,@DateofReg
 				   ,@RegisteredFrom
 				   ,@CreatedBy
 				   ,GETDATE()
@@ -154,7 +165,7 @@ BEGIN
 					  ,FirstName = @FirstName
 					  ,MiddleName = @MiddleName
 					  ,LastName = @LastName
-					  ,DOB = CONVERT(DATE,@DOB,103)
+					  ,DOB = @DateOfBirth
 					  ,Age = @Age
 					  ,Gender = @Gender
 					  ,MaritalStatus = @MaritalStatus
@@ -170,7 +181,7 @@ BEGIN
 					  ,Spouse_GovIdType_ID = @Spouse_GovIdType_ID
 					  ,Spouse_GovIdDetail = @Spouse_GovIdDetail
 					  ,AssignANM_ID = @AssignANM_ID
-					  ,DateofRegister = CONVERT(DATE,@DateofRegister,103)	
+					  ,DateofRegister = @DateofReg
 					  ,RegisteredFrom = @RegisteredFrom 				  				 
 					  ,UpdatedBy = @UpdatedBy
 					  ,UpdatedOn = GETDATE()
