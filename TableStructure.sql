@@ -296,7 +296,6 @@ END
 USE [Eduquaydb]
 GO
 
-
 SET ANSI_NULLS ON
 GO
 
@@ -307,6 +306,7 @@ IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_RIMaster' AND [type] = 
 BEGIN
 CREATE TABLE [dbo].[Tbl_RIMaster](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[TestingCHCID] [int] NOT NULL,
 	[PHCID] [int] NOT NULL,
 	[SCID] [int] NOT NULL,
 	[RI_gov_code] [varchar](100) NOT NULL,
@@ -1163,8 +1163,9 @@ IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_AVDMaster' AND [type] =
 BEGIN
 
 CREATE TABLE [dbo].[Tbl_AVDMaster](
-	[ID] [int] IDENTITY(1,1) NOT NULL,	
-	[AVDName] [varchar] (200) NOT NULL,
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[RIID] [varchar](max) NOT NULL,	
+	[AVDName] [varchar] (200) NOT NULL,	
 	[ContactNo] [varchar] (200)  NULL,	
 	[CreatedBy][int] NULL,
 	[CreatedOn] [datetime] NULL,

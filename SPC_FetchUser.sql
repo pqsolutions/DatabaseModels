@@ -6,14 +6,14 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-IF EXISTS (Select 1 from sys.objects where name='SPC_FetchUser' and [type] = 'p')
-Begin
+IF EXISTS (SELECT 1 FROM sys.objects WHERE NAME='SPC_FetchUser' AND [type] = 'p')
+BEGIN
 	DROP PROCEDURE SPC_FetchUser
-End
+END
 GO
-CREATE Procedure [dbo].[SPC_FetchUser](@ID int)
-As
-Begin
+CREATE Procedure [dbo].[SPC_FetchUser](@ID INT)
+AS
+BEGIN
 	SELECT  um.[ID]
 			,um.[UserType_ID]  
 			,ut.[Usertype]
@@ -36,7 +36,7 @@ Begin
 			,ISNULL(um.[SCID],0) AS SCID
 			,sc.[SCname]
 			,ISNULL(um.[RIID],0) AS RIID
-			,ri.[RIsite] 
+			--,ri.[RIsite] 
 			,um.[FirstName]
 			,um.[MiddleName]
 			,um.[LastName] 
@@ -62,7 +62,7 @@ Begin
 	INNER JOIN [dbo].[Tbl_CHCMaster] c WITH (NOLOCK) ON c.ID = um.CHCID
 	INNER JOIN [dbo].[Tbl_PHCMaster] p WITH (NOLOCK) ON p.ID = um.PHCID	
 	INNER JOIN [dbo].[Tbl_SCMaster] sc WITH (NOLOCK) ON sc.ID = um.SCID
-	INNER JOIN [dbo].[Tbl_RIMaster] ri WITH (NOLOCK) ON ri.ID = um.RIID
+	--INNER JOIN [dbo].[Tbl_RIMaster] ri WITH (NOLOCK) ON ri.ID = um.RIID
 	INNER JOIN [dbo].[Tbl_Gov_IDTypeMaster] gm WITH (NOLOCK) ON gm.ID = um.GovIDType_ID
 	WHERE um.[ID]= @ID
-End
+END
