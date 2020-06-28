@@ -52,7 +52,13 @@ Begin
 			,um.[Updatedby]
 			,um.[Comments] 
 			,um.[Isactive] 
-			,um.[DigitalSignature]     
+			,um.[DigitalSignature]
+			,CASE WHEN UserType_ID =1 THEN (SELECT ID FROM Tbl_ConstantValues WHERE CommonName = 'ANM' AND comments = 'RegisterFrom')
+				ELSE (SELECT ID FROM Tbl_ConstantValues WHERE CommonName = 'CHC' AND comments = 'RegisterFrom')END AS RegisteredFrom
+			,CASE WHEN UserType_ID =1 THEN (SELECT ID FROM Tbl_ConstantValues WHERE CommonName = 'ANM' AND comments = 'SampleCollectionFrom')
+				ELSE (SELECT ID FROM Tbl_ConstantValues WHERE CommonName = 'CHC' AND comments = 'SampleCollectionFrom') END AS SampleCollectionFrom
+			,CASE WHEN UserType_ID =1 THEN (SELECT ID FROM Tbl_ConstantValues WHERE CommonName = 'ANM - CHC' AND comments = 'ShipmentFrom')
+				ELSE (SELECT ID FROM Tbl_ConstantValues WHERE CommonName = 'CHC - CHC' AND comments = 'ShipmentFrom') END AS ShipmentFrom      
 	FROM [dbo].[Tbl_UserMaster] um
 	LEFT JOIN [dbo].[Tbl_UserRoleMaster] ur WITH (NOLOCK) ON ur.ID = um.UserRole_ID
 	LEFT JOIN [dbo].[Tbl_UserTypeMaster] ut WITH (NOLOCK) ON ut.ID = um.UserType_ID

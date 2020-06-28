@@ -1021,7 +1021,6 @@ GO
 SET QUOTED_IDENTIFIER ON  
 GO
 
-
 IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_ANMCHCShipment' AND [type] = 'U')
 BEGIN
 
@@ -1030,7 +1029,7 @@ CREATE TABLE [dbo].[Tbl_ANMCHCShipment](
 	[SubjectID] [int] NOT NULL,
 	[UniqueSubjectID] [varchar](200) NOT NULL,
 	[SampleCollectionID] [int] NOT NULL,
-	[ShipmentFrom] [varchar](20) NOT NULL,	
+	[ShipmentFrom] [int] NOT NULL,	
 	[ShipmentID] [varchar](200) NOT NULL,
 	[ANM_ID] [int] NULL,
 	[TestingCHCID][int] NULL,
@@ -1060,6 +1059,89 @@ PRIMARY KEY CLUSTERED
 END
 
 -------------------------------------------------------------------------------------------------
+
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON  
+GO
+
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_ANMCHCShipments' AND [type] = 'U')
+BEGIN
+
+CREATE TABLE [dbo].[Tbl_ANMCHCShipments](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[ShipmentFrom] [int] NOT NULL,	
+	[GenratedShipmentID] [varchar](200) NOT NULL,
+	[ANM_ID] [int] NULL,
+	[RIID] [int] NULL,
+	[ILR_ID] [int] NULL,
+	[AVDID] [int] NULL,
+	[AVDContactNo] [varchar] (150) NULL,
+	[CHCUserId] [int] NULL,
+	[CollectionCHCID] [int] NULL,
+	[LogisticsProviderId] [int] NULL,
+	[DeliveryExecutiveName] [varchar] (250) NULL,
+	[ExecutiveContactNo] [varchar] (150) NULL,
+	[TestingCHCID][int] NULL,	
+	[DateofShipment][date] NULL,
+	[TimeofShipment] [time](2)NULL,
+	[ReceivedDate] [date] NULL,
+	[ProcessingDateTime] [datetime] NULL,
+	[ILR_InTime] [time](2) NULL,
+	[ILR_OutTime] [time](2) NULL,
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
+	
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END
+
+-------------------------------------------------------------------------------------------------
+
+
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON  
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_ANMCHCShipmentsDetail' AND [type] = 'U')
+BEGIN
+
+CREATE TABLE [dbo].[Tbl_ANMCHCShipmentsDetail](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[ShipmentID] [int] NOT NULL,
+	[UniqueSubjectID] [varchar](250) NOT NULL,
+	[BarcodeNo] [varchar] (250) NULL,
+	
+
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END
+
+-------------------------------------------------------------------------------------------------
+
+
+
+
 USE [Eduquaydb]
 GO
 

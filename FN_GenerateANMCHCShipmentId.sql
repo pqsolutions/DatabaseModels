@@ -1,3 +1,7 @@
+
+
+
+
 USE [Eduquaydb]
 GO
 SET ANSI_NULLS ON
@@ -13,7 +17,7 @@ CREATE FUNCTION [dbo].[FN_GenerateANMCHCShipmentId]
 (
 	@SenderId INT
 	,@Source CHAR(1)
-	,@ShipmentFrom VARCHAR(20)
+	,@ShipmentFrom INT
 ) 
 RETURNS VARCHAR(250)        
 AS    
@@ -26,20 +30,16 @@ BEGIN
 		,@LastShipmentId VARCHAR(MAX)
 		,@LastShipmentId1 VARCHAR(MAX)
 		,@ShipmentId VARCHAR(MAX)
+		,@Serial INT
 		,@SerialValue CHAR(1)
 		,@Lastvalue CHAR(1)
 		,@NumValue INT
 		,@ReturnValue VARCHAR(200)
+		,@Shipment VARCHAR(50)
 		
+	SELECT @Shipment = CommonName FROM Tbl_constantValues WHERE Comments = 'ShipmentFrom' AND ID = @ShipmentFrom
 	
-	IF @ShipmentFrom = 'ANM'
-	BEGIN		
-		SELECT @SenderCode = RI_gov_code FROM Tbl_RIMaster WHERE ID = @SenderId
-	END
-	ELSE IF @ShipmentFrom = 'CHC'
-	BEGIN
-		SELECT @SenderCode = CHC_gov_code FROM Tbl_CHCMaster WHERE ID = @SenderId
-	END
+	
 	
 	SET @Year = (SELECT CONVERT(VARCHAR,RIGHT(YEAR(GETDATE()),2)))
 	
@@ -54,10 +54,25 @@ BEGIN
 	
 	SET @MonthYear = @Month + @Year
 	
-	SET @LastShipmentId = (SELECT TOP 1 ShipmentID 
-							FROM Tbl_ANMCHCShipment WITH(NOLOCK) WHERE RIID = @SenderId  AND ShipmentID LIKE '%'+@Source   
-							AND ShipmentID LIKE @SenderCode +'/'+@MonthYear+'/%'   
-							ORDER BY ShipmentID DESC) 
+	IF @Shipment = 'ANM - CHC'
+	BEGIN		
+		SELECT @SenderCode = RI_gov_code FROM Tbl_RIMaster WHERE ID = @SenderId
+		SET @LastShipmentId = (SELECT TOP 1 GenratedShipmentID 
+							FROM Tbl_ANMCHCShipments WITH(NOLOCK) WHERE RIID = @SenderId  AND GenratedShipmentID LIKE '%'+@Source   
+							AND GenratedShipmentID LIKE @SenderCode +'/'+@MonthYear+'/%'   
+							ORDER BY GenratedShipmentID DESC)
+		
+	END
+	ELSE IF @Shipment = 'CHC - CHC'
+	BEGIN
+		SELECT @SenderCode = CHC_gov_code FROM Tbl_CHCMaster WHERE ID = @SenderId
+		SET @LastShipmentId = (SELECT TOP 1 GenratedShipmentID 
+							FROM Tbl_ANMCHCShipments WITH(NOLOCK) WHERE CollectionCHCID = @SenderId  AND GenratedShipmentID LIKE '%'+@Source   
+							AND GenratedShipmentID LIKE @SenderCode +'/'+@MonthYear+'/%'   
+							ORDER BY GenratedShipmentID DESC)
+	END
+	
+	 
 							
 	SET @LastShipmentId1 =(SELECT ISNULL(LEFT(@LastShipmentId,(LEN(@LastShipmentId)-2)),''))
 	
@@ -75,6 +90,7 @@ BEGIN
 			ELSE IF @NumValue = 9
 			BEGIN
 				SET @SerialValue = 'A'
+				
 			END	
 		END
 		ELSE
@@ -89,9 +105,8 @@ BEGIN
 	BEGIN
 		SET @SerialValue = '1'
 	END
-	
-	SET  @ShipmentId = @SenderCode + '/' + @MonthYear + '/' + @SerialValue + '/' + @Source
 
+	SET  @ShipmentId = @SenderCode + '/' + @MonthYear + '/' + @SerialValue + '/' + @Source
 
 RETURN @ShipmentId
 END
