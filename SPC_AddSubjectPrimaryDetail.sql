@@ -67,7 +67,7 @@ BEGIN
 			 END
 			 IF (@Count <= 0)
 			 BEGIN
-				 SET @NewUniqueSubjectId = (Select [dbo].[FN_GenerateUniqueSubjectId](@AssignANM_ID,@Source))
+				 SET @NewUniqueSubjectId = (SELECT [dbo].[FN_GenerateUniqueSubjectId](@AssignANM_ID,@Source))
 				 INSERT INTO [dbo].[Tbl_SubjectPrimaryDetail]
 						   (SubjectTypeID
 						   ,ChildSubjectTypeID

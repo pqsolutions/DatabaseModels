@@ -14,28 +14,47 @@ END
 GO
 CREATE PROCEDURE [dbo].[SPC_AddANMSampleRecollection]
 (	
-	@SampleCollectionID INT
-	,@SubjectID INT 
-	,@UniqueSubjectID VARCHAR(200)
+	@UniqueSubjectID VARCHAR(200)
 	,@BarcodeNo VARCHAR(200)
 	,@SampleCollectionDate VARCHAR(100)
 	,@SampleCollectionTime VARCHAR(100)
-	,@Reason_Id INT
+	,@Reason VARCHAR(50)
 	,@CollectionFrom INT
 	,@CollectedBy INT
-	,@CreatedBy INT
 	,@Scope_output INT OUTPUT
 )AS 
 DECLARE
 	@sCount INT
 	,@tempId int
+	,@Reason_Id INT
+	,@SubjectId INT
+	,@OldBarcodeNo VARCHAR(200)
 BEGIN
 	BEGIN TRY
-		IF @SubjectID != 0 OR @SubjectID IS NOT NULL
+		IF @UniqueSubjectID IS NOT NULL
 		BEGIN
+			SELECT @SubjectId = ID FROM Tbl_SubjectPrimaryDetail WHERE UniqueSubjectID = @UniqueSubjectID
+			SELECT @Reason_Id = ID FROM Tbl_ConstantValues WHERE CommonName = @Reason AND comments =  'SampleCollectionType' 
 			SELECT @sCount =  COUNT(ID) FROM Tbl_SampleCollection WHERE SubjectID = @SubjectID AND BarcodeNo = @BarcodeNo
 			IF(@sCount <= 0)
 			BEGIN
+				IF @Reason = 'Damaged Sample'
+				BEGIN
+					SELECT TOP 1 @OldBarcodeNo = BarcodeNO FROM Tbl_SampleCollection WHERE SampleDamaged = 1 AND UniqueSubjectID = @UniqueSubjectID  ORDER BY ID DESC
+				END
+				ELSE IF @Reason = 'Sample Timeout'
+				BEGIN
+					SELECT TOP 1 @OldBarcodeNo = BarcodeNO FROM Tbl_SampleCollection WHERE SampleTimeoutExpiry  = 1 AND UniqueSubjectID = @UniqueSubjectID ORDER BY ID DESC
+				END
+				UPDATE Tbl_SampleCollection SET
+				  NotifiedStatus = 1
+				  ,UpdatedBy = @CollectedBy 
+				  ,UpdatedOn = GETDATE()
+				  ,NotifiedOn = GETDATE()
+				  ,IsRecollected = 'Y'				  
+				WHERE BarcodeNo = @OldBarcodeNo 
+				
+			
 				INSERT INTO Tbl_SampleCollection
 					  (SubjectID
 					  ,UniqueSubjectID
@@ -49,7 +68,8 @@ BEGIN
 					  ,CreatedOn
 					  ,BarcodeDamaged 
 					  ,SampleDamaged
-					  ,SampleTimeoutExpiry 
+					  ,SampleTimeoutExpiry
+					  ,IsRecollected 
 					  )
 					  VALUES
 					  (@SubjectID
@@ -60,18 +80,12 @@ BEGIN
 					  ,@Reason_Id
 					  ,@CollectionFrom
 					  ,@CollectedBy
-					  ,@CreatedBy
+					  ,@CollectedBy 
 					  ,GETDATE()
 					  ,0
 					  ,0
-					  ,0)
-				UPDATE Tbl_SampleCollection SET
-					  NotifiedStatus = 1
-					  ,UpdatedBy = @CreatedBy 
-					  ,UpdatedOn = GETDATE()
-					  ,NotifiedOn = GETDATE()
-					  ,IsRecollected = 'Y'				  
-				WHERE ID = @SampleCollectionID
+					  ,0
+					  ,'N')
 				SET @tempId = IDENT_CURRENT('Tbl_SampleCollection')
 				SET @Scope_output = 1
 			END

@@ -15,7 +15,7 @@ END
 GO
 CREATE PROCEDURE [dbo].[SPC_UpdateStatusANMNotificationSamples]
 (	
-	@ID INT
+	@SampleCollectionId INT
 	,@Status INT
 	,@ANMID INT
 	,@Scope_output INT OUTPUT
@@ -23,14 +23,14 @@ CREATE PROCEDURE [dbo].[SPC_UpdateStatusANMNotificationSamples]
 AS
 BEGIN
 	BEGIN TRY
-		IF @ID != null
+		IF @SampleCollectionId != null
 		BEGIN
 			UPDATE Tbl_SampleCollection SET 
 			NotifiedStatus = @Status
 			,UpdatedBy = @ANMID
 			,UpdatedOn = GETDATE()
 			,NotifiedOn = GETDATE()
-			WHERE ID = @ID
+			WHERE ID = @SampleCollectionId
 			SET @Scope_output = 1
 		END
 		ELSE

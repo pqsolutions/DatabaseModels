@@ -27,15 +27,35 @@ DECLARE
 	,@tempId int
 	,@Reason_Id INT
 	,@SubjectId INT
+	,@OldBarcodeNo VARCHAR(200)
 BEGIN
 	BEGIN TRY
 		IF @UniqueSubjectID IS NOT NULL
 		BEGIN
 			SELECT @SubjectId = ID FROM Tbl_SubjectPrimaryDetail WHERE UniqueSubjectID = @UniqueSubjectID
 			SELECT @Reason_Id = ID FROM Tbl_ConstantValues WHERE CommonName = @Reason AND comments =  'SampleCollectionType' 
-			SELECT @sCount =  COUNT(ID) FROM Tbl_SampleCollection WHERE SubjectID = @SubjectID OR BarcodeNo = @BarcodeNo
+			SELECT @sCount =  COUNT(ID) FROM Tbl_SampleCollection WHERE SubjectID = @SubjectID AND BarcodeNo = @BarcodeNo
 			IF(@sCount <= 0)
 			BEGIN
+				IF @Reason != 'First Time Collection'
+				BEGIN
+					IF @Reason = 'Damaged Sample'
+					BEGIN
+						SELECT TOP 1 @OldBarcodeNo = BarcodeNO FROM Tbl_SampleCollection WHERE SampleDamaged = 1 AND UniqueSubjectID = @UniqueSubjectID ORDER BY ID DESC
+					END
+					ELSE IF @Reason = 'Sample Timeout'
+					BEGIN
+						SELECT TOP 1 @OldBarcodeNo = BarcodeNO FROM Tbl_SampleCollection WHERE SampleTimeoutExpiry  = 1 AND UniqueSubjectID = @UniqueSubjectID ORDER BY ID DESC
+					END
+					UPDATE Tbl_SampleCollection SET
+					  NotifiedStatus = 1
+					  ,UpdatedBy = @CollectedBy 
+					  ,UpdatedOn = GETDATE()
+					  ,NotifiedOn = GETDATE()
+					  ,IsRecollected = 'Y'				  
+					WHERE BarcodeNo = @OldBarcodeNo 
+				END
+			
 				INSERT INTO Tbl_SampleCollection
 					  (SubjectID
 					  ,UniqueSubjectID
@@ -49,7 +69,8 @@ BEGIN
 					  ,CreatedOn
 					  ,BarcodeDamaged 
 					  ,SampleDamaged
-					  ,SampleTimeoutExpiry 
+					  ,SampleTimeoutExpiry
+					  ,IsRecollected 
 					  )
 					  VALUES
 					  (@SubjectID
@@ -64,7 +85,8 @@ BEGIN
 					  ,GETDATE()
 					  ,0
 					  ,0
-					  ,0)
+					  ,0
+					  ,'N')
 				SET @tempId = IDENT_CURRENT('Tbl_SampleCollection')
 				SET @Scope_output = 1
 			END

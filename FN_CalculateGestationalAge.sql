@@ -22,7 +22,7 @@ BEGIN
 		,@Week INT
 		,@Day INT
 		,@GestationalAge VARCHAR(20)		
-		SET @LMPDate = (SELECT TOP 1 LMP_Date FROM Tbl_SubjectPregnancyDetail WHERE ID = @ID)
+		SET @LMPDate = (SELECT TOP 1 LMP_Date FROM Tbl_SubjectPregnancyDetail WHERE SubjectId = @ID)
 		IF @LMPDATE IS NOT NULL OR @LMPDATE != ''
 		BEGIN
 			SET @Week = (SELECT DATEDIFF(day, @LMPDate, GETDATE())/7) 

@@ -54,7 +54,7 @@ BEGIN
 			,(SP.[Spouse_FirstName] + ' ' + SP.[Spouse_MiddleName] + ' ' + SP.[Spouse_LastName]) AS SpouseName
 			,(CONVERT(VARCHAR,SP.[DateofRegister],103)) AS  DateofRegister
 			,SP.[MobileNo] AS ContactNo
-			,(SELECT [dbo].[FN_CalculateGestationalAge](SP.[ID])) AS GestationalAge
+			,CAST((SELECT [dbo].[FN_CalculateGestationalAge](SPR.[SubjectID])) AS DECIMAL(18,1)) AS GestationalAge
 			,(SELECT [dbo].[FN_FindSampleType](SP.[ID])) AS SampleType
 			,(SELECT [dbo].[FN_FindSampleTypeReason](SP.[ID])) AS Reason
 			,@StartDate AS FromDate
@@ -70,6 +70,7 @@ BEGIN
 			AND SP.[ID]  IN (SELECT TOP 1 SubjectID FROM Tbl_SubjectPregnancyDetail  WHERE SubjectID = SP.ID) 
 			AND SP.[ID]  IN (SELECT TOP 1 SubjectID FROM Tbl_SubjectParentDetail   WHERE SubjectID  = SP.ID)
 			AND SP.[ID] NOT IN (SELECT SubjectID FROM Tbl_SampleCollection WHERE SampleDamaged != 1 AND SampleTimeoutExpiry != 1)
+			ORDER By GestationalAge DESC
 			
 	END
 	ELSE IF @RegisterFrom = 'CHC'
@@ -83,7 +84,7 @@ BEGIN
 			,(SP.[Spouse_FirstName] + ' ' + SP.[Spouse_MiddleName] + ' ' + SP.[Spouse_LastName]) AS SpouseName 
 			,(CONVERT(VARCHAR,SP.[DateofRegister],105)) AS  DateofRegister
 			,SP.[MobileNo] AS ContactNo
-			,(SELECT [dbo].[FN_CalculateGestationalAge](SP.[ID])) AS GestationalAge
+			,CAST((SELECT [dbo].[FN_CalculateGestationalAge](SPR.[SubjectID])) AS DECIMAL(18,1)) AS GestationalAge
 			,(SELECT [dbo].[FN_FindSampleType](SP.[ID])) AS SampleType
 			,(SELECT [dbo].[FN_FindSampleTypeReason](SP.[ID])) AS Reason
 			,@StartDate AS FromDate
@@ -99,6 +100,7 @@ BEGIN
 			AND SP.[ID]  IN (SELECT TOP 1 SubjectID FROM Tbl_SubjectPregnancyDetail  WHERE SubjectID = SP.ID) 
 			AND SP.[ID]  IN (SELECT TOP 1 SubjectID FROM Tbl_SubjectParentDetail   WHERE SubjectID  = SP.ID)
 			AND SP.[ID] NOT IN (SELECT SubjectID FROM Tbl_SampleCollection WHERE SampleDamaged != 1 AND SampleTimeoutExpiry != 1)
+			ORDER By GestationalAge DESC
 	END
 END
       

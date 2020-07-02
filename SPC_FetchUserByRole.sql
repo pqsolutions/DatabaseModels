@@ -37,6 +37,7 @@ Begin
 			,sc.[SCname]
 			,ISNULL(um.[RIID],0) AS RIID
 			--,ri.[RIsite] 
+			,(um.[FirstName] + ' ' + um.[MiddleName] + ' ' + um.[LastName] ) AS Name
 			,um.[FirstName]
 			,um.[MiddleName]
 			,um.[LastName] 

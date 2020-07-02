@@ -955,7 +955,7 @@ CREATE TABLE [dbo].[Tbl_SampleCollection](
 	[CreatedOn] [datetime] NULL,
 	[UpdatedBy] [int] NULL,
 	[UpdatedOn] [datetime] NULL,
-	
+	[RejectAt] [varchar](250) NULL,
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
@@ -1330,7 +1330,6 @@ PRIMARY KEY CLUSTERED
 END
 ---------------------------------------------------------------------------------------------------------------
 
-
 USE [Eduquaydb]
 GO
 
@@ -1347,9 +1346,7 @@ CREATE TABLE [dbo].[Tbl_CBCandSSTestResult](
 	[UniqueSubjectID] [varchar](200) NOT NULL,
 	[SampleCollectionID] [int] NOT NULL,
 	[BarcodeNo] [varchar] (200) NOT NULL,
-	[Hb] [decimal](18,2) NULL,
 	[MVC] [decimal](18,2) NULL,
-	[MCH] [decimal](18,2) NULL,
 	[RDW] [decimal](18,2) NULL,
 	[CBCResult] [varchar] (max)  NULL,
 	[CBCStatus] [char] (1) NULL,
@@ -1360,8 +1357,6 @@ CREATE TABLE [dbo].[Tbl_CBCandSSTestResult](
 	[SSTComplete] [bit] NULL,
 	[SST_UpdatedBy] [int] NULL,
 	[SST_UpdatedOn] [datetime] NULL
-	
-	
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC

@@ -7,7 +7,7 @@ SET QUOTED_IDENTIFIER ON
 GO
 IF EXISTS (Select 1 from sys.objects where name='SPC_FetchSubjectDetail' and [type] = 'p')
 Begin
-	DROP PROCEDURE SPC_FetchSubjectDetail
+	DROP PROCEDURE SPC_FetchSubjectDetail 
 End
 GO
 CREATE PROCEDURE [dbo].[SPC_FetchSubjectDetail]
@@ -15,7 +15,8 @@ CREATE PROCEDURE [dbo].[SPC_FetchSubjectDetail]
 	@UniqueSubjectID VARCHAR(200)
 )AS
 BEGIN
-	SELECT SPRD.[SubjectTypeID]
+	SELECT SPRD.[ID] 
+			,SPRD.[SubjectTypeID]
 			,STM.[SubjectType]
 			,SPRD.[ChildSubjectTypeID]
 			,STM1.[SubjectType] AS ChildSubjectType
@@ -34,13 +35,17 @@ BEGIN
 			,SPRD.[FirstName]
 			,SPRD.[MiddleName]
 			,SPRD.[LastName]
-			,CONVERT(VARCHAR,SPRD.[DOB],105) AS DOB
+			,CASE WHEN ISNULL(SPRD.[DOB],'') = '' THEN '' 
+			 ELSE CONVERT(VARCHAR,SPRD.[DOB],103)
+			 END  AS  [DOB]
 			,SPRD.[Age]
 			,SPRD.[Gender]
 			,SPRD.[MaritalStatus]
 			,SPRD.[MobileNo]
 			,SPRD.[EmailId]
-			,(CONVERT(VARCHAR,SPRD.[DateofRegister],105)) AS DateofRegister
+			,CASE WHEN ISNULL(SPRD.[DateofRegister],'') = '' THEN '' 
+			 ELSE CONVERT(VARCHAR,SPRD.[DateofRegister],103)
+			 END  AS  [DateofRegister]
 			,SPRD.[SpouseSubjectID]
 			,SPRD.[Spouse_FirstName]
 			,SPRD.[Spouse_MiddleName]
@@ -52,6 +57,7 @@ BEGIN
 			,SPRD.[AssignANM_ID]
 			,(UM.[User_gov_code]+ ' - ' + UM.[FirstName] + ' ' + UM.[MiddleName]  + ' ' + UM.[LastName]) AS ANMName
 			,SPRD.[IsActive]
+			,SAD.[SubjectID] SADSubjectID
 			,SAD.[Religion_Id]
 			,RM.[Religionname]
 			,SAD.[Caste_Id]
@@ -62,14 +68,19 @@ BEGIN
 			,SAD.[Address2]
 			,SAD.[Address3]
 			,SAD.[Pincode]
+			,SAD.[StateName] 
+			,SPD.[SubjectID] SPDSubjectId
 			,SPD.[RCHID]
 			,SPD.[ECNumber]
-			,CONVERT(VARCHAR,SPD.[LMP_Date],105)AS LMP_Date
-			,SPD.[Gestational_period]
+			,CASE WHEN ISNULL(SPD.[LMP_Date],'') = '' THEN '' 
+			 ELSE CONVERT(VARCHAR,SPD.[LMP_Date],103)
+			 END  AS  LMP_Date
+			,(SELECT [dbo].[FN_CalculateGestationalAge](SPD.[SubjectID])) AS [Gestational_period]
 			,SPD.[G]
 			,SPD.[P]
 			,SPD.[L]
 			,SPD.[A]
+			,SPAD.[SubjectID] SPADSubjectID
 			,SPAD.[Mother_FirstName]
 			,SPAD.[Mother_MiddleName]
 			,SPAD.[Mother_LastName]
@@ -93,7 +104,6 @@ BEGIN
 			,SPAD.[SchoolPincode]
 			,SPAD.[SchoolCity]
 			,SPAD.[SchoolState]
-			,SMS.[Statename]
 			,SPAD.[Standard]
 			,SPAD.[Section]
 			,SPAD.[RollNo]
@@ -109,7 +119,6 @@ BEGIN
 	LEFT JOIN [dbo].[Tbl_SubjectAddressDetail] SAD WITH (NOLOCK) ON SAD.[UniqueSubjectID] = SPRD.[UniqueSubjectID] 
 	LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail] SPD WITH (NOLOCK) ON SPD.[UniqueSubjectID] = SPRD.[UniqueSubjectID] 
 	LEFT JOIN [dbo].[Tbl_SubjectParentDetail] SPAD WITH (NOLOCK) ON SPAD.[UniqueSubjectID] = SPRD.[UniqueSubjectID]
-	LEFT JOIN [dbo].[Tbl_StateMaster] SMS WITH (NOLOCK) ON SMS.[ID] = SPAD.[SchoolState] 
 	LEFT JOIN [dbo].[Tbl_ReligionMaster] RM WITH (NOLOCK) ON RM.[ID] = SAD.[Religion_Id]  
 	LEFT JOIN [dbo].[Tbl_CasteMaster] CAM WITH (NOLOCK) ON CAM.[ID] = SAD.[Caste_Id]   
 	LEFT JOIN [dbo].[Tbl_Gov_IDTypeMaster] GIM WITH (NOLOCK) ON GIM.[ID] = SPRD.[GovIdType_ID]    
@@ -117,6 +126,7 @@ BEGIN
 	LEFT JOIN [dbo].[Tbl_Gov_IDTypeMaster] GIMM WITH (NOLOCK) ON GIMM.[ID] = SPAD.[Mother_GovIdType_ID]      
 	LEFT JOIN [dbo].[Tbl_Gov_IDTypeMaster] GIMG WITH (NOLOCK) ON GIMG.[ID] = SPAD.[Guardian_GovIdType_ID]       
 	LEFT JOIN [dbo].[Tbl_CommunityMaster] COM WITH (NOLOCK) ON COM.[ID] = SAD.[Community_Id]    
-	
-	WHERE  (SPRD.[UniqueSubjectID] = @UniqueSubjectID OR SPRD.[MobileNo] = @UniqueSubjectID OR SPRD.[GovIdDetail] = @UniqueSubjectID  OR SPD.[RCHID]  = @UniqueSubjectID)
+	LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.[UniqueSubjectID] = SPRD.[UniqueSubjectID] 
+	WHERE  (SPRD.[UniqueSubjectID] = @UniqueSubjectID OR SPRD.[MobileNo] = @UniqueSubjectID OR 
+	SPD.[RCHID]  = @UniqueSubjectID)
 END
