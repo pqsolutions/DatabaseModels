@@ -1272,14 +1272,14 @@ GO
 
 SET QUOTED_IDENTIFIER ON
 GO
-IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_HPLCMaster' AND [type] = 'U')
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_CentralLabMaster' AND [type] = 'U')
 BEGIN
 
-CREATE TABLE [dbo].[Tbl_HPLCMaster](
+CREATE TABLE [dbo].[Tbl_CentralLabMaster](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
 	[DistrictID] [int] NOT NULL,
-	[HPLCCode] [varchar](100) NOT NULL,
-	[HPLCName] [varchar](100) NOT NULL,
+	[CentralLabCode] [varchar](100) NOT NULL,
+	[CentralLabName] [varchar](100) NOT NULL,
 	[Pincode] [varchar](150) NULL,
 	[CreatedOn] [datetime] NULL,
 	[CreatedBy] [int] NULL,
@@ -1349,11 +1349,11 @@ CREATE TABLE [dbo].[Tbl_CBCandSSTestResult](
 	[MVC] [decimal](18,2) NULL,
 	[RDW] [decimal](18,2) NULL,
 	[CBCResult] [varchar] (max)  NULL,
-	[CBCStatus] [char] (1) NULL,
+	[CBCStatus] [char] (1) NULL, -- 'P' OR 'N'
 	[CBCTestComplete] [bit] NULL,
 	[CBC_UpdatedBy] [int] NULL,
 	[CBC_UpdatedOn] [datetime] NULL,
-	[SSTStatus] [char] (1) NULL,
+	[SSTStatus] [char] (1) NULL, -- 'P' OR 'N'
 	[SSTComplete] [bit] NULL,
 	[SST_UpdatedBy] [int] NULL,
 	[SST_UpdatedOn] [datetime] NULL
@@ -1364,3 +1364,309 @@ PRIMARY KEY CLUSTERED
 ) ON [PRIMARY]
 END
 -------------------------------------------------------------------------------------------------------------
+
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON  
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_CHCShipments' AND [type] = 'U')
+BEGIN
+
+CREATE TABLE [dbo].[Tbl_CHCShipments](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[ShipmentFrom] [int] NOT NULL,	
+	[GenratedShipmentID] [varchar](200) NOT NULL,
+	[CHCUserId] [int] NULL,
+	[LabTechnicianName] [Varchar](250) NULL,
+	[TestingCHCID][int] NULL,	
+	[ReceivingCentralLabId] [int] NULL,
+	[LogisticsProviderId] [int] NULL,
+	[DeliveryExecutiveName] [varchar] (250) NULL,
+	[ExecutiveContactNo] [varchar] (150) NULL,
+	[DateofShipment][date] NULL,
+	[TimeofShipment] [time](2)NULL,
+	[ReceivedDate] [date] NULL,
+	[ProcessingDate] [datetime] NULL,
+	[ProcessingTime] [time](2) NULL,
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
+	
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END
+
+-------------------------------------------------------------------------------------------------
+
+
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON  
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_CHCShipmentsDetail' AND [type] = 'U')
+BEGIN
+
+CREATE TABLE [dbo].[Tbl_CHCShipmentsDetail](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[ShipmentID] [int] NOT NULL,
+	[UniqueSubjectID] [varchar](250) NOT NULL,
+	[BarcodeNo] [varchar] (250) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END
+
+-------------------------------------------------------------------------------------------------
+
+
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO  
+
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_HPLCTestResult' AND [type] = 'U')
+BEGIN
+CREATE TABLE [dbo].[Tbl_HPLCTestResult](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[SubjectID] [int] NOT NULL,
+	[UniqueSubjectID] [varchar](200) NOT NULL,
+	[SampleCollectionID] [int] NOT NULL,
+	[BarcodeNo] [varchar] (200) NOT NULL,
+	[HbA1a] [decimal] (10,3) NULL,
+	[HbA1b] [decimal] (10,3) NULL,
+	[HbF] [decimal] (10,3) NULL,
+	[HbLA1c/CHb-1] [decimal] (10,3) NULL,
+	[HbLA1c/CHb-2] [decimal] (10,3) NULL,
+	[HbP3] [decimal] (10,3) NULL,
+	[HbA0] [decimal] (10,3) NULL,
+	[HbA2] [decimal] (10,3) NULL,
+	[HbS] [decimal] (10,3) NULL,
+	[HbC] [decimal] (10,3) NULL,
+	[HbD] [decimal] (10,3) NULL,
+	[HPLCResult] [varchar] (max)  NULL,
+	[HPLCStatus] [char] (1) NULL, -- 'P' OR 'N'
+	[HPLCTestComplete] [bit] NULL,
+	[HPLC_UpdatedBy] [int] NULL,
+	[HPLC_UpdatedOn] [datetime] NULL,
+	
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+END
+-------------------------------------------------------------------------------------------------------------
+
+
+
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO  
+
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_HPLCResultMaster' AND [type] = 'U')
+BEGIN
+CREATE TABLE [dbo].[Tbl_HPLCResultMaster](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[HPLCResultName] [varchar](250) NOT NULL, -- Normal, Thalassemia etc
+	[IsActive] [bit] NULL,
+	[CreatedOn] [datetime] NULL,
+	[CreatedBy] [int] NULL
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+END
+-------------------------------------------------------------------------------------------------------------
+
+
+
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO  
+
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_HPLCDiagnosisResult' AND [type] = 'U')
+BEGIN
+CREATE TABLE [dbo].[Tbl_HPLCDiagnosisResult](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[SubjectID] [int] NOT NULL,
+	[UniqueSubjectID] [varchar](200) NOT NULL,
+	[BarcodeNo] [varchar] (200) NOT NULL,
+	[HPLCTestResultId] [int] NULL,
+	[ClinicalDiagnosisId] [int] NULL,
+	[HPLCResultId] [varchar] (200), -- multicheck more than one value
+	[IsConsultPathologist] [bit] NULL,
+	[IsNormal] [bit] NULL,
+	[DiagnosisSummary] [varchar](max) NULL,
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+END
+-------------------------------------------------------------------------------------------------------------
+
+
+
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON  
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_CentralLabShipments' AND [type] = 'U')
+BEGIN
+
+CREATE TABLE [dbo].[Tbl_CentralLabShipments](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[ShipmentFrom] [int] NOT NULL,	
+	[GenratedShipmentID] [varchar](200) NOT NULL,
+	[CentralLabUserId] [int] NULL,
+	[LabTechnicianName] [Varchar](250) NULL,
+	[CentralLabLocation] [varchar](250) NULL,
+	[CentralLabId] [int] NULL,
+	[ReceivingMolecularLabId] [int] NULL,
+	[LogisticsProviderId] [int] NULL,
+	[LogisticsProviderName] [varchar](250) NULL,
+	[DeliveryExecutiveName] [varchar] (250) NULL,
+	[ExecutiveContactNo] [varchar] (150) NULL,
+	[DateofShipment][date] NULL,
+	[TimeofShipment] [time](2)NULL,
+	[ReceivedDate] [date] NULL,
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
+	
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END
+
+-------------------------------------------------------------------------------------------------
+
+
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON  
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_CentralLabShipmentsDetail' AND [type] = 'U')
+BEGIN
+
+CREATE TABLE [dbo].[Tbl_CentralLabShipmentsDetail](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[ShipmentID] [int] NOT NULL,
+	[UniqueSubjectID] [varchar](250) NOT NULL,
+	[BarcodeNo] [varchar] (250) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END
+
+---------------------------------------------------------------------------------------------------------------------
+
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO  
+
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_MolecularTestResult' AND [type] = 'U')
+BEGIN
+CREATE TABLE [dbo].[Tbl_MolecularTestResult](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[SubjectID] [int] NOT NULL,
+	[UniqueSubjectID] [varchar](200) NOT NULL,
+	[BarcodeNo] [varchar] (200) NOT NULL,
+	[ClinicalDiagnosisId] [int] NULL,
+	[Result] [int] NULL, -- Normal, DNA Test Positive
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END	
+--------------------------------------------------------------------------------------------------------------------------
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO  
+
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_PositiveResultSubjectsDetail' AND [type] = 'U')
+BEGIN
+CREATE TABLE [dbo].[Tbl_PositiveResultSubjectsDetail](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[SubjectID] [int] NOT NULL,
+	[UniqueSubjectID] [varchar](200) NOT NULL,
+	[BarcodeNo] [varchar] (200) NOT NULL,
+	[CBCStatus] [char] (1) NULL, -- 'P' OR 'N'
+	[CBCResult] [varchar] (max)  NULL,
+	[CBCUpdatedOn] [datetime] NULL,
+	[SSTStatus] [char] (1) NULL, -- 'P' OR 'N'
+	[SSTUpdatedOn] [datetime] NULL,
+	[HPLCTestResult] [varchar] (max) NULL,
+	[HPLCStatus] [char] (1) NULL, -- 'P' OR 'N'
+	[HPLCUpdatedOn] [datetime] NULL,
+	[MolecularResult] [varchar](max) NULL,
+	[MolecularStatus] [char] (1) NULL, -- 'P' OR 'N'
+	[MolecularUpdatedOn] [datetime] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END
