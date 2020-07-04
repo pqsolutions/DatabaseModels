@@ -15,27 +15,27 @@ END
 GO
 CREATE PROCEDURE [dbo].[SPC_UpdateStatusANMNotificationSamples]
 (	
-	@SampleCollectionId INT
-	,@Status INT
+	@BarcodeNo VARCHAR(MAX)
 	,@ANMID INT
-	,@Scope_output INT OUTPUT
 )
 AS
+DECLARE @Indexvar INT  
+DECLARE @TotalCount INT  
+DECLARE @CurrentIndexBarcode NVARCHAR(200)
 BEGIN
 	BEGIN TRY
-		IF @SampleCollectionId != null
-		BEGIN
+		SET @IndexVar = 0  
+		SELECT @TotalCount = COUNT(value) FROM [dbo].[FN_Split](@BarcodeNo,',')  
+		WHILE @Indexvar < @TotalCount  
+		BEGIN	
+			SELECT @IndexVar = @IndexVar + 1
+			SELECT @CurrentIndexBarcode = Value FROM  [dbo].[FN_Split](@BarcodeNo,',') WHERE id = @Indexvar
 			UPDATE Tbl_SampleCollection SET 
-			NotifiedStatus = @Status
-			,UpdatedBy = @ANMID
-			,UpdatedOn = GETDATE()
-			,NotifiedOn = GETDATE()
-			WHERE ID = @SampleCollectionId
-			SET @Scope_output = 1
-		END
-		ELSE
-		BEGIN
-			SET @Scope_output = -1
+				NotifiedStatus = 1
+				,UpdatedBy = @ANMID
+				,UpdatedOn = GETDATE()
+				,NotifiedOn = GETDATE()
+			WHERE BarcodeNo = @CurrentIndexBarcode
 		END
 	END TRY
 	BEGIN CATCH
