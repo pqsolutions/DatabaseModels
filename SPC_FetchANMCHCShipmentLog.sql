@@ -39,8 +39,6 @@ BEGIN
 		  ,SPR.[RCHID]
 		  ,(SP.[FirstName] + ' ' + SP.[MiddleName] + ' '+ SP.[LastName] ) AS SubjectName
 		  ,CONVERT(VARCHAR,SC.[SampleCollectionDate],103) + ' ' + CONVERT(VARCHAR(5),SC.[SampleCollectionTime]) AS SampleCollectionDateTime
-		  
-		  --,S.[TimeofShipment] AS ShipmentTime
 		FROM [dbo].[Tbl_ANMCHCShipments] S 
 		LEFT JOIN [dbo].[Tbl_UserMaster] UM WITH (NOLOCK) ON UM.ID = S.ANM_ID
 		LEFT JOIN [dbo].[Tbl_CHCMaster] CM WITH (NOLOCK) ON CM.ID = S.TestingCHCID
@@ -50,9 +48,40 @@ BEGIN
 		LEFT JOIN [dbo].[Tbl_ANMCHCShipmentsDetail]  SD WITH (NOLOCK) ON SD.ShipmentID = S.ID
 		LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP   WITH (NOLOCK) ON SP.UniqueSubjectID = SD.UniqueSubjectID
 		LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail] SPR   WITH (NOLOCK) ON SPR.UniqueSubjectID = SD.UniqueSubjectID
-		LEFT Join [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.BarcodeNo = SD.BarcodeNo
+		LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.BarcodeNo = SD.BarcodeNo
 		WHERE S.[ANM_ID] = @UserID AND S.[ShipmentFrom] = @ShipmentFrom
-		ORDER BY S.[DateofShipment] DESC  
+		ORDER BY S.[DateofShipment],S.[TimeofShipment] DESC  
+	END
+	ELSE IF @ShipFrom = 'CHC - CHC'
+	BEGIN
+		SELECT S.[ID]
+		   ,S.[GenratedShipmentID] AS ShipmentID
+		  ,(UM.[FirstName] + ' ' + UM.[MiddleName] + ' ' + UM.[LastName]) AS CHCLabTechnicianName
+		  ,(UM1.[FirstName] + ' ' + UM1.[MiddleName] + ' ' + UM1.[LastName]) AS AssociatedANMName
+		  ,CM.[CHCname] AS ReceivingTestingCHC
+		  ,CM1.[CHCname] AS CollectionCHC
+		  ,LPM.[ProviderName] AS LogisticsProviderName
+		  ,S.[DeliveryExecutiveName] 
+		  ,S.[ExecutiveContactNo]  AS ContactNo
+		  ,CONVERT(VARCHAR,S.[DateofShipment],103) + ' ' + CONVERT(VARCHAR(5),S.[TimeofShipment]) AS ShipmentDateTime
+		  ,SD.[UniqueSubjectID]
+		  ,SD.[BarcodeNo]
+		  ,SPR.[RCHID]
+		  ,(SP.[FirstName] + ' ' + SP.[MiddleName] + ' '+ SP.[LastName] ) AS SubjectName
+		  ,CONVERT(VARCHAR,SC.[SampleCollectionDate],103) + ' ' + CONVERT(VARCHAR(5),SC.[SampleCollectionTime]) AS SampleCollectionDateTime
+		  
+		FROM [dbo].[Tbl_ANMCHCShipments] S 
+		LEFT JOIN [dbo].[Tbl_UserMaster] UM WITH (NOLOCK) ON UM.ID = S.CHCUserId 
+		LEFT JOIN [dbo].[Tbl_CHCMaster] CM1 WITH (NOLOCK) ON CM1.ID = S.CollectionCHCID
+		LEFT JOIN [dbo].[Tbl_CHCMaster] CM WITH (NOLOCK) ON CM.ID = S.TestingCHCID
+		LEFT JOIN [dbo].[Tbl_LogisticsProviderMaster]  LPM WITH (NOLOCK) ON LPM.ID = S.LogisticsProviderId
+		LEFT JOIN [dbo].[Tbl_ANMCHCShipmentsDetail]  SD WITH (NOLOCK) ON SD.ShipmentID = S.ID
+		LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP   WITH (NOLOCK) ON SP.UniqueSubjectID = SD.UniqueSubjectID
+		LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail] SPR   WITH (NOLOCK) ON SPR.UniqueSubjectID = SD.UniqueSubjectID
+		LEFT JOIN [dbo].[Tbl_UserMaster] UM1 WITH (NOLOCK) ON UM1.ID = SP.AssignANM_ID  
+		LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.BarcodeNo = SD.BarcodeNo
+		WHERE  S.[ShipmentFrom] = @ShipmentFrom AND S.[CollectionCHCID] = @CHCID
+		ORDER BY S.[DateofShipment],S.[TimeofShipment] DESC  
 	END
 	
 END

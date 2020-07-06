@@ -34,7 +34,8 @@ BEGIN
 		   FROM Tbl_SampleCollection SC
 		   LEFT JOIN Tbl_SubjectPrimaryDetail SP WITH (NOLOCK) ON SP.ID = SC.SubjectID
 		   LEFT JOIN Tbl_SubjectPregnancyDetail SPR WITH (NOLOCK) ON SPR.SubjectID = SP.ID
-		   WHERE SC.CollectedBy = @UserID AND SC.CollectionFrom = @CollectionFrom AND SC.BarcodeNo NOT IN (SELECT BarcodeNo from Tbl_ANMCHCShipmentsDetail)
+		   WHERE SC.CollectedBy = @UserID AND SC.CollectionFrom = @CollectionFrom 
+		   AND SC.BarcodeNo NOT IN (SELECT BarcodeNo from Tbl_ANMCHCShipmentsDetail)
     END
     ELSE IF @CollectFrom = 'CHC'
     BEGIN
@@ -47,6 +48,7 @@ BEGIN
 		   FROM Tbl_SampleCollection SC
 		   LEFT JOIN Tbl_SubjectPrimaryDetail SP WITH (NOLOCK) ON SP.ID = SC.SubjectID
 		   LEFT JOIN Tbl_SubjectPregnancyDetail SPR WITH (NOLOCK) ON SPR.SubjectID = SP.ID
-		   WHERE SP.CHCID = @CHCID AND SC.CollectionFrom = @CollectionFrom AND SC.BarcodeNo NOT IN (SELECT BarcodeNo from Tbl_ANMCHCShipmentsDetail)
+		   WHERE SP.CHCID = @CHCID AND SC.CollectionFrom = @CollectionFrom 
+		   AND SC.BarcodeNo NOT IN (SELECT BarcodeNo from Tbl_ANMCHCShipmentsDetail)
     END
 END

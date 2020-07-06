@@ -274,6 +274,7 @@ CREATE TABLE [dbo].[Tbl_SCMaster](
 	[PHCID] [int] NOT NULL,
 	[SC_gov_code] [varchar](100) NOT NULL,
 	[SCname] [varchar](100) NOT NULL,
+	[SCAddress] [varchar](max) NULL,
 	[Pincode] [varchar](100) NULL,
 	[HNIN_ID] [varchar](200) NULL,
 	[Createdon] [datetime] NULL,
