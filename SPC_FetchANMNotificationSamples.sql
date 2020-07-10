@@ -57,6 +57,7 @@ BEGIN
 		LEFT JOIN [dbo].[Tbl_SubjectTypeMaster] ST WITH (NOLOCK) ON ST.[ID] = SP.[SubjectTypeID]  
 		WHERE SC.[CollectedBy] = @ANMID  AND SC.[SampleTimeoutExpiry] = 1 AND SC.[IsRecollected] != 'Y' 
 		ORDER BY GestationalAge DESC		
-	END					
+	END	
+				
 END
       

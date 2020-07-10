@@ -966,100 +966,6 @@ PRIMARY KEY CLUSTERED
 END
 -------------------------------------------------------------------------------------------------------
 
-USE [Eduquaydb]
-GO
-
-SET ANSI_NULLS ON
-GO
-
-SET QUOTED_IDENTIFIER ON  
-GO
-
-IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_ANMShipment' AND [type] = 'U')
-BEGIN
-
-CREATE TABLE [dbo].[Tbl_ANMShipment](
-	[ID] [int] IDENTITY(1,1) NOT NULL,
-	[SubjectID] [int] NOT NULL,
-	[UniqueSubjectID] [varchar](200) NOT NULL,
-	[SampleCollectionID] [int] NOT NULL,
-	[ShipmentFrom] [varchar](20) NOT NULL,	
-	[ShipmentID] [varchar](200) NOT NULL,
-	[ANM_ID] [int] NULL,
-	[TestingCHCID][int] NULL,
-	[RIID] [int] NULL,
-	[ILR_ID] [int] NULL,	
-	[AVDID] [int] NULL,
-	[ContactNo] [varchar] (150) NULL,
-	[DateofShipment][date] NULL,
-	[TimeofShipment] [time](2)NULL,
-	[ReceivedDate] [date] NULL,
-	[ProcessingDateTime] [datetime] NULL,
-	[ILR_InTime] [time](2) NULL,
-	[ILR_OutTime] [time](2) NULL,
-	[SampleStatus] [int] NULL,
-	[CreatedBy] [int] NULL,
-	[CreatedOn] [datetime] NULL,
-	[UpdatedBy] [int] NULL,
-	[UpdatedOn] [datetime] NULL,
-	
-PRIMARY KEY CLUSTERED 
-(
-	[ID] ASC
-)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
-) ON [PRIMARY]
-
-END
-
--------------------------------------------------------------------------------------------------------
-
-USE [Eduquaydb]
-GO
-
-SET ANSI_NULLS ON
-GO
-
-SET QUOTED_IDENTIFIER ON  
-GO
-
-IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_ANMCHCShipment' AND [type] = 'U')
-BEGIN
-
-CREATE TABLE [dbo].[Tbl_ANMCHCShipment](
-	[ID] [int] IDENTITY(1,1) NOT NULL,
-	[SubjectID] [int] NOT NULL,
-	[UniqueSubjectID] [varchar](200) NOT NULL,
-	[SampleCollectionID] [int] NOT NULL,
-	[ShipmentFrom] [int] NOT NULL,	
-	[ShipmentID] [varchar](200) NOT NULL,
-	[ANM_ID] [int] NULL,
-	[TestingCHCID][int] NULL,
-	[RIID] [int] NULL,
-	[ILR_ID] [int] NULL,	
-	[AVDID] [int] NULL,
-	[DeliveryExecutiveName] [varchar] (250) NULL,
-	[ContactNo] [varchar] (150) NULL,
-	[DateofShipment][date] NULL,
-	[TimeofShipment] [time](2)NULL,
-	[ReceivedDate] [date] NULL,
-	[ProcessingDateTime] [datetime] NULL,
-	[ILR_InTime] [time](2) NULL,
-	[ILR_OutTime] [time](2) NULL,
-	[SampleStatus] [int] NULL,
-	[CreatedBy] [int] NULL,
-	[CreatedOn] [datetime] NULL,
-	[UpdatedBy] [int] NULL,
-	[UpdatedOn] [datetime] NULL,
-	
-PRIMARY KEY CLUSTERED 
-(
-	[ID] ASC
-)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
-) ON [PRIMARY]
-
-END
-
--------------------------------------------------------------------------------------------------
 
 USE [Eduquaydb]
 GO
@@ -1093,8 +999,8 @@ CREATE TABLE [dbo].[Tbl_ANMCHCShipments](
 	[TimeofShipment] [time](2)NULL,
 	[ReceivedDate] [date] NULL,
 	[ProcessingDateTime] [datetime] NULL,
-	[ILR_InTime] [time](2) NULL,
-	[ILR_OutTime] [time](2) NULL,
+	[ILRInDateTime] [datetime] NULL,
+	[ILROutDateTime] [datetime] NULL,
 	[CreatedBy] [int] NULL,
 	[CreatedOn] [datetime] NULL,
 	[UpdatedBy] [int] NULL,

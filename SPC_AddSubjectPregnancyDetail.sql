@@ -16,7 +16,6 @@ CREATE PROCEDURE [dbo].[SPC_AddSubjectPregnancyDetail]
 	,@RCHID  VARCHAR(150)
 	,@ECNumber  VARCHAR(150)
 	,@LMP_Date  VARCHAR(150)
-	--,@Gestational_period DECIMAL(18,2)
 	,@G INT
 	,@P INT
 	,@L INT
@@ -29,12 +28,16 @@ DECLARE
 	,@SubjectID  INT
 	,@tempUserId INT
 	,@LMP DATE
+	,@SubjectType INT
+	,@ChildSubjectType INT
+	,@SpouseSubjectID VARCHAR(250)
 BEGIN
 	BEGIN TRY
 		IF @UniqueSubjectID IS NOT NULL
 		BEGIN
-			SELECT @SubCount =  COUNT(ID) from Tbl_SubjectPregnancyDetail where UniqueSubjectID = @UniqueSubjectID
-			SELECT @SubjectID =   ID FROM Tbl_SubjectPrimaryDetail WHERE UniqueSubjectID = @UniqueSubjectID
+			SELECT @SubCount =  COUNT(ID) FROM Tbl_SubjectPregnancyDetail WHERE UniqueSubjectID = @UniqueSubjectID
+			SELECT @SubjectID =   ID, @SubjectType = SubjectTypeID, @ChildSubjectType = ChildSubjectTypeID, 
+			@SpouseSubjectID = SpouseSubjectID FROM Tbl_SubjectPrimaryDetail WHERE UniqueSubjectID = @UniqueSubjectID
 			SET @LMP = CONVERT(DATE,@LMP_Date,103)
 			IF ISNULL(@LMP_Date,'')= ''
 			BEGIN
@@ -48,7 +51,6 @@ BEGIN
 					,RCHID
 					,ECNumber
 					,LMP_Date
-				--	,Gestational_period
 					,G
 					,P
 					,L
@@ -61,13 +63,21 @@ BEGIN
 					,@RCHID
 					,@ECNumber
 					,@LMP
-					--,@Gestational_period
 					,@G  
 					,@P  
 					,@L  
 					,@A  
 					,@UpdatedBy 
 					,GETDATE() )
+					
+				IF @SubjectType = 2 OR @ChildSubjectType = 2
+				BEGIN
+					UPDATE Tbl_SubjectPregnancyDetail  SET 
+						ECNumber = @ECNumber
+						,UpdatedBy = @UpdatedBy
+						,UpdatedOn = GETDATE()
+				WHERE  UniqueSubjectID  = @SpouseSubjectID 
+				END	
 				SET @tempUserId = IDENT_CURRENT('Tbl_SubjectPregnancyDetail')
 				SET @Scope_output = 1
 			END
@@ -77,7 +87,6 @@ BEGIN
 				   SET RCHID = @RCHID
 					  ,ECNumber = @ECNumber
 					  ,LMP_Date = @LMP
-					 -- ,Gestational_period = @Gestational_period
 					  ,G = @G
 					  ,P = @P
 					  ,L = @L
@@ -85,6 +94,16 @@ BEGIN
 					  ,UpdatedBy = @UpdatedBy
 					  ,UpdatedOn = GETDATE()
 				WHERE UniqueSubjectID = @UniqueSubjectID
+				
+				IF @SubjectType = 2 OR @ChildSubjectType = 2 OR  @SubjectType = 1 OR @ChildSubjectType = 1
+				BEGIN
+					UPDATE Tbl_SubjectPregnancyDetail  SET
+						ECNumber = @ECNumber
+						,UpdatedBy = @UpdatedBy
+					    ,UpdatedOn = GETDATE()
+					WHERE  UniqueSubjectID  = @SpouseSubjectID 
+				END
+				
 				SET @Scope_output = 1
 			END
 		END

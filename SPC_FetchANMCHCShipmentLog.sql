@@ -26,7 +26,7 @@ BEGIN
 	IF @ShipFrom = 'ANM - CHC'
 	BEGIN
 		SELECT S.[ID]
-		   ,S.[GenratedShipmentID] AS ShipmentID
+		  ,S.[GenratedShipmentID] AS ShipmentID
 		  ,(UM.[FirstName] + ' ' + UM.[MiddleName] + ' ' + UM.[LastName]) AS ANMName
 		  ,CM.[CHCname] AS ReceivingTestingCHC
 		  ,AM.[AVDName]
@@ -49,6 +49,8 @@ BEGIN
 		LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP   WITH (NOLOCK) ON SP.UniqueSubjectID = SD.UniqueSubjectID
 		LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail] SPR   WITH (NOLOCK) ON SPR.UniqueSubjectID = SD.UniqueSubjectID
 		LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.BarcodeNo = SD.BarcodeNo
+		
+		
 		WHERE S.[ANM_ID] = @UserID AND S.[ShipmentFrom] = @ShipmentFrom
 		ORDER BY S.[DateofShipment],S.[TimeofShipment] DESC  
 	END

@@ -101,6 +101,7 @@ BEGIN
 			AND SP.[ID]  IN (SELECT TOP 1 SubjectID FROM Tbl_SubjectParentDetail   WHERE SubjectID  = SP.ID)
 			AND SP.[ID] NOT IN (SELECT SubjectID FROM Tbl_SampleCollection WHERE SampleDamaged != 1 AND SampleTimeoutExpiry != 1)
 			ORDER By GestationalAge DESC
+			PRINT 'Y'
 	END
 END
       

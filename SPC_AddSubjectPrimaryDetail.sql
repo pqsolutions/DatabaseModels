@@ -143,7 +143,15 @@ BEGIN
 					SELECT  @NewUniqueSubjectID  as UniqueSubjectID, SCOPE_IDENTITY() AS ID
 					IF @SubjectTypeID = 2 OR @ChildSubjectTypeID = 2 
 					BEGIN
-						UPDATE Tbl_SubjectPrimaryDetail  SET SpouseSubjectID = @NewUniqueSubjectID  WHERE  UniqueSubjectID  = @SpouseSubjectID 
+						UPDATE Tbl_SubjectPrimaryDetail  SET 
+							SpouseSubjectID = @UniqueSubjectId
+							,Spouse_ContactNo = @MobileNo
+							,Spouse_FirstName = @FirstName
+							,Spouse_MiddleName = @MiddleName
+							,Spouse_LastName = @LastName 
+							,Spouse_GovIdType_ID = @GovIdType_ID 
+							,Spouse_GovIdDetail = @GovIdDetail 
+						WHERE  UniqueSubjectID  = @SpouseSubjectID
 					END
 				END
 				ELSE
@@ -183,10 +191,18 @@ BEGIN
 					  ,UpdatedOn = GETDATE()
 					  ,IsActive = 1
 					WHERE ID = @ID
-				IF @SubjectTypeID = 2 OR @ChildSubjectTypeID = 2 
-				BEGIN
-					UPDATE Tbl_SubjectPrimaryDetail  SET SpouseSubjectID = @UniqueSubjectId    WHERE  UniqueSubjectID  = @SpouseSubjectID 
-				END
+					IF @SubjectTypeID = 2 OR @ChildSubjectTypeID = 2 OR @SubjectTypeID = 1 OR @ChildSubjectTypeID = 1
+					BEGIN
+						UPDATE Tbl_SubjectPrimaryDetail  SET 
+							SpouseSubjectID = @UniqueSubjectId
+							,Spouse_ContactNo = @MobileNo
+							,Spouse_FirstName = @FirstName
+							,Spouse_MiddleName = @MiddleName
+							,Spouse_LastName = @LastName 
+							,Spouse_GovIdType_ID = @GovIdType_ID 
+							,Spouse_GovIdDetail = @GovIdDetail 
+						WHERE  UniqueSubjectID  = @SpouseSubjectID 
+					END
 				SELECT  @UniqueSubjectID AS UniqueSubjectID, @ID AS ID
 				END
 	END TRY
