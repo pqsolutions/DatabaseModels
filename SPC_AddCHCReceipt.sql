@@ -32,8 +32,8 @@ DECLARE
 BEGIN
 	BEGIN TRY
 		SET @RejectAt = NULL
-		SET @ILRIn = CONVERT(DATETIME,@ILRInDateTime)
-		SET @ILROut = CONVERT(DATETIME,@ILROutDateTime)
+		SET @ILRIn = CONVERT(DATETIME,@ILRInDateTime,103)
+		SET @ILROut = CONVERT(DATETIME,@ILROutDateTime,103)
 		IF ISNULL(@ILRInDateTime ,'') = ''
 		BEGIN
 			SET @ILRIn = NULL
@@ -49,8 +49,8 @@ BEGIN
 		
 	
 		UPDATE Tbl_ANMCHCShipments SET 
-				ReceivedDate = @ReceivedDate 
-				,ProcessingDateTime = CONVERT(DATETIME,@ProcessingDateTime)
+				ReceivedDate =CONVERT(DATETIME,@ReceivedDate,103)  
+				,ProcessingDateTime = CONVERT(DATETIME,@ProcessingDateTime,103)
 				,ILRInDateTime = @ILRIn
 				,ILROutDateTime = @ILROut
 				,UpdatedBy = @UpdatedBy 

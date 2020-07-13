@@ -10,7 +10,7 @@ GO
 
 IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_FetchSubjectNotSampleCollected' AND [type] = 'p')
 BEGIN
-	DROP PROCEDURE SPC_FetchSubjectNotSampleCollected
+	DROP PROCEDURE SPC_FetchSubjectNotSampleCollected 
 END
 GO
 CREATE PROCEDURE [dbo].[SPC_FetchSubjectNotSampleCollected] 

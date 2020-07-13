@@ -1245,25 +1245,23 @@ GO
 
 SET QUOTED_IDENTIFIER ON
 GO
-IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_CBCandSSTestResult' AND [type] = 'U')
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_CBCTestResult' AND [type] = 'U')
 BEGIN
-CREATE TABLE [dbo].[Tbl_CBCandSSTestResult](
+CREATE TABLE [dbo].[Tbl_CBCTestResult](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
-	[SubjectID] [int] NOT NULL,
 	[UniqueSubjectID] [varchar](200) NOT NULL,
-	[SampleCollectionID] [int] NOT NULL,
 	[BarcodeNo] [varchar] (200) NOT NULL,
-	[MVC] [decimal](18,2) NULL,
+	[TestingCHCId] [int] NULL,
+	[MCV] [decimal](18,2) NULL,
 	[RDW] [decimal](18,2) NULL,
 	[CBCResult] [varchar] (max)  NULL,
-	[CBCStatus] [char] (1) NULL, -- 'P' OR 'N'
+	[IsPositive] [bit] NULL,
 	[CBCTestComplete] [bit] NULL,
-	[CBC_UpdatedBy] [int] NULL,
-	[CBC_UpdatedOn] [datetime] NULL,
-	[SSTStatus] [char] (1) NULL, -- 'P' OR 'N'
-	[SSTComplete] [bit] NULL,
-	[SST_UpdatedBy] [int] NULL,
-	[SST_UpdatedOn] [datetime] NULL
+	[CreatedOn] [datetime] NULL,
+	[CreatedBy] [int] NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
+	
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
@@ -1271,6 +1269,39 @@ PRIMARY KEY CLUSTERED
 ) ON [PRIMARY]
 END
 -------------------------------------------------------------------------------------------------------------
+
+
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO  
+
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_SSTestResult' AND [type] = 'U')
+BEGIN
+CREATE TABLE [dbo].[Tbl_SSTestResult](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[UniqueSubjectID] [varchar](200) NOT NULL,
+	[BarcodeNo] [varchar] (200) NOT NULL,
+	[TestingCHCId] [int] NULL,
+	[IsPositive] [bit] NULL,
+	[SSTComplete] [bit] NULL,
+	[CreatedOn] [datetime] NULL,
+	[CreatedBy] [int] NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+END
+-------------------------------------------------------------------------------------------------------------
+
+
+
 
 USE [Eduquaydb]
 GO
@@ -1544,6 +1575,8 @@ PRIMARY KEY CLUSTERED
 
 END	
 --------------------------------------------------------------------------------------------------------------------------
+
+
 USE [Eduquaydb]
 GO
 
@@ -1570,6 +1603,9 @@ CREATE TABLE [dbo].[Tbl_PositiveResultSubjectsDetail](
 	[MolecularResult] [varchar](max) NULL,
 	[MolecularStatus] [char] (1) NULL, -- 'P' OR 'N'
 	[MolecularUpdatedOn] [datetime] NULL,
+	[HPLCNotifiedStatus] [bit] NULL,
+	[HPLCNotifiedOn] [datetime] NULL,
+	[IsActive] [bit] NULL
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC

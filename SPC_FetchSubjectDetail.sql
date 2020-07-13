@@ -80,6 +80,7 @@ BEGIN
 			,SPD.[P]
 			,SPD.[L]
 			,SPD.[A]
+			,(SELECT [dbo].[FN_FindBarcodesByUser](SPRD.[ID])) AS Barcodes
 			,SPAD.[SubjectID] SPADSubjectID
 			,SPAD.[Mother_FirstName]
 			,SPAD.[Mother_MiddleName]
@@ -126,7 +127,6 @@ BEGIN
 	LEFT JOIN [dbo].[Tbl_Gov_IDTypeMaster] GIMM WITH (NOLOCK) ON GIMM.[ID] = SPAD.[Mother_GovIdType_ID]      
 	LEFT JOIN [dbo].[Tbl_Gov_IDTypeMaster] GIMG WITH (NOLOCK) ON GIMG.[ID] = SPAD.[Guardian_GovIdType_ID]       
 	LEFT JOIN [dbo].[Tbl_CommunityMaster] COM WITH (NOLOCK) ON COM.[ID] = SAD.[Community_Id]    
-	LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.[UniqueSubjectID] = SPRD.[UniqueSubjectID] 
 	WHERE  (SPRD.[UniqueSubjectID] = @UniqueSubjectID OR SPRD.[MobileNo] = @UniqueSubjectID OR 
 	SPD.[RCHID]  = @UniqueSubjectID)
 END
