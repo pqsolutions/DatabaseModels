@@ -967,6 +967,7 @@ END
 -------------------------------------------------------------------------------------------------------
 
 
+
 USE [Eduquaydb]
 GO
 
@@ -989,6 +990,8 @@ CREATE TABLE [dbo].[Tbl_ANMCHCShipments](
 	[ILR_ID] [int] NULL,
 	[AVDID] [int] NULL,
 	[AVDContactNo] [varchar] (150) NULL,
+	[AlternateAVD] [varchar] (250) NULL,
+	[AlternateAVDContactNo] [varchar] (250) NULL,
 	[CHCUserId] [int] NULL,
 	[CollectionCHCID] [int] NULL,
 	[LogisticsProviderId] [int] NULL,
@@ -1301,8 +1304,6 @@ END
 -------------------------------------------------------------------------------------------------------------
 
 
-
-
 USE [Eduquaydb]
 GO
 
@@ -1329,8 +1330,7 @@ CREATE TABLE [dbo].[Tbl_CHCShipments](
 	[DateofShipment][date] NULL,
 	[TimeofShipment] [time](2)NULL,
 	[ReceivedDate] [date] NULL,
-	[ProcessingDate] [datetime] NULL,
-	[ProcessingTime] [time](2) NULL,
+	[ProcessingDateTime] [datetime] NULL,
 	[CreatedBy] [int] NULL,
 	[CreatedOn] [datetime] NULL,
 	[UpdatedBy] [int] NULL,
@@ -1403,10 +1403,12 @@ CREATE TABLE [dbo].[Tbl_HPLCTestResult](
 	[HbC] [decimal] (10,3) NULL,
 	[HbD] [decimal] (10,3) NULL,
 	[HPLCResult] [varchar] (max)  NULL,
-	[HPLCStatus] [char] (1) NULL, -- 'P' OR 'N'
+	[IsPositive] [bit] NULL,
 	[HPLCTestComplete] [bit] NULL,
-	[HPLC_UpdatedBy] [int] NULL,
-	[HPLC_UpdatedOn] [datetime] NULL,
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
 	
 PRIMARY KEY CLUSTERED 
 (
@@ -1605,6 +1607,7 @@ CREATE TABLE [dbo].[Tbl_PositiveResultSubjectsDetail](
 	[MolecularUpdatedOn] [datetime] NULL,
 	[HPLCNotifiedStatus] [bit] NULL,
 	[HPLCNotifiedOn] [datetime] NULL,
+	[HPLCNotifiedBy][int] NULL,
 	[IsActive] [bit] NULL
 PRIMARY KEY CLUSTERED 
 (

@@ -59,6 +59,9 @@ BEGIN
 			,(SELECT [dbo].[FN_FindSampleTypeReason](SP.[ID])) AS Reason
 			,@StartDate AS FromDate
 			,@EndDate AS ToDate
+			,CASE WHEN (SELECT [dbo].[FN_FindSampleType](SP.[ID])) !='F' THEN 
+			(SELECT TOP 1  CONVERT(DATE,SampleCollectionDate,103) FROM Tbl_SampleCollection WHERE SubjectID  = SP.[ID] ORDER BY ID DESC)
+			ELSE NULL END  AS SampleCollectionDate
 		FROM Tbl_SubjectPrimaryDetail SP
 		LEFT JOIN Tbl_SubjectPregnancyDetail SPR WITH (NOLOCK) ON SPR.UniqueSubjectID  = SP.UniqueSubjectID 
 		LEFT JOIN Tbl_SubjectTypeMaster ST WITH (NOLOCK) ON ST.ID = SP.SubjectTypeID 
@@ -89,6 +92,9 @@ BEGIN
 			,(SELECT [dbo].[FN_FindSampleTypeReason](SP.[ID])) AS Reason
 			,@StartDate AS FromDate
 			,@EndDate AS ToDate
+			,CASE WHEN (SELECT [dbo].[FN_FindSampleType](SP.[ID])) !='F' THEN 
+			(SELECT TOP 1 CONVERT(DATE,SampleCollectionDate,103) FROM Tbl_SampleCollection WHERE SubjectID  = SP.[ID] ORDER BY ID DESC)
+			ELSE NULL END  AS SampleCollectionDate
 		FROM Tbl_SubjectPrimaryDetail SP
 		LEFT JOIN Tbl_SubjectPregnancyDetail SPR WITH (NOLOCK) ON SPR.UniqueSubjectID  = SP.UniqueSubjectID 
 		LEFT JOIN Tbl_SubjectTypeMaster ST WITH (NOLOCK) ON ST.ID = SP.SubjectTypeID 
@@ -101,7 +107,6 @@ BEGIN
 			AND SP.[ID]  IN (SELECT TOP 1 SubjectID FROM Tbl_SubjectParentDetail   WHERE SubjectID  = SP.ID)
 			AND SP.[ID] NOT IN (SELECT SubjectID FROM Tbl_SampleCollection WHERE SampleDamaged != 1 AND SampleTimeoutExpiry != 1)
 			ORDER By GestationalAge DESC
-			PRINT 'Y'
 	END
 END
       

@@ -21,6 +21,8 @@ CREATE PROCEDURE [dbo].[SPC_AddANMMobileShipments]
 	,@ILR_ID INT
 	,@AVDID INT
 	,@AVDContactNo VARCHAR(150)
+	,@AlternateAVD VARCHAR(250)
+	,@AlternateAVDContactNo VARCHAR(250)
 	,@TestingCHCID INT
 	,@DateofShipment VARCHAR(100)
 	,@TimeofShipment VARCHAR(100)
@@ -66,6 +68,8 @@ BEGIN
 					,ILR_ID
 					,AVDID
 					,AVDContactNo
+					,AlternateAVD
+					,AlternateAVDContactNo
 					,TestingCHCID
 					,DateofShipment
 					,TimeofShipment
@@ -79,6 +83,8 @@ BEGIN
 					,@ILR_ID
 					,@AVDID
 					,@AVDContactNo
+					,@AlternateAVD
+					,@AlternateAVDContactNo
 					,@TestingCHCID
 					,CONVERT(DATE,@DateofShipment,103)
 					,CONVERT(TIME(0),@TimeofShipment) 

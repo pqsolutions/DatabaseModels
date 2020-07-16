@@ -31,6 +31,8 @@ BEGIN
 		  ,CM.[CHCname] AS ReceivingTestingCHC
 		  ,AM.[AVDName]
 		  ,S.[AVDContactNo] AS ContactNo
+		  ,ISNULL(S.[AlternateAVD] ,'') AS AlternateAVD
+	      ,ISNULL(S.[AlternateAVDContactNo] ,'') AS AlternateAVDContactNo
 		  ,IM.[ILRPoint]
 		  ,RM.[RIsite] AS RIPoint
 		  ,CONVERT(VARCHAR,S.[DateofShipment],103) + ' ' + CONVERT(VARCHAR(5),S.[TimeofShipment]) AS ShipmentDateTime

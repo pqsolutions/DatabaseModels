@@ -32,6 +32,9 @@ BEGIN
 			,CAST((SELECT [dbo].[FN_CalculateGestationalAge](SPR.[SubjectID])) AS DECIMAL(18,1)) AS GestationalAge
 			,(SELECT [dbo].[FN_FindSampleType](SP.[ID])) AS SampleType
 			,(SELECT [dbo].[FN_FindSampleTypeReason](SP.[ID])) AS Reason
+			,(CONVERT(VARCHAR,SC.[SampleCollectionDate],103) + ' ' + CONVERT(VARCHAR(5),SC.[SampleCollectionTime])) AS SampleDateTime
+			,CONVERT(VARCHAR,SC.[SampleCollectionDate],103) AS SampleCollectionDate
+			, CONVERT(VARCHAR(5),SC.[SampleCollectionTime]) AS SampleCollectionTime
 		FROM [dbo].[Tbl_SampleCollection] SC     
 		LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP WITH (NOLOCK) ON SP.[ID] = SC.[SubjectID] 
 		LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail]  SPR WITH (NOLOCK) ON SPR.[SubjectID] = SP.[ID]   
@@ -51,6 +54,9 @@ BEGIN
 			,CAST((SELECT [dbo].[FN_CalculateGestationalAge](SPR.[SubjectID])) AS DECIMAL(18,1)) AS GestationalAge
 			,(SELECT [dbo].[FN_FindSampleType](SP.[ID])) AS SampleType
 			,(SELECT [dbo].[FN_FindSampleTypeReason](SP.[ID])) AS Reason
+			,(CONVERT(VARCHAR,SC.[SampleCollectionDate],103) + ' ' + CONVERT(VARCHAR(5),SC.[SampleCollectionTime])) AS SampleDateTime
+			,CONVERT(VARCHAR,SC.[SampleCollectionDate],103) AS SampleCollectionDate
+			, CONVERT(VARCHAR(5),SC.[SampleCollectionTime]) AS SampleCollectionTime
 		FROM [dbo].[Tbl_SampleCollection] SC     
 		LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP WITH (NOLOCK) ON SP.[ID] = SC.[SubjectID]
 		LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail]  SPR WITH (NOLOCK) ON SPR.[SubjectID] = SP.[ID]  

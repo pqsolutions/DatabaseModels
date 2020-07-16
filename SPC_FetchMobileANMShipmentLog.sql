@@ -6,7 +6,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
---Fetch Shipment Details (Log) of particular ANM user
+--Fetch Shipment Details (Log) of particular ANM user Mobile
 
 IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_FetchMobileANMShipmentLog' AND [type] = 'p')
 BEGIN
@@ -29,6 +29,8 @@ BEGIN
 	  ,S.[AVDID] 
 	  ,AM.[AVDName]
 	  ,S.[AVDContactNo]
+	  ,ISNULL(S.[AlternateAVD] ,'') AS AlternateAVD
+	  ,ISNULL(S.[AlternateAVDContactNo] ,'') AS AlternateAVDContactNo
 	  ,S.[ILR_ID] 
 	  ,IM.[ILRPoint]
 	  ,S.[RIID] 
