@@ -21,7 +21,7 @@ RETURNS VARCHAR(MAX)
 AS      
 BEGIN  
  
-DECLARE @OutputBarcode varchar(MAX),@Barcodes varchar(max)
+DECLARE @OutputBarcode VARCHAR(MAX),@Barcodes VARCHAR(max)
 SELECT
 @Barcodes=STUFF ((SELECT   BarcodeNo + ' | ' FROM Tbl_SampleCollection WHERE SubjectID=@SubjectId Order by id desc FOR XMl PATH('')) ,1,0,'')  
  

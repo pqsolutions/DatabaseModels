@@ -85,7 +85,7 @@ BEGIN
 			,SP.[SubjectTypeID]
 			,ST.[SubjectType] 
 			,(SP.[Spouse_FirstName] + ' ' + SP.[Spouse_MiddleName] + ' ' + SP.[Spouse_LastName]) AS SpouseName 
-			,(CONVERT(VARCHAR,SP.[DateofRegister],105)) AS  DateofRegister
+			,(CONVERT(VARCHAR,SP.[DateofRegister],103)) AS  DateofRegister
 			,SP.[MobileNo] AS ContactNo
 			,CAST((SELECT [dbo].[FN_CalculateGestationalAge](SPR.[SubjectID])) AS DECIMAL(18,1)) AS GestationalAge
 			,(SELECT [dbo].[FN_FindSampleType](SP.[ID])) AS SampleType

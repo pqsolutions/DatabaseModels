@@ -1,3 +1,37 @@
+
+USE [Eduquaydb]
+GO
+
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_ANMLogin' AND [type] = 'U')
+BEGIN
+
+CREATE TABLE [dbo].[Tbl_ANMLogin](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[ANMId] [int] NOT NULL,
+	[UserName] [varchar](200) NOT NULL,
+	[DeviceId] [varchar](max) NULL,
+	[LoginStatus][bit] NULL,
+	[LastLoginFrom] [varchar](50) NULL,
+	[LastLoginDate] [datetime] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END
+
+-------------------------------------------------------------
+
+
+
+
 USE [Eduquaydb]
 GO
 
@@ -206,7 +240,7 @@ CREATE TABLE [dbo].[Tbl_CHCMaster](
 	[Isactive] [bit] NULL,
 	[Latitude] [varchar](150) NULL,
 	[Longitude] [varchar](150) NULL,
-	[AssociatedCHCID] [int] NULL
+	[TestingCHCID] [int] NULL
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
@@ -308,6 +342,7 @@ BEGIN
 CREATE TABLE [dbo].[Tbl_RIMaster](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
 	[TestingCHCID] [int] NOT NULL,
+	[CHCID] [int] NOT NULL,
 	[PHCID] [int] NOT NULL,
 	[SCID] [int] NOT NULL,
 	[RI_gov_code] [varchar](100) NOT NULL,

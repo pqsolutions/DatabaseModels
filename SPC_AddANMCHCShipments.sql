@@ -61,7 +61,7 @@ BEGIN
 			END
 			ELSE
 			BEGIN
-				SET @GeneratedShipmentID = (SELECT  [dbo].[FN_GenerateANMCHCShipmentId](@RIID,@Source,@ShipmentFrom))
+				SET @GeneratedShipmentID = (SELECT  [dbo].[FN_GenerateANMCHCShipmentId](@ANM_ID,@Source,@ShipmentFrom))
 				INSERT INTO Tbl_ANMCHCShipments
 					(ShipmentFrom
 					,GenratedShipmentID

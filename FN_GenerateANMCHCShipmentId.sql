@@ -1,7 +1,5 @@
 
 
-
-
 USE [Eduquaydb]
 GO
 SET ANSI_NULLS ON
@@ -39,8 +37,6 @@ BEGIN
 		
 	SELECT @Shipment = CommonName FROM Tbl_constantValues WHERE Comments = 'ShipmentFrom' AND ID = @ShipmentFrom
 	
-	
-	
 	SET @Year = (SELECT CONVERT(VARCHAR,RIGHT(YEAR(GETDATE()),2)))
 	
 	IF (LEN(MONTH(GETDATE())) > 1)
@@ -56,57 +52,41 @@ BEGIN
 	
 	IF @Shipment = 'ANM - CHC'
 	BEGIN		
-		SELECT @SenderCode = RI_gov_code FROM Tbl_RIMaster WHERE ID = @SenderId
-		SET @LastShipmentId = (SELECT TOP 1 GenratedShipmentID 
-							FROM Tbl_ANMCHCShipments WITH(NOLOCK) WHERE RIID = @SenderId  AND GenratedShipmentID LIKE '%'+@Source   
+		SELECT @SenderCode = User_gov_code FROM Tbl_UserMaster WHERE ID = @SenderId
+		SET @LastShipmentId =(SELECT TOP 1 GenratedShipmentID 
+							FROM Tbl_ANMCHCShipments WITH(NOLOCK) WHERE ANM_ID = @SenderId  AND GenratedShipmentID LIKE '%'+@Source   
 							AND GenratedShipmentID LIKE @SenderCode +'/'+@MonthYear+'/%'   
 							ORDER BY GenratedShipmentID DESC)
+
+		SET @LastShipmentId1 =(SELECT ISNULL(LEFT(@LastShipmentId,(LEN(@LastShipmentId)-2)),''))
+	
+		SELECT @ShipmentId = @SenderCode + '/' + @MonthYear + '/' +     
+			CAST(STUFF('000',4-LEN(ISNULL(MAX(RIGHT(@LastShipmentId1,3)),0)+1),        
+			LEN(ISNULL(MAX(RIGHT(@LastShipmentId1,3)),0)+1),        
+			CONVERT(VARCHAR,ISNULL(MAX(RIGHT(@LastShipmentId1,3)),0)+1)) AS NVARCHAR(15))+ '/'
+		FROM Tbl_ANMCHCShipments 
+		WHERE ANM_ID = @SenderId AND GenratedShipmentID LIKE '%'+@Source  AND GenratedShipmentID LIKE @SenderCode +'/'+@MonthYear+'/%'  
 		
 	END
 	ELSE IF @Shipment = 'CHC - CHC'
 	BEGIN
 		SELECT @SenderCode = CHC_gov_code FROM Tbl_CHCMaster WHERE ID = @SenderId
-		SET @LastShipmentId = (SELECT TOP 1 GenratedShipmentID 
+		SET @LastShipmentId =(SELECT TOP 1 GenratedShipmentID 
 							FROM Tbl_ANMCHCShipments WITH(NOLOCK) WHERE CollectionCHCID = @SenderId  AND GenratedShipmentID LIKE '%'+@Source   
 							AND GenratedShipmentID LIKE @SenderCode +'/'+@MonthYear+'/%'   
 							ORDER BY GenratedShipmentID DESC)
-	END
+
+		SET @LastShipmentId1 =(SELECT ISNULL(LEFT(@LastShipmentId,(LEN(@LastShipmentId)-2)),''))
 	
-	 
-							
-	SET @LastShipmentId1 =(SELECT ISNULL(LEFT(@LastShipmentId,(LEN(@LastShipmentId)-2)),''))
-	
-	IF @LastShipmentId1 != ''
-	BEGIN
-		SET @LastValue =  (SELECT RIGHT(@LastShipmentId1,1))
-		
-		IF ISNUMERIC(@LastValue) = 1
-		BEGIN
-			SET @NumValue = CAST(@LastValue AS INT)
-			IF @NumValue > 0 AND @NumValue < 9
-			BEGIN
-				SET @SerialValue = CONVERT(CHAR,(@NumValue+1))
-			END
-			ELSE IF @NumValue = 9
-			BEGIN
-				SET @SerialValue = 'A'
-				
-			END	
-		END
-		ELSE
-		BEGIN
-			IF @LastValue != 'Z'
-			BEGIN
-				SET @SerialValue = (SELECT CHAR(ASCII(@LastValue)+1))
-			END
-		END
-	END
-	ELSE
-	BEGIN
-		SET @SerialValue = '1'
+		SELECT @ShipmentId = @SenderCode + '/' + @MonthYear + '/' +     
+			CAST(STUFF('000',4-LEN(ISNULL(MAX(RIGHT(@LastShipmentId1,3)),0)+1),        
+			LEN(ISNULL(MAX(RIGHT(@LastShipmentId1,3)),0)+1),        
+			CONVERT(VARCHAR,ISNULL(MAX(RIGHT(@LastShipmentId1,3)),0)+1)) AS NVARCHAR(15))+ '/'
+		FROM Tbl_ANMCHCShipments 
+		WHERE CollectionCHCID = @SenderId AND GenratedShipmentID LIKE '%'+@Source  AND GenratedShipmentID LIKE @SenderCode +'/'+@MonthYear+'/%'  
 	END
 
-	SET  @ShipmentId = @SenderCode + '/' + @MonthYear + '/' + @SerialValue + '/' + @Source
+	SET  @ReturnValue = @ShipmentId + @Source
 
-RETURN @ShipmentId
+RETURN @ReturnValue
 END
