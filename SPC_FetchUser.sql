@@ -36,7 +36,6 @@ BEGIN
 			,ISNULL(um.[SCID],0) AS SCID
 			,sc.[SCname]
 			,ISNULL(um.[RIID],0) AS RIID
-			--,ri.[RIsite] 
 			,um.[FirstName]
 			,um.[MiddleName]
 			,um.[LastName] 
@@ -68,7 +67,6 @@ BEGIN
 	INNER JOIN [dbo].[Tbl_CHCMaster] c WITH (NOLOCK) ON c.ID = um.CHCID
 	INNER JOIN [dbo].[Tbl_PHCMaster] p WITH (NOLOCK) ON p.ID = um.PHCID	
 	INNER JOIN [dbo].[Tbl_SCMaster] sc WITH (NOLOCK) ON sc.ID = um.SCID
-	--INNER JOIN [dbo].[Tbl_RIMaster] ri WITH (NOLOCK) ON ri.ID = um.RIID
 	INNER JOIN [dbo].[Tbl_Gov_IDTypeMaster] gm WITH (NOLOCK) ON gm.ID = um.GovIDType_ID
 	WHERE um.[ID]= @ID
 END
