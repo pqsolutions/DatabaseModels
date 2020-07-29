@@ -28,10 +28,6 @@ BEGIN
 		,@LastShipmentId VARCHAR(MAX)
 		,@LastShipmentId1 VARCHAR(MAX)
 		,@ShipmentId VARCHAR(MAX)
-		,@Serial INT
-		,@SerialValue CHAR(1)
-		,@Lastvalue CHAR(1)
-		,@NumValue INT
 		,@ReturnValue VARCHAR(200)
 		,@Shipment VARCHAR(50)
 		

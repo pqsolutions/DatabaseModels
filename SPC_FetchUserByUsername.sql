@@ -24,6 +24,8 @@ Begin
 			,um.[Password]
 			,um.[StateID]
 			,s.[Statename]
+			,um.[CentralLabId]
+			,cl.[CentralLabName]
 			,s.[Shortname]
 			,um.[DistrictID]
 			,d.[Districtname] 
@@ -64,6 +66,7 @@ Begin
 	LEFT JOIN [dbo].[Tbl_UserRoleMaster] ur WITH (NOLOCK) ON ur.ID = um.UserRole_ID
 	LEFT JOIN [dbo].[Tbl_UserTypeMaster] ut WITH (NOLOCK) ON ut.ID = um.UserType_ID
 	LEFT JOIN [dbo].[Tbl_StateMaster] s WITH (NOLOCK) ON s.ID = um.StateID
+	LEFT JOIN [dbo].[Tbl_CentralLabMaster] cl WITH (NOLOCK) ON cl.ID = um.CentralLabId
 	LEFT JOIN [dbo].[Tbl_DistrictMaster] d WITH (NOLOCK) ON d.ID = um.DistrictID
 	LEFT JOIN [dbo].[Tbl_BlockMaster] b WITH (NOLOCK) ON b.ID = um.BlockID
 	LEFT JOIN [dbo].[Tbl_CHCMaster] c WITH (NOLOCK) ON c.ID = um.CHCID

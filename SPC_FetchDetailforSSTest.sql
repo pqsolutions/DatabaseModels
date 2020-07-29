@@ -13,7 +13,7 @@ END
 GO
 CREATE PROCEDURE [dbo].[SPC_FetchDetailforSSTest] 
 (
-	@TestingCHCId int
+	@TestingCHCId INT
 )
 
 AS

@@ -8,50 +8,51 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-IF EXISTS (Select 1 from sys.objects where name='SPC_AddCHC' and [type] = 'p')
-Begin
+IF EXISTS (SELECT  1 FROM sys.objects WHERE name='SPC_AddCHC' AND [type] = 'p')
+BEGIN
 	DROP PROCEDURE SPC_AddCHC
-End
+END
 GO
 
-CREATE procedure [dbo].[SPC_AddCHC]
+CREATE PROCEDURE [dbo].[SPC_AddCHC]
 (	
-	
-	@DistrictID int
-	,@BlockID int
-	,@HNIN_ID varchar(200)
-	,@CHC_gov_code varchar(50)	
-	,@CHCname varchar(100)
-	,@Istestingfacility  Bit
-	,@TestingCHCID int
-	,@Pincode varchar(150)
-	,@Isactive  Bit
-	,@Latitude varchar(150)
-	,@Longitude varchar(150)
-	,@Comments varchar(150)
-	,@Createdby int
-	,@Updatedby int
-	,@Scope_output int output
-) As
+	@DistrictID INT
+	,@BlockID INT
+	,@HNIN_ID VARCHAR(200)
+	,@CHC_gov_code VARCHAR(50)	
+	,@CHCname VARCHAR(100)
+	,@Istestingfacility  BIT
+	,@TestingCHCID INT
+	,@CentralLabId INT
+	,@Pincode VARCHAR(150)
+	,@Isactive  BIT
+	,@Latitude VARCHAR(150)
+	,@Longitude VARCHAR(150)
+	,@Comments VARCHAR(150)
+	,@Createdby INT
+	,@Updatedby INT
+	,@Scope_output INT OUTPUT
+) AS
 Declare
-	@chcCount int
-	,@id int
-	,@tempUserId int
-Begin
-	Begin try
-		If @CHC_gov_code !='' or  @CHC_gov_code is not null
-		Begin
-			select @chcCount =  count(ID) from Tbl_CHCMaster where CHC_gov_code = @CHC_gov_code
-			select @id= ID from Tbl_CHCMaster where CHC_gov_code= @CHC_gov_code
-			if(@chcCount <= 0)
-			Begin
-				insert into Tbl_CHCMaster (
+	@chcCount INT
+	,@id INT
+	,@tempUserId INT
+	,@getId INT
+BEGIN
+	BEGIN TRY
+		IF @CHC_gov_code !='' OR  @CHC_gov_code IS NOT NULL
+		BEGIN
+			SELECT @chcCount =  count(ID) FROM Tbl_CHCMaster WHERE CHC_gov_code = @CHC_gov_code
+			SELECT @id= ID from Tbl_CHCMaster WHERE CHC_gov_code = @CHC_gov_code
+			IF(@chcCount <= 0)
+			BEGIN
+				INSERT INTO Tbl_CHCMaster (
 					BlockID
 					,DistrictID
 					,CHC_gov_code					
 					,CHCname
 					,Istestingfacility
-					,TestingCHCID
+					,CentralLabId
 					,HNIN_ID
 					,Pincode
 					,Isactive
@@ -63,13 +64,13 @@ Begin
 					,Createdon
 					,Updatedon
 				) 
-				values(
+				VALUES(
 				@BlockID
 				,@DistrictID
 				,@CHC_gov_code				
 				,@CHCname
 				,@Istestingfacility
-				,@TestingCHCID
+				,@CentralLabId
 				,@HNIN_ID
 				,@Pincode
 				,@Isactive
@@ -81,18 +82,25 @@ Begin
 				,GETDATE()
 				,GETDATE()
 				)
-				set @tempUserId = IDENT_CURRENT('Tbl_CHCMaster')
-				set @Scope_output = 1
-			End
-			else
-			Begin
-				Update Tbl_CHCMaster set 
+				SET @getId =( SELECT SCOPE_IDENTITY())
+				IF @Istestingfacility = 1
+				BEGIN
+					UPDATE Tbl_CHCMaster SET TestingCHCID = @getId  WHERE ID = @getId 
+				END
+				SET @tempUserId = IDENT_CURRENT('Tbl_CHCMaster')
+				SET @Scope_output = 1
+				
+			END
+			ELSE
+			BEGIN
+				UPDATE Tbl_CHCMaster SET 
 				BlockID = @BlockID	
 				,DistrictID = @DistrictID			
 				,CHC_gov_code = @CHC_gov_code				
 				,CHCname = @CHCname
 				,Istestingfacility = @Istestingfacility
-				,TestingCHCID = @TestingCHCID
+				,TestingCHCID = @TestingCHCID 
+				,CentralLabId = @CentralLabId 
 				,HNIN_ID = @HNIN_ID
 				,Pincode = @Pincode
 				,Isactive = @Isactive
@@ -101,15 +109,21 @@ Begin
 				,Comments = @Comments
 				,Updatedby = @Updatedby
 				,Updatedon = GETDATE()
-				where ID = @id
-			End
-		End
-		else
-		Begin
-			set @Scope_output = -1
-		End
-	End try
-	Begin catch
+				WHERE ID = @id
+				
+				IF @Istestingfacility = 1
+				BEGIN
+					UPDATE Tbl_CHCMaster SET TestingCHCID = @id  WHERE ID = @id 
+				END
+				
+			END
+		END
+		ELSE
+		BEGIN
+			SET @Scope_output = -1
+		END
+	END TRY
+	BEGIN CATCH
 		IF @@TRANCOUNT > 0
 			ROLLBACK TRANSACTION;
 
@@ -123,8 +137,8 @@ Begin
 			PRINT 'Actual line number: ' + CAST(@ErrorLine AS VARCHAR(10));
 
 			RAISERROR(@ErrorMessage, @ErrorSeverity, @ErrorState);		
-	End catch
-End
+	END CATCH
+END
 
 GO
 

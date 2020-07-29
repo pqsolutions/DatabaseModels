@@ -1,9 +1,4 @@
 
-
-
-
-
-
 USE [Eduquaydb]
 GO
 
@@ -19,7 +14,7 @@ END
 GO
 CREATE PROCEDURE [dbo].[SPC_FetchDetailforCBCTest] 
 (
-	@TestingCHCId int
+	@TestingCHCId INT
 )
 
 AS

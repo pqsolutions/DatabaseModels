@@ -22,6 +22,7 @@ Begin
 			,um.[StateID]
 			,um.[DistrictID]
 			,ISNULL(um.[BlockId],0)AS BlockID
+			,ISNULL(um.[CentralLabId],0) AS CentralLabId
 			,ISNULL(um.[CHCID],0) AS CHCID
 			,ISNULL(um.[PHCID],0)AS PHCID
 			,ISNULL(um.[SCID],0) AS SCID

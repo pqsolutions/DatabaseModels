@@ -240,7 +240,8 @@ CREATE TABLE [dbo].[Tbl_CHCMaster](
 	[Isactive] [bit] NULL,
 	[Latitude] [varchar](150) NULL,
 	[Longitude] [varchar](150) NULL,
-	[TestingCHCID] [int] NULL
+	[TestingCHCID] [int] NULL,
+	[CentralLabId][int] NULL
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
@@ -517,6 +518,7 @@ CREATE TABLE [dbo].[Tbl_UserMaster](
 	[Username] [varchar](150) NOT NULL,
 	[Password] [varchar](150) NOT NULL,
 	[StateID] [int] NOT NULL,
+	[CentralLabId] [int] NULL,
 	[DistrictID] [int] NOT NULL,
 	[BlockID] [int] NULL,
 	[CHCID] [int]  NULL,
@@ -1353,7 +1355,6 @@ BEGIN
 
 CREATE TABLE [dbo].[Tbl_CHCShipments](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
-	[ShipmentFrom] [int] NOT NULL,	
 	[GenratedShipmentID] [varchar](200) NOT NULL,
 	[CHCUserId] [int] NULL,
 	[LabTechnicianName] [Varchar](250) NULL,
@@ -1409,7 +1410,6 @@ END
 
 -------------------------------------------------------------------------------------------------
 
-
 USE [Eduquaydb]
 GO
 
@@ -1426,20 +1426,18 @@ CREATE TABLE [dbo].[Tbl_HPLCTestResult](
 	[UniqueSubjectID] [varchar](200) NOT NULL,
 	[SampleCollectionID] [int] NOT NULL,
 	[BarcodeNo] [varchar] (200) NOT NULL,
-	[HbA1a] [decimal] (10,3) NULL,
-	[HbA1b] [decimal] (10,3) NULL,
+	[CentralLabId] [int] NOT NULL,
 	[HbF] [decimal] (10,3) NULL,
-	[HbLA1c/CHb-1] [decimal] (10,3) NULL,
-	[HbLA1c/CHb-2] [decimal] (10,3) NULL,
-	[HbP3] [decimal] (10,3) NULL,
 	[HbA0] [decimal] (10,3) NULL,
 	[HbA2] [decimal] (10,3) NULL,
 	[HbS] [decimal] (10,3) NULL,
 	[HbC] [decimal] (10,3) NULL,
 	[HbD] [decimal] (10,3) NULL,
+	[IsNormal] [bit] NULL,
+	[HPLCTestComplete] [bit] NULL,
+	[HPLCTestCompletedOn] [datetime] NULL,
 	[HPLCResult] [varchar] (max)  NULL,
 	[IsPositive] [bit] NULL,
-	[HPLCTestComplete] [bit] NULL,
 	[CreatedBy] [int] NULL,
 	[CreatedOn] [datetime] NULL,
 	[UpdatedBy] [int] NULL,

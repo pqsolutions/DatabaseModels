@@ -15,6 +15,7 @@ CREATE PROCEDURE [dbo].[SPC_FetchCHCANWPositiveSubjectDetail]
 	@CHCId INT
 	,@FromDate VARCHAR(50)
 	,@ToDate VARCHAR(50)
+	,@RegisteredFrom INT
 )AS
 BEGIN
 	DECLARE @StartDate VARCHAR(50), @EndDate VARCHAR(50)
@@ -114,7 +115,7 @@ BEGIN
 	LEFT JOIN [dbo].[Tbl_CasteMaster] CAM WITH (NOLOCK) ON CAM.[ID] = SAD.[Caste_Id]   
 	LEFT JOIN [dbo].[Tbl_Gov_IDTypeMaster] GIM WITH (NOLOCK) ON GIM.[ID] = SPRD.[GovIdType_ID]    
 	LEFT JOIN [dbo].[Tbl_CommunityMaster] COM WITH (NOLOCK) ON COM.[ID] = SAD.[Community_Id] 
-	WHERE  SPRD.[CHCID]  = @CHCId AND SPRD.[RegisteredFrom] = 9 AND ISNULL(SPRD.[SpouseSubjectID],'') = '' 
+	WHERE  SPRD.[CHCID]  = @CHCId AND SPRD.[RegisteredFrom] = @RegisteredFrom AND ISNULL(SPRD.[SpouseSubjectID],'') = '' 
 	AND SPRD.[UniqueSubjectID] NOT IN (SELECT SpouseSubjectID  FROM [dbo].[Tbl_SubjectPrimaryDetail] WHERE (SPRD.[SubjectTypeID] = 2 OR SPRD.[ChildSubjectTypeID] = 2))
 	AND SPRD.[ID] IN( SELECT SubjectID FROM[dbo].[Tbl_PositiveResultSubjectsDetail] WHERE UPPER(HPLCStatus) = 'P' )
 	AND (CONVERT(DATE,SPRD.[DateofRegister],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103))

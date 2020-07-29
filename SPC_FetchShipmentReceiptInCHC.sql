@@ -13,7 +13,7 @@ END
 GO
 CREATE PROCEDURE [dbo].[SPC_FetchShipmentReceiptInCHC] 
 (
-	@TestingCHCId int
+	@TestingCHCId INT
 )
 
 AS
