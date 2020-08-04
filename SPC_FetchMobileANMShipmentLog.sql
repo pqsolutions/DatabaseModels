@@ -58,7 +58,6 @@ BEGIN
 	LEFT Join [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.BarcodeNo = SD.BarcodeNo
 	WHERE S.[ANM_ID] = @UserID
 	ORDER BY S.[DateofShipment],S.[TimeofShipment] DESC   
-	
 END
 
 

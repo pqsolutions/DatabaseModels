@@ -106,10 +106,14 @@ BEGIN
 		,SPAD.[Section]
 		,SPAD.[RollNo]
 		,SPAD.[UpdatedBy] AS SPA_UpdatedBy
+		,(SELECT [dbo].[FN_FindResult](SPAD.[UniqueSubjectID],'CBC')) AS CBCTestResult
+		,(SELECT [dbo].[FN_FindResult](SPAD.[UniqueSubjectID],'SST')) AS SSTestResult
+		,(SELECT [dbo].[FN_FindResult](SPAD.[UniqueSubjectID],'HPLC')) AS HPLCTestResult
+		,CASE WHEN (SELECT [dbo].[FN_FindResult](SPAD.[UniqueSubjectID],'HPLC')) = '' THEN 0 ELSE 1 END AS IsHPLCPositive
 	FROM [dbo].[Tbl_SubjectPrimaryDetail] SP
 	LEFT JOIN [dbo].[Tbl_SubjectAddressDetail] SAD WITH (NOLOCK) ON SP.[ID] = SAD.[SubjectID]
 	LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail] SPD WITH (NOLOCK) ON SP.[ID] = SPD.[SubjectID]
 	LEFT JOIN [dbo].[Tbl_SubjectParentDetail] SPAD WITH (NOLOCK) ON SP.[ID] = SPAD.[SubjectID]
-	WHERE AssignANM_ID = @UserId AND
-	SPAD.[UniqueSubjectID] IN (SELECT UniqueSubjectID  FROM Tbl_SubjectPrimaryDetail)
+	WHERE SP.[AssignANM_ID] = @UserId -- AND SP.[IsActive] = 1 
+	AND  SPAD.[UniqueSubjectID] IN (SELECT UniqueSubjectID  FROM Tbl_SubjectPrimaryDetail)
 END

@@ -35,5 +35,4 @@ BEGIN
 		AND SC.BarcodeNo IN (SELECT BarcodeNo FROM Tbl_PositiveResultSubjectsDetail WHERE CBCStatus = 'P' OR SSTStatus = 'P') 
 		AND SC.BarcodeNo NOT IN (SELECT BarcodeNo FROM Tbl_CHCShipmentsDetail)
 	ORDER BY GestationalAge DESC
-
 END

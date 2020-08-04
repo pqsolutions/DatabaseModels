@@ -28,6 +28,7 @@ DECLARE
 	,@Reason_Id INT
 	,@SubjectId INT
 	,@OldBarcodeNo VARCHAR(200)
+	,@NotifiedStatus BIT
 BEGIN
 	BEGIN TRY
 		IF @UniqueSubjectID IS NOT NULL
@@ -41,19 +42,30 @@ BEGIN
 				BEGIN
 					IF @Reason = 'Damaged Sample'
 					BEGIN
-						SELECT TOP 1 @OldBarcodeNo = BarcodeNO FROM Tbl_SampleCollection WHERE SampleDamaged = 1 AND UniqueSubjectID = @UniqueSubjectID ORDER BY ID DESC
+						SELECT TOP 1 @OldBarcodeNo = BarcodeNo,@NotifiedStatus = NotifiedStatus FROM Tbl_SampleCollection WHERE SampleDamaged = 1 AND UniqueSubjectID = @UniqueSubjectID ORDER BY ID DESC
 					END
 					ELSE IF @Reason = 'Sample Timeout'
 					BEGIN
-						SELECT TOP 1 @OldBarcodeNo = BarcodeNO FROM Tbl_SampleCollection WHERE SampleTimeoutExpiry  = 1 AND UniqueSubjectID = @UniqueSubjectID ORDER BY ID DESC
+						SELECT TOP 1 @OldBarcodeNo = BarcodeNo,@NotifiedStatus = NotifiedStatus FROM Tbl_SampleCollection WHERE SampleTimeoutExpiry  = 1 AND UniqueSubjectID = @UniqueSubjectID ORDER BY ID DESC
 					END
-					UPDATE Tbl_SampleCollection SET
-					  NotifiedStatus = 1
-					  ,UpdatedBy = @CollectedBy 
-					  ,UpdatedOn = GETDATE()
-					  ,NotifiedOn = GETDATE()
-					  ,IsRecollected = 'Y'				  
-					WHERE BarcodeNo = @OldBarcodeNo 
+					IF @NotifiedStatus = 1
+					BEGIN
+						UPDATE Tbl_SampleCollection SET
+						  UpdatedBy = @CollectedBy 
+						  ,UpdatedOn = GETDATE()
+						  ,IsRecollected = 'Y'				  
+						WHERE BarcodeNo = @OldBarcodeNo
+					END
+					ELSE
+					BEGIN
+						UPDATE Tbl_SampleCollection SET
+						  NotifiedStatus = 1
+						  ,UpdatedBy = @CollectedBy 
+						  ,UpdatedOn = GETDATE()
+						  ,NotifiedOn = GETDATE()
+						  ,IsRecollected = 'Y'				  
+						WHERE BarcodeNo = @OldBarcodeNo
+					END 
 				END
 			
 				INSERT INTO Tbl_SampleCollection
@@ -71,6 +83,7 @@ BEGIN
 					  ,SampleDamaged
 					  ,SampleTimeoutExpiry
 					  ,IsRecollected 
+					  ,NotifiedStatus
 					  )
 					  VALUES
 					  (@SubjectID
@@ -86,7 +99,8 @@ BEGIN
 					  ,0
 					  ,0
 					  ,0
-					  ,'N')
+					  ,'N'
+					  ,0)
 				SET @tempId = IDENT_CURRENT('Tbl_SampleCollection')
 				SET @Scope_output = 1
 			END

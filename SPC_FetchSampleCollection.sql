@@ -36,6 +36,7 @@ BEGIN
 		   LEFT JOIN Tbl_SubjectPrimaryDetail SP WITH (NOLOCK) ON SP.ID = SC.SubjectID
 		   LEFT JOIN Tbl_SubjectPregnancyDetail SPR WITH (NOLOCK) ON SPR.SubjectID = SP.ID
 		WHERE SC.CollectedBy = @UserID AND SC.CollectionFrom = @CollectionFrom  AND SC.SampleTimeoutExpiry != 1 AND SC.SampleDamaged != 1
+		--AND SP.[IsActive] = 1 
 		AND SC.BarcodeNo NOT IN (SELECT BarcodeNo from Tbl_ANMCHCShipmentsDetail)
 		ORDER BY GestationalAge DESC
     END
@@ -52,6 +53,7 @@ BEGIN
 		   LEFT JOIN Tbl_SubjectPrimaryDetail SP WITH (NOLOCK) ON SP.ID = SC.SubjectID
 		   LEFT JOIN Tbl_SubjectPregnancyDetail SPR WITH (NOLOCK) ON SPR.SubjectID = SP.ID
 		WHERE SP.CHCID = @CHCID AND SC.CollectionFrom = @CollectionFrom   AND SC.SampleTimeoutExpiry != 1 AND SC.SampleDamaged != 1
+		--AND SP.[IsActive] = 1 
 		AND SC.BarcodeNo NOT IN (SELECT BarcodeNo from Tbl_ANMCHCShipmentsDetail)
 		ORDER BY GestationalAge DESC
     END

@@ -21,8 +21,7 @@ RETURNS CHAR(1)
 AS      
 BEGIN  
  DECLARE  
-  @SampleCount INT  
-  ,@SampleType CHAR(1)  
+ @SampleType CHAR(1)  
   SET @SampleType = 'F'  
   IF EXISTS(SELECT 1 FROM Tbl_SampleCollection WHERE SubjectID = @SubjectID)  
   BEGIN  

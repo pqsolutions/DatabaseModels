@@ -44,6 +44,7 @@ BEGIN
 		LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail]  SPR WITH (NOLOCK) ON SPR.[SubjectID] = SP.[ID]   
 		LEFT JOIN [dbo].[Tbl_SubjectTypeMaster] ST WITH (NOLOCK) ON ST.[ID] = SP.[SubjectTypeID]    
 		WHERE SP.CHCID = @CHCID AND SC.CollectionFrom = @CollectedFrom    AND SC.[SampleDamaged] = 1 AND SC.[IsRecollected] != 'Y' 
+		--AND SP.[IsActive] = 1 
 		ORDER BY GestationalAge DESC	 		
 	END
 	ELSE IF @Notification = 3
@@ -66,6 +67,7 @@ BEGIN
 		LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail]  SPR WITH (NOLOCK) ON SPR.[SubjectID] = SP.[ID]  
 		LEFT JOIN [dbo].[Tbl_SubjectTypeMaster] ST WITH (NOLOCK) ON ST.[ID] = SP.[SubjectTypeID]  
 		WHERE  SP.CHCID = @CHCID AND SC.CollectionFrom = @CollectedFrom   AND SC.[SampleTimeoutExpiry] = 1 AND SC.[IsRecollected] != 'Y' 
+		--AND SP.[IsActive] = 1 
 		ORDER BY GestationalAge DESC		
 	END	
 	ELSE IF @Notification = 2 
@@ -82,7 +84,8 @@ BEGIN
 		   LEFT JOIN Tbl_SubjectPrimaryDetail SP WITH (NOLOCK) ON SP.ID = SC.SubjectID
 		   LEFT JOIN Tbl_SubjectPregnancyDetail SPR WITH (NOLOCK) ON SPR.SubjectID = SP.ID
 		WHERE SC.CollectionFrom  = @CollectedFrom AND SP.CHCID = @CHCID  AND SC.SampleTimeoutExpiry != 1 AND SC.SampleDamaged != 1
-		AND SC.BarcodeNo NOT IN (SELECT BarcodeNo from Tbl_ANMCHCShipmentsDetail)
+		AND SC.BarcodeNo NOT IN (SELECT BarcodeNo from Tbl_ANMCHCShipmentsDetail) 
+		--AND SP.[IsActive] = 1 
 		ORDER BY GestationalAge DESC
 	END
 				

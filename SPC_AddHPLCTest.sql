@@ -29,6 +29,7 @@ CREATE PROCEDURE [dbo].[SPC_AddHPLCTest]
 AS
 DECLARE 
 	@IsNormal BIT
+	,@SubjectId INT
 	
 BEGIN
 	BEGIN TRY
@@ -37,9 +38,10 @@ BEGIN
 		BEGIN
 			SET @IsNormal = 0
 		END
-		
+		SELECT @SubjectID = ID FROM Tbl_SubjectPrimaryDetail WHERE UniqueSubjectID =@UniqueSubjectId
 		INSERT INTO Tbl_HPLCTestResult(
-			[UniqueSubjectID]
+			[SubjectID] 
+		   ,[UniqueSubjectID]
            ,[BarcodeNo]
            ,[CentralLabId]
            ,[HbF]
@@ -54,7 +56,8 @@ BEGIN
            ,[CreatedOn]
            ,[CreatedBy])
 		VALUES(
-			@UniqueSubjectID
+		    @SubjectID
+		   ,@UniqueSubjectID
            ,@BarcodeNo
            ,@CentralLabId
            ,@HbF

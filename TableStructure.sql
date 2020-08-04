@@ -636,7 +636,7 @@ BEGIN
 CREATE TABLE [dbo].[Tbl_CommunityMaster](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
 	[CasteID] [int] NOT NULL,
-	[Communityname] [varchar](150) NOT NULL,	
+	[Communityname] [varchar](max) NULL,	
 	[Createdon] [datetime] NULL,
 	[Createdby] [int] NULL,
 	[Updatedon] [datetime] NULL,
@@ -1301,7 +1301,7 @@ CREATE TABLE [dbo].[Tbl_CBCTestResult](
 	[CreatedBy] [int] NULL,
 	[UpdatedBy] [int] NULL,
 	[UpdatedOn] [datetime] NULL,
-	
+	[UpdatedToANM] [bit] NULL,
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
@@ -1332,6 +1332,7 @@ CREATE TABLE [dbo].[Tbl_SSTestResult](
 	[CreatedBy] [int] NULL,
 	[UpdatedBy] [int] NULL,
 	[UpdatedOn] [datetime] NULL,
+	[UpdatedToANM] [bit] NULL,
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
@@ -1424,7 +1425,6 @@ CREATE TABLE [dbo].[Tbl_HPLCTestResult](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
 	[SubjectID] [int] NOT NULL,
 	[UniqueSubjectID] [varchar](200) NOT NULL,
-	[SampleCollectionID] [int] NOT NULL,
 	[BarcodeNo] [varchar] (200) NOT NULL,
 	[CentralLabId] [int] NOT NULL,
 	[HbF] [decimal] (10,3) NULL,
@@ -1438,11 +1438,13 @@ CREATE TABLE [dbo].[Tbl_HPLCTestResult](
 	[HPLCTestCompletedOn] [datetime] NULL,
 	[HPLCResult] [varchar] (max)  NULL,
 	[IsPositive] [bit] NULL,
+	[ResultUpdatedPathologistId] [int] NULL,
+	[HPLCResultUpdatedOn] [datetime] NULL,
 	[CreatedBy] [int] NULL,
 	[CreatedOn] [datetime] NULL,
 	[UpdatedBy] [int] NULL,
 	[UpdatedOn] [datetime] NULL,
-	
+	[UpdatedToANM] [bit] NULL,
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
@@ -1491,14 +1493,16 @@ IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_HPLCDiagnosisResult' AN
 BEGIN
 CREATE TABLE [dbo].[Tbl_HPLCDiagnosisResult](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
-	[SubjectID] [int] NOT NULL,
 	[UniqueSubjectID] [varchar](200) NOT NULL,
 	[BarcodeNo] [varchar] (200) NOT NULL,
 	[HPLCTestResultId] [int] NULL,
 	[ClinicalDiagnosisId] [int] NULL,
-	[HPLCResultId] [varchar] (200), -- multicheck more than one value
-	[IsConsultPathologist] [bit] NULL,
+	[HPLCResultMasterId] [varchar] (200), -- multicheck more than one value
+	[IsConsultSeniorPathologist] [bit] NULL,
+	[SeniorPathologistName] [varchar](250) NULL,
+	[SeniorPathologistRemarks] [varchar](max) NULL,
 	[IsNormal] [bit] NULL,
+	[CentralLabId] [int] NULL,
 	[DiagnosisSummary] [varchar](max) NULL,
 	[CreatedBy] [int] NULL,
 	[CreatedOn] [datetime] NULL
@@ -1509,7 +1513,6 @@ PRIMARY KEY CLUSTERED
 ) ON [PRIMARY]
 END
 -------------------------------------------------------------------------------------------------------------
-
 
 
 USE [Eduquaydb]
@@ -1526,14 +1529,12 @@ BEGIN
 
 CREATE TABLE [dbo].[Tbl_CentralLabShipments](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
-	[ShipmentFrom] [int] NOT NULL,	
 	[GenratedShipmentID] [varchar](200) NOT NULL,
 	[CentralLabUserId] [int] NULL,
 	[LabTechnicianName] [Varchar](250) NULL,
 	[CentralLabLocation] [varchar](250) NULL,
 	[CentralLabId] [int] NULL,
 	[ReceivingMolecularLabId] [int] NULL,
-	[LogisticsProviderId] [int] NULL,
 	[LogisticsProviderName] [varchar](250) NULL,
 	[DeliveryExecutiveName] [varchar] (250) NULL,
 	[ExecutiveContactNo] [varchar] (150) NULL,

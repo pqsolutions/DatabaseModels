@@ -34,6 +34,6 @@ BEGIN
 	LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.BarcodeNo = SD.BarcodeNo
 	LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP   WITH (NOLOCK) ON SP.UniqueSubjectID = SD.UniqueSubjectID
 	LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail] SPR   WITH (NOLOCK) ON SPR.UniqueSubjectID = SD.UniqueSubjectID
-	WHERE S.[ReceivingCentralLabId] = @CentralLabId  AND SC.[IsAccept] = 1 
+	WHERE S.[ReceivingCentralLabId] = @CentralLabId  AND SC.[IsAccept] = 1 AND SP.[IsActive]=1
 	AND S.[ReceivedDate] IS NOT NULL AND SD.[BarcodeNo] NOT IN (SELECT BarcodeNo FROM Tbl_HPLCTestResult)
 END

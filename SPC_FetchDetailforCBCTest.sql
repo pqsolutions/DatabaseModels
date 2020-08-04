@@ -30,6 +30,6 @@ BEGIN
 	LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.BarcodeNo = SD.BarcodeNo
 	LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP   WITH (NOLOCK) ON SP.UniqueSubjectID = SD.UniqueSubjectID
 	LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail] SPR   WITH (NOLOCK) ON SPR.UniqueSubjectID = SD.UniqueSubjectID
-	WHERE S.[TestingCHCID] = @TestingCHCId AND SC.IsAccept = 1 
+	WHERE S.[TestingCHCID] = @TestingCHCId AND SC.[IsAccept] = 1 
 	AND SD.[BarcodeNo] NOT IN (SELECT BarcodeNo FROM Tbl_CBCTestResult)
 END

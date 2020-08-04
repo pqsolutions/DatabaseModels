@@ -26,7 +26,7 @@ BEGIN
 	DECLARE @RegisterFrom VARCHAR(10), @CHCID INT, @StartDate VARCHAR(50), @EndDate VARCHAR(50)
 	IF @FromDate = NULL OR @FromDate = ''
 	BEGIN
-		SET @StartDate = (SELECT CONVERT(VARCHAR,DATEADD(DAY ,-5,GETDATE()),103))
+		SET @StartDate = (SELECT CONVERT(VARCHAR,DATEADD(YEAR ,-1,GETDATE()),103))
 	END
 	ELSE
 	BEGIN
@@ -73,6 +73,7 @@ BEGIN
 			AND SP.[ID]  IN (SELECT TOP 1 SubjectID FROM Tbl_SubjectPregnancyDetail  WHERE SubjectID = SP.ID) 
 			AND SP.[ID]  IN (SELECT TOP 1 SubjectID FROM Tbl_SubjectParentDetail   WHERE SubjectID  = SP.ID)
 			AND SP.[ID] NOT IN (SELECT SubjectID FROM Tbl_SampleCollection WHERE SampleDamaged != 1 AND SampleTimeoutExpiry != 1)
+			--AND SP.[IsActive]  = 1
 			ORDER By GestationalAge DESC
 			
 	END
@@ -106,7 +107,9 @@ BEGIN
 			AND SP.[ID]  IN (SELECT TOP 1 SubjectID FROM Tbl_SubjectPregnancyDetail  WHERE SubjectID = SP.ID) 
 			AND SP.[ID]  IN (SELECT TOP 1 SubjectID FROM Tbl_SubjectParentDetail   WHERE SubjectID  = SP.ID)
 			AND SP.[ID] NOT IN (SELECT SubjectID FROM Tbl_SampleCollection WHERE SampleDamaged != 1 AND SampleTimeoutExpiry != 1)
+			--AND SP.[IsActive]  = 1
 			ORDER By GestationalAge DESC
 	END
 END
       
+

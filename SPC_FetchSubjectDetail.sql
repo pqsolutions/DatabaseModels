@@ -128,5 +128,5 @@ BEGIN
 	LEFT JOIN [dbo].[Tbl_Gov_IDTypeMaster] GIMG WITH (NOLOCK) ON GIMG.[ID] = SPAD.[Guardian_GovIdType_ID]       
 	LEFT JOIN [dbo].[Tbl_CommunityMaster] COM WITH (NOLOCK) ON COM.[ID] = SAD.[Community_Id]    
 	WHERE  (SPRD.[UniqueSubjectID] = @UniqueSubjectID OR SPRD.[MobileNo] = @UniqueSubjectID OR 
-	SPD.[RCHID]  = @UniqueSubjectID)
+	SPD.[RCHID]  = @UniqueSubjectID) --AND SPRD.[IsActive] = 1
 END

@@ -56,7 +56,7 @@ BEGIN
 	WHERE  SPRD.[AssignANM_ID] = @ANMID AND ISNULL(SPRD.[SpouseSubjectID],'') = '' 
 	AND SPRD.[UniqueSubjectID] NOT IN (SELECT SpouseSubjectID  FROM [dbo].[Tbl_SubjectPrimaryDetail]
 	WHERE (SPRD.[SubjectTypeID] = 2 OR SPRD.[ChildSubjectTypeID] = 2))
-	AND PRSD.[HPLCStatus] = 'P' AND (SPRD.[SubjectTypeID] = 1 OR SPRD.[ChildSubjectTypeID] = 1)
+	AND PRSD.[HPLCStatus] = 'P' AND (SPRD.[SubjectTypeID] = 1 OR SPRD.[ChildSubjectTypeID] = 1) AND SPRD.[IsActive] = 1
 	
 	UNION 
 	SELECT SPRD.[ID] 
@@ -98,7 +98,7 @@ BEGIN
 	LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.[SubjectID] = SPRD.[ID]
 	LEFT JOIN [dbo].[Tbl_PositiveResultSubjectsDetail] PRSD WITH (NOLOCK) ON PRSD.[BarcodeNo]  = SC .[BarcodeNo] 
 	WHERE  SPRD.[AssignANM_ID] = @ANMID AND PRSD.[HPLCNotifiedStatus] != 1 AND PRSD.[HPLCStatus] = 'P'
-	AND (SPRD.[SubjectTypeID] != 1 OR SPRD.[ChildSubjectTypeID] != 1)
+	AND (SPRD.[SubjectTypeID] != 1 OR SPRD.[ChildSubjectTypeID] != 1) AND SPRD.[IsActive] = 1
 	
 	ORDER BY [GestationalAge] DESC
 END

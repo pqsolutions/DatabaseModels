@@ -51,10 +51,8 @@ BEGIN
 		LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP   WITH (NOLOCK) ON SP.UniqueSubjectID = SD.UniqueSubjectID
 		LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail] SPR   WITH (NOLOCK) ON SPR.UniqueSubjectID = SD.UniqueSubjectID
 		LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.BarcodeNo = SD.BarcodeNo
-		
-		
 		WHERE S.[ANM_ID] = @UserID AND S.[ShipmentFrom] = @ShipmentFrom
-		ORDER BY S.[DateofShipment],S.[TimeofShipment] DESC  
+		ORDER BY S.[GenratedShipmentID] DESC   
 	END
 	ELSE IF @ShipFrom = 'CHC - CHC'
 	BEGIN
@@ -73,7 +71,6 @@ BEGIN
 		  ,SPR.[RCHID]
 		  ,(SP.[FirstName] + ' ' + SP.[MiddleName] + ' '+ SP.[LastName] ) AS SubjectName
 		  ,CONVERT(VARCHAR,SC.[SampleCollectionDate],103) + ' ' + CONVERT(VARCHAR(5),SC.[SampleCollectionTime]) AS SampleCollectionDateTime
-		  
 		FROM [dbo].[Tbl_ANMCHCShipments] S 
 		LEFT JOIN [dbo].[Tbl_UserMaster] UM WITH (NOLOCK) ON UM.ID = S.CHCUserId 
 		LEFT JOIN [dbo].[Tbl_CHCMaster] CM1 WITH (NOLOCK) ON CM1.ID = S.CollectionCHCID

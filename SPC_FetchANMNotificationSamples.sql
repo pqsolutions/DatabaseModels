@@ -39,7 +39,7 @@ BEGIN
 		LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP WITH (NOLOCK) ON SP.[ID] = SC.[SubjectID] 
 		LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail]  SPR WITH (NOLOCK) ON SPR.[SubjectID] = SP.[ID]   
 		LEFT JOIN [dbo].[Tbl_SubjectTypeMaster] ST WITH (NOLOCK) ON ST.[ID] = SP.[SubjectTypeID]    
-		WHERE SP.[AssignANM_ID]  = @ANMID  AND SC.[SampleDamaged] = 1 AND SC.[IsRecollected] != 'Y' 
+		WHERE SP.[AssignANM_ID]  = @ANMID  AND SC.[SampleDamaged] = 1 AND SC.[IsRecollected] != 'Y' --AND SP.[IsActive] = 1
 		ORDER BY GestationalAge DESC	 		
 	END
 	ELSE IF @Notification = 3
@@ -61,7 +61,7 @@ BEGIN
 		LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP WITH (NOLOCK) ON SP.[ID] = SC.[SubjectID]
 		LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail]  SPR WITH (NOLOCK) ON SPR.[SubjectID] = SP.[ID]  
 		LEFT JOIN [dbo].[Tbl_SubjectTypeMaster] ST WITH (NOLOCK) ON ST.[ID] = SP.[SubjectTypeID]  
-		WHERE SP.[AssignANM_ID] = @ANMID  AND SC.[SampleTimeoutExpiry] = 1 AND SC.[IsRecollected] != 'Y' 
+		WHERE SP.[AssignANM_ID] = @ANMID  AND SC.[SampleTimeoutExpiry] = 1 AND SC.[IsRecollected] != 'Y' --AND SP.[IsActive] = 1
 		ORDER BY GestationalAge DESC		
 	END	
 				
