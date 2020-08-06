@@ -6,24 +6,24 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_AddCHCCentralShipments' AND [type] = 'p')
+IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_AddCentralLabShipments' AND [type] = 'p')
 BEGIN
-	DROP PROCEDURE SPC_AddCHCCentralShipments
+	DROP PROCEDURE SPC_AddCentralLabShipments
 END
 GO
-CREATE PROCEDURE [dbo].[SPC_AddCHCCentralShipments]
+CREATE PROCEDURE [dbo].[SPC_AddCentralLabShipments]
 (	
 	@BarcodeNo VARCHAR(MAX)	
 	,@LabTechnicianName VARCHAR(250)
-	,@CHCUserID INT
-	,@TestingCHCID INT
-	,@ReceivingCentralLabId INT
-	,@LogicsProviderID INT
+	,@CentralLabUserId INT
+	,@CentralLabId INT
+	,@CentralLabLocation VARCHAR(200)
+	,@ReceivingMolecularLabId INT
+	,@LogisticsProviderName VARCHAR(250)
 	,@DeliveryExecutiveName VARCHAR(250)
 	,@ExecutiveContactNo VARCHAR(150)
 	,@DateofShipment VARCHAR(100)
 	,@TimeofShipment VARCHAR(100)
-	,@CreatedBy INT
 	,@Source CHAR(1)
 ) AS
 DECLARE
@@ -39,7 +39,7 @@ BEGIN
 	BEGIN TRY
 		IF @BarcodeNo IS NOT NULL
 		BEGIN
-			IF EXISTS (SELECT Value FROM [dbo].[FN_Split](@BarcodeNo,',') WHERE Value IN (SELECT BarcodeNo FROM Tbl_CHCShipmentsDetail))
+			IF EXISTS (SELECT Value FROM [dbo].[FN_Split](@BarcodeNo,',') WHERE Value  IN (SELECT BarcodeNo FROM Tbl_CentralLabShipmentsDetail))
 			BEGIN
 				SET @IndexVar = 0  
 				SELECT @TotalCount = COUNT(value) FROM [dbo].[FN_Split](@BarcodeNo,',')  
@@ -47,7 +47,7 @@ BEGIN
 				BEGIN
 					SELECT @IndexVar = @IndexVar + 1
 					SELECT @CurrentIndexBarcode = Value FROM  [dbo].[FN_Split](@BarcodeNo,',') WHERE id = @Indexvar
-					IF EXISTS( SELECT BarcodeNo FROM Tbl_CHCShipmentsDetail WHERE BarcodeNo = @CurrentIndexBarcode)
+					IF EXISTS( SELECT BarcodeNo FROM Tbl_CentralLabShipmentsDetail WHERE BarcodeNo = @CurrentIndexBarcode)
 					BEGIN
 						SELECT @BNO += @CurrentIndexBarcode + ','
 					END
@@ -59,14 +59,15 @@ BEGIN
 			END
 			ELSE
 			BEGIN
-				SET @GeneratedShipmentID = (SELECT  [dbo].[FN_GenerateCHCCentralShipmentId](@TestingCHCID,@Source))
-				INSERT INTO Tbl_CHCShipments
+				SET @GeneratedShipmentID = (SELECT  [dbo].[FN_GenerateCentralLabShipmentId](@CentralLabId,@Source))
+				INSERT INTO Tbl_CentralLabShipments
 					(LabTechnicianName 
 					,GenratedShipmentID
-					,CHCUserId
-					,TestingCHCID
-					,ReceivingCentralLabId  
-					,LogisticsProviderId
+					,CentralLabUserId
+					,CentralLabId
+					,CentralLabLocation
+					,ReceivingMolecularLabId  
+					,LogisticsProviderName
 					,DeliveryExecutiveName
 					,ExecutiveContactNo
 					,DateofShipment
@@ -76,15 +77,16 @@ BEGIN
 				VALUES
 					(@LabTechnicianName  
 					,@GeneratedShipmentID
-					,@CHCUserID
-					,@TestingCHCID
-					,@ReceivingCentralLabId 
-					,@LogicsProviderID
+					,@CentralLabUserId
+					,@CentralLabId
+					,@CentralLabLocation
+					,@ReceivingMolecularLabId  
+					,@LogisticsProviderName
 					,@DeliveryExecutiveName
 					,@ExecutiveContactNo
 					,CONVERT(DATE,@DateofShipment,103)
 					,CONVERT(TIME(0),@TimeofShipment) 
-					,@CreatedBy 
+					,@CentralLabUserId 
 					,GETDATE())
 					
 				SET @ShipmentID = (SELECT SCOPE_IDENTITY())
@@ -99,7 +101,7 @@ BEGIN
 					 SELECT @Indexvar  = @Indexvar + 1 
 					 SELECT @CurrentIndexBarcode = TempCol FROM #TempTable WHERE ArrayIndex = @Indexvar
 						
-					 INSERT INTO Tbl_CHCShipmentsDetail (ShipmentId,UniqueSubjectId,BarcodeNo)  
+					 INSERT INTO Tbl_CentralLabShipmentsDetail (ShipmentId,UniqueSubjectId,BarcodeNo)  
 					 SELECT @ShipmentID,UniqueSubjectId,@CurrentIndexBarcode FROM Tbl_SampleCollection
 					 WHERE BarcodeNo = @CurrentIndexBarcode
 				END

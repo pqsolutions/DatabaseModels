@@ -71,7 +71,7 @@ BEGIN
 			END
 			ELSE
 			BEGIN
-				SET @Result = ''
+				SET @Result = @HPLCResult
 			END
 		END
 		ELSE

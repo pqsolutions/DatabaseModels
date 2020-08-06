@@ -52,7 +52,7 @@ BEGIN
 		LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail] SPR   WITH (NOLOCK) ON SPR.UniqueSubjectID = SD.UniqueSubjectID
 		LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.BarcodeNo = SD.BarcodeNo
 		WHERE S.[ANM_ID] = @UserID AND S.[ShipmentFrom] = @ShipmentFrom
-		ORDER BY S.[GenratedShipmentID] DESC   
+		ORDER BY S.[DateofShipment] ,[S].[TimeofShipment]  DESC  
 	END
 	ELSE IF @ShipFrom = 'CHC - CHC'
 	BEGIN

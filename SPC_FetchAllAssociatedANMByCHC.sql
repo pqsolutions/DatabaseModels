@@ -23,7 +23,7 @@ BEGIN
 	,RI.[RIsite] AS RIPoint
 	,(SELECT ID FROM Tbl_UserMaster WHERE  '1' = [dbo].[FN_TableToColumn] ([RIID],',',RI.[ID],'contains')) AS AssignANMID
 	,(SELECT (FirstName +' '+LastName)FROM Tbl_UserMaster WHERE  '1' = [dbo].[FN_TableToColumn] ([RIID],',',RI.[ID],'contains'))AS ANMName
-	,(SELECT ContactNo1 FROM	Tbl_UserMaster WHERE  '1' = [dbo].[FN_TableToColumn] ([RIID],',',RI.[ID],'contains'))AS ContactNo
+	,(SELECT ContactNo1 FROM Tbl_UserMaster WHERE  '1' = [dbo].[FN_TableToColumn] ([RIID],',',RI.[ID],'contains'))AS ContactNo
 	,CM.TestingCHCID
 	,C.[CHCname] AS TestingCHC
 	FROM Tbl_CHCMaster CM

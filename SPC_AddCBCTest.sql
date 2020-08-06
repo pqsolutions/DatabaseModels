@@ -53,8 +53,8 @@ BEGIN
 					,CBCResult
 					,CBCStatus 
 					,CBCUpdatedOn
-					,IsActive)
-				VALUES(
+					,IsActive
+					)VALUES(
 					@SubjectId
 					,@UniqueSubjectId
 					,@Barcode

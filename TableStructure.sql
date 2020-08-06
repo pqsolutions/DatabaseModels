@@ -1211,6 +1211,8 @@ PRIMARY KEY CLUSTERED
 END
 
 ----------------------------------------------------------------------------------------
+ 
+
 USE [Eduquaydb]
 GO
 
@@ -1228,6 +1230,7 @@ CREATE TABLE [dbo].[Tbl_CentralLabMaster](
 	[CentralLabCode] [varchar](100) NOT NULL,
 	[CentralLabName] [varchar](100) NOT NULL,
 	[Pincode] [varchar](150) NULL,
+	[MolecularLabId] [int] NULL,
 	[CreatedOn] [datetime] NULL,
 	[CreatedBy] [int] NULL,
 	[UpdatedOn] [datetime] NULL,
@@ -1479,8 +1482,6 @@ PRIMARY KEY CLUSTERED
 END
 -------------------------------------------------------------------------------------------------------------
 
-
-
 USE [Eduquaydb]
 GO
 
@@ -1505,7 +1506,9 @@ CREATE TABLE [dbo].[Tbl_HPLCDiagnosisResult](
 	[CentralLabId] [int] NULL,
 	[DiagnosisSummary] [varchar](max) NULL,
 	[CreatedBy] [int] NULL,
-	[CreatedOn] [datetime] NULL
+	[CreatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC

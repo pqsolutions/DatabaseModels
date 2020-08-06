@@ -83,7 +83,7 @@ BEGIN
 			,SP.[UniqueSubjectID]
 			,(SP.[FirstName] + ' ' + SP.[MiddleName] + ' ' + SP.[LastName]) AS SubjectName
 			,SPR.[RCHID]
-			,SP.[SubjectTypeID]
+			,SP.[ChildSubjectTypeID] AS SubjectTypeID
 			,ST.[SubjectType] 
 			,(SP.[Spouse_FirstName] + ' ' + SP.[Spouse_MiddleName] + ' ' + SP.[Spouse_LastName]) AS SpouseName 
 			,(CONVERT(VARCHAR,SP.[DateofRegister],103)) AS  DateofRegister
@@ -98,7 +98,7 @@ BEGIN
 			ELSE NULL END  AS SampleCollectionDate
 		FROM Tbl_SubjectPrimaryDetail SP
 		LEFT JOIN Tbl_SubjectPregnancyDetail SPR WITH (NOLOCK) ON SPR.UniqueSubjectID  = SP.UniqueSubjectID 
-		LEFT JOIN Tbl_SubjectTypeMaster ST WITH (NOLOCK) ON ST.ID = SP.SubjectTypeID 
+		LEFT JOIN Tbl_SubjectTypeMaster ST WITH (NOLOCK) ON ST.ID = SP.ChildSubjectTypeID  
 		WHERE SP.CHCID = @CHCID 
 			AND (CONVERT(DATE,SP.[DateofRegister],103) BETWEEN CONVERT(DATE,@StartDate ,103) AND CONVERT(DATE,@EndDate,103))
 			AND (@SubjectType = 0 OR SP.[ChildSubjectTypeID] = @SubjectType)
