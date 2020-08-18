@@ -10,7 +10,7 @@ GO
 
 IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_FetchSubjectNotSampleCollected' AND [type] = 'p')
 BEGIN
-	DROP PROCEDURE SPC_FetchSubjectNotSampleCollected 
+	DROP PROCEDURE SPC_FetchSubjectNotSampleCollected  
 END
 GO
 CREATE PROCEDURE [dbo].[SPC_FetchSubjectNotSampleCollected] 
@@ -60,7 +60,7 @@ BEGIN
 			,@StartDate AS FromDate
 			,@EndDate AS ToDate
 			,CASE WHEN (SELECT [dbo].[FN_FindSampleType](SP.[ID])) !='F' THEN 
-			(SELECT TOP 1  CONVERT(DATE,SampleCollectionDate,103) FROM Tbl_SampleCollection WHERE SubjectID  = SP.[ID] ORDER BY ID DESC)
+			(SELECT TOP 1 (CONVERT(VARCHAR,SampleCollectionDate,103) +' '+ CONVERT(VARCHAR(5),SampleCollectionTime,108))AS SampleCollectionDate FROM Tbl_SampleCollection WHERE SubjectID  = SP.[ID] ORDER BY ID DESC)
 			ELSE NULL END  AS SampleCollectionDate
 		FROM Tbl_SubjectPrimaryDetail SP
 		LEFT JOIN Tbl_SubjectPregnancyDetail SPR WITH (NOLOCK) ON SPR.UniqueSubjectID  = SP.UniqueSubjectID 
@@ -94,7 +94,7 @@ BEGIN
 			,@StartDate AS FromDate
 			,@EndDate AS ToDate
 			,CASE WHEN (SELECT [dbo].[FN_FindSampleType](SP.[ID])) !='F' THEN 
-			(SELECT TOP 1 CONVERT(DATE,SampleCollectionDate,103) FROM Tbl_SampleCollection WHERE SubjectID  = SP.[ID] ORDER BY ID DESC)
+			(SELECT TOP 1 (CONVERT(VARCHAR,SampleCollectionDate,103)+' '+CONVERT(VARCHAR(5),SampleCollectionTime,108)) AS SampleCollectionDate FROM Tbl_SampleCollection WHERE SubjectID  = SP.[ID] ORDER BY ID DESC)
 			ELSE NULL END  AS SampleCollectionDate
 		FROM Tbl_SubjectPrimaryDetail SP
 		LEFT JOIN Tbl_SubjectPregnancyDetail SPR WITH (NOLOCK) ON SPR.UniqueSubjectID  = SP.UniqueSubjectID 

@@ -8,7 +8,7 @@ GO
 
 IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_FetchShipmentReceiptInCentralLab' AND [type] = 'p')
 BEGIN
-	DROP PROCEDURE SPC_FetchShipmentReceiptInCentralLab 
+	DROP PROCEDURE SPC_FetchShipmentReceiptInCentralLab  
 END
 GO
 CREATE PROCEDURE [dbo].[SPC_FetchShipmentReceiptInCentralLab] 
@@ -25,6 +25,7 @@ BEGIN
 		,CM.[CHCname] AS TestingCHC
 		,D.[Districtname]
 		,CONVERT(VARCHAR,S.[DateofShipment],103) + ' ' + CONVERT(VARCHAR(5),S.[TimeofShipment]) AS ShipmentDateTime
+		,CONVERT(DATETIME,(CONVERT(VARCHAR,S.[DateofShipment],103) + ' ' + CONVERT(VARCHAR(5),S.[TimeofShipment])),103) AS ShipmentDate
 		,S.[ReceivingCentralLabId] 
 		,CL.[CentralLabName] 
 		,SD.[UniqueSubjectID]
@@ -40,8 +41,7 @@ BEGIN
 		LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP   WITH (NOLOCK) ON SP.UniqueSubjectID = SD.UniqueSubjectID
 		LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail] SPR   WITH (NOLOCK) ON SPR.UniqueSubjectID = SD.UniqueSubjectID
 		LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.BarcodeNo = SD.BarcodeNo
-
 	WHERE ISNULL(S.[ReceivedDate],'') = '' AND S.[ReceivingCentralLabId] = @CentralLabId  
-	ORDER BY S.[GenratedShipmentID]  
+	ORDER BY ShipmentDate DESC
 
 END

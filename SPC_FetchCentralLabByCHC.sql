@@ -16,5 +16,5 @@ AS BEGIN
 		,(C.[CentralLabName]) AS [CentralLab]
  FROM   [dbo].[Tbl_CentralLabMaster] C
  LEFT JOIN [dbo].[Tbl_CHCMaster] CM WITH (NOLOCK) ON C.[ID] = CM.[CentralLabId] 
- WHERE C.[ID] = @ID
+ WHERE CM.[ID] = @ID
 END  

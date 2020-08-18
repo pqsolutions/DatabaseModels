@@ -5,16 +5,36 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-IF EXISTS (Select 1 from sys.objects where name='SPC_FetchSubjectDetail' and [type] = 'p')
+IF EXISTS (Select 1 from sys.objects where name='SPC_FetchAllSubjectDetailByANM' and [type] = 'p')
 Begin
-	DROP PROCEDURE SPC_FetchSubjectDetail 
+	DROP PROCEDURE SPC_FetchAllSubjectDetailByANM 
 End
 GO
-CREATE PROCEDURE [dbo].[SPC_FetchSubjectDetail]
+CREATE PROCEDURE [dbo].[SPC_FetchAllSubjectDetailByANM]
 (
-	@UniqueSubjectID VARCHAR(200)
+	@UserId VARCHAR(200)
+	,@FromDate VARCHAR(50)
+	,@ToDate VARCHAR(50)
 )AS
 BEGIN
+	DECLARE  @StartDate VARCHAR(50), @EndDate VARCHAR(50)
+	
+	IF @FromDate = NULL OR @FromDate = ''
+	BEGIN
+		SET @StartDate = (SELECT CONVERT(VARCHAR,DATEADD(YEAR ,-1,GETDATE()),103))
+	END
+	ELSE
+	BEGIN
+		SET @StartDate = @FromDate
+	END
+	IF @ToDate = NULL OR @ToDate = ''
+	BEGIN
+		SET @EndDate = (SELECT CONVERT(VARCHAR,GETDATE(),103))
+	END
+	ELSE
+	BEGIN
+		SET @EndDate = @ToDate
+	END
 	SELECT SPRD.[ID] 
 			,SPRD.[SubjectTypeID]
 			,STM.[SubjectType]
@@ -108,9 +128,6 @@ BEGIN
 			,SPAD.[Standard]
 			,SPAD.[Section]
 			,SPAD.[RollNo]
-			,(SELECT [dbo].[FN_FindResult](SPAD.[UniqueSubjectID],'CBC')) AS CBCTestResult
-			,(SELECT [dbo].[FN_FindResult](SPAD.[UniqueSubjectID],'SST')) AS SSTestResult
-			,(SELECT [dbo].[FN_FindResult](SPAD.[UniqueSubjectID],'HPLC')) AS HPLCTestResult
 	FROM [dbo].[Tbl_SubjectPrimaryDetail] AS SPRD
 	LEFT JOIN [dbo].[Tbl_SubjectTypeMaster] STM WITH (NOLOCK) ON STM.[ID] = SPRD.[SubjectTypeID]
 	LEFT JOIN [dbo].[Tbl_SubjectTypeMaster] STM1 WITH (NOLOCK) ON STM1.[ID] = SPRD.[ChildSubjectTypeID]
@@ -130,6 +147,6 @@ BEGIN
 	LEFT JOIN [dbo].[Tbl_Gov_IDTypeMaster] GIMM WITH (NOLOCK) ON GIMM.[ID] = SPAD.[Mother_GovIdType_ID]      
 	LEFT JOIN [dbo].[Tbl_Gov_IDTypeMaster] GIMG WITH (NOLOCK) ON GIMG.[ID] = SPAD.[Guardian_GovIdType_ID]       
 	LEFT JOIN [dbo].[Tbl_CommunityMaster] COM WITH (NOLOCK) ON COM.[ID] = SAD.[Community_Id]    
-	WHERE  (SPRD.[UniqueSubjectID] = @UniqueSubjectID OR SPRD.[MobileNo] = @UniqueSubjectID OR 
-	SPD.[RCHID] = @UniqueSubjectID )
+	WHERE  [SPRD].AssignANM_ID = @UserId --AND SPRD.[IsActive] = 1
+	AND (CONVERT(DATE,SPRD.[DateofRegister],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103))
 END

@@ -25,11 +25,12 @@ BEGIN
 		,SPR.[RCHID]
 		,0 AS MCV
 		,0 AS RDW
+		,(CONVERT(VARCHAR,SC.[SampleCollectionDate],103) + ' ' + CONVERT(VARCHAR(5),SC.[SampleCollectionTime])) AS SampleDateTime
 	FROM [dbo].[Tbl_ANMCHCShipmentsDetail]  SD 
 	LEFT JOIN  [dbo].[Tbl_ANMCHCShipments] S WITH (NOLOCK) ON SD.ShipmentID = S.ID
 	LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.BarcodeNo = SD.BarcodeNo
 	LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP   WITH (NOLOCK) ON SP.UniqueSubjectID = SD.UniqueSubjectID
 	LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail] SPR   WITH (NOLOCK) ON SPR.UniqueSubjectID = SD.UniqueSubjectID
-	WHERE S.[TestingCHCID] = @TestingCHCId AND SC.[IsAccept] = 1 
+	WHERE S.[TestingCHCID] = @TestingCHCId AND SC.[IsAccept] = 1 AND SC.[SampleDamaged] = 0 AND SC.[SampleTimeoutExpiry] = 0
 	AND SD.[BarcodeNo] NOT IN (SELECT BarcodeNo FROM Tbl_CBCTestResult)
 END

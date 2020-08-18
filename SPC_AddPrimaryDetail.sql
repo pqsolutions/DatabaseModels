@@ -153,6 +153,13 @@ BEGIN
 					,Spouse_GovIdType_ID = @GovIdType_ID 
 					,Spouse_GovIdDetail = @GovIdDetail 
 				WHERE  UniqueSubjectID  = @SpouseSubjectID 
+				
+				UPDATE Tbl_PositiveResultSubjectsDetail SET 
+					HPLCNotifiedStatus = 1
+					,HPLCNotifiedBy = @CreatedBy
+					,HPLCNotifiedOn = GETDATE()
+				WHERE  UniqueSubjectID  = @SpouseSubjectID  
+				
 			END
 						
 		END

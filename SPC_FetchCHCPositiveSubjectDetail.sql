@@ -27,7 +27,10 @@ BEGIN
 			,SPRD.[RIID]
 			,SPRD.[SubjectTitle]
 			,(SPRD.[FirstName] + ' ' + SPRD.[MiddleName] + ' ' + SPRD.[LastName]) AS SubjectName
-			,SPRD.[MobileNo] AS ContactNo
+			,SPRD.[FirstName]
+			,SPRD.[MiddleName]
+			,SPRD.[LastName]
+			,SPRD.[MobileNo]
 			,SPRD.[Spouse_FirstName]
 			,SPRD.[Spouse_MiddleName]
 			,SPRD.[Spouse_LastName]
@@ -71,7 +74,10 @@ BEGIN
 			,SPRD.[RIID]
 			,SPRD.[SubjectTitle]
 			,(SPRD.[FirstName] + ' ' + SPRD.[MiddleName] + ' ' + SPRD.[LastName]) AS SubjectName
-			,SPRD.[MobileNo] AS ContactNo
+			,SPRD.[FirstName]
+			,SPRD.[MiddleName]
+			,SPRD.[LastName]
+			,SPRD.[MobileNo] 
 			,SPRD.[Spouse_FirstName]
 			,SPRD.[Spouse_MiddleName]
 			,SPRD.[Spouse_LastName]

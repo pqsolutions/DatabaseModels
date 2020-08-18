@@ -20,6 +20,8 @@ CREATE PROCEDURE [dbo].[SPC_AddCBCTest]
 	,@TestingCHCId INT
 	,@MCV DECIMAL(18,2)
 	,@RDW DECIMAL(18,2)
+	,@TestCompleteOn VARCHAR(250)
+	,@SampleDateTime VARCHAR(250)
 	,@CreatedBy INT
 )
 AS
@@ -27,6 +29,8 @@ DECLARE
 	@IsPositive BIT
 	,@CBCResult VARCHAR(MAX)
 	,@SubjectId INT
+	,@CBCStatus CHAR(1)
+	,@HoursDiff INT  -- New logic added for expire
 BEGIN
 	BEGIN TRY
 		
@@ -35,62 +39,86 @@ BEGIN
 		BEGIN
 			SET @IsPositive = 1
 			SET @CBCResult = 'Screening Test Positive'
-			IF EXISTS(SELECT 1 FROM Tbl_PositiveResultSubjectsDetail WHERE BarcodeNo = @Barcode )
-			BEGIN
-				UPDATE Tbl_PositiveResultSubjectsDetail SET 
-					CBCStatus = 'P'
-					,CBCResult = @CBCResult 
-					,CBCUpdatedOn = GETDATE()
-					,IsActive = 1
-				WHERE BarcodeNo = @Barcode 
-			END
-			ELSE
-			BEGIN
-				INSERT INTO Tbl_PositiveResultSubjectsDetail(
-					SubjectID 
-					,UniqueSubjectID
-					,BarcodeNo
-					,CBCResult
-					,CBCStatus 
-					,CBCUpdatedOn
-					,IsActive
-					)VALUES(
-					@SubjectId
-					,@UniqueSubjectId
-					,@Barcode
-					,@CBCResult
-					,'P'
-					,GETDATE()
-					,1)				
-			END
+			SET @CBCStatus = 'P'
 		END
 		ELSE
 		BEGIN
-			SET @IsPositive = 0
+		SET @IsPositive = 0
 			SET @CBCResult = 'Screening Test Negative'
+			SET @CBCStatus = 'N'
 		END
-		INSERT INTO Tbl_CBCTestResult(
-			[UniqueSubjectID]
-           ,[BarcodeNo]
-           ,[TestingCHCId]
-           ,[MCV]
-           ,[RDW]
-           ,[IsPositive]
-           ,[CBCResult]
-           ,[CBCTestComplete]
-           ,[CreatedOn]
-           ,[CreatedBy])
-		VALUES(
-			@UniqueSubjectId 
-			,@Barcode 
-			,@TestingCHCId
-			,@MCV
-			,@RDW
-			,@IsPositive 
-			,@CBCResult 
-			,1
-			,GETDATE()
-			,@CreatedBy)
+		
+		IF NOT EXISTS (SELECT 1 FROM Tbl_CBCTestResult WHERE BarcodeNo = @Barcode )
+		BEGIN
+			INSERT INTO Tbl_CBCTestResult(
+				[UniqueSubjectID]
+			   ,[BarcodeNo]
+			   ,[TestingCHCId]
+			   ,[MCV]
+			   ,[RDW]
+			   ,[IsPositive]
+			   ,[CBCResult]
+			   ,[CBCTestComplete]
+			   ,[CreatedOn]
+			   ,[CreatedBy]
+			   ,[TestCompleteOn])
+			VALUES(
+				@UniqueSubjectId 
+				,@Barcode 
+				,@TestingCHCId
+				,@MCV
+				,@RDW
+				,@IsPositive 
+				,@CBCResult 
+				,1
+				,GETDATE()
+				,@CreatedBy
+				,CONVERT(DATETIME,@TestCompleteOn,103)
+				)
+			------------New logic added for expiry-----------------------
+			SET @HoursDiff = (SELECT DATEDIFF(HH,CONVERT(DATETIME,@SampleDateTime,103) ,CONVERT(DATETIME,@TestCompleteOn,103)) HoursDifference)
+				
+			 IF @HoursDiff > 24 
+			 BEGIN
+				UPDATE Tbl_SampleCollection SET 
+					SampleTimeoutExpiry = 1
+					,UpdatedBy = @CreatedBy 
+					,UpdatedOn = GETDATE()
+					,RejectAt = 'CBC Test'
+					,IsAccept = 0
+				WHERE BarcodeNo = @Barcode 
+			 END
+		 --------------------------------------------------------
+		END
+		IF EXISTS(SELECT 1 FROM Tbl_PositiveResultSubjectsDetail WHERE BarcodeNo = @Barcode )
+		BEGIN
+			UPDATE Tbl_PositiveResultSubjectsDetail SET 
+				CBCStatus = @CBCStatus 
+				,CBCResult = @CBCResult 
+				,CBCUpdatedOn = GETDATE()
+				,IsActive = 1
+			WHERE BarcodeNo = @Barcode 
+		END
+		ELSE
+		BEGIN
+			INSERT INTO Tbl_PositiveResultSubjectsDetail(
+				SubjectID 
+				,UniqueSubjectID
+				,BarcodeNo
+				,CBCResult
+				,CBCStatus 
+				,CBCUpdatedOn
+				,IsActive
+				)VALUES(
+				@SubjectId
+				,@UniqueSubjectId
+				,@Barcode
+				,@CBCResult
+				,@CBCStatus 
+				,GETDATE()
+				,1)				
+		END
+		
 	END TRY
 	BEGIN CATCH
 		IF @@TRANCOUNT > 0

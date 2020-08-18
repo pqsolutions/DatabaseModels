@@ -43,9 +43,9 @@ DECLARE
 	
 BEGIN
 	BEGIN TRY
+		SELECT @SubjectId = ID FROM Tbl_SubjectPrimaryDetail WHERE UniqueSubjectID = @UniqueSubjectId 
 		IF NOT EXISTS (SELECT 1 FROM Tbl_HPLCDiagnosisResult WHERE BarcodeNo = @BarcodeNo) 
 		BEGIN
-			SELECT @SubjectId = ID FROM Tbl_SubjectPrimaryDetail WHERE UniqueSubjectID = @UniqueSubjectId 
 			INSERT INTO Tbl_HPLCDiagnosisResult( 
 				SubjectID 
 				,UniqueSubjectID
@@ -53,7 +53,6 @@ BEGIN
 				,HPLCTestResultId 
 				,ClinicalDiagnosisId 
 				,IsNormal
-				,DiagnosisSummary 
 				,IsConsultSeniorPathologist
 				,SeniorPathologistName
 				,SeniorPathologistRemarks
@@ -68,7 +67,6 @@ BEGIN
 				,@HPLCTestResultId 
 				,@ClinicalDiagnosisId 
 				,@IsNormal
-				,@DiagnosisSummary 
 				,@IsConsultSeniorPathologist
 				,@SeniorPathologistName
 				,@SeniorPathologistRemarks
@@ -77,6 +75,22 @@ BEGIN
 				,@CreatedBy 
 				,GETDATE())
 			SELECT @GetId = SCOPE_IDENTITY()
+			
+			INSERT INTO Tbl_HPLCDiagnosisResultCaseSheet(
+				UniqueSubjectID
+				,BarcodeNo
+				,HPLCDiagnosisResultId
+				,DiagnosisSummary
+				,CreatedBy
+				,CreatedOn
+				)VALUES(
+				@UniqueSubjectId 
+				,@BarcodeNo 
+				,@GetId 
+				,@DiagnosisSummary 
+				,@CreatedBy
+				,GETDATE())
+			
 			SELECT @GetHPLCResultMasterId = HPLCResultMasterId FROM Tbl_HPLCDiagnosisResult WHERE ID = @GetId
 			SET @IsPositive = 0 
 			SET @IndexVar = 0  
@@ -119,6 +133,64 @@ BEGIN
 					,HPLCUpdatedOn = GETDATE()
 					,IsActive = 1
 			WHERE BarcodeNo = @BarcodeNo
+		END
+		ELSE
+		BEGIN
+			UPDATE Tbl_HPLCDiagnosisResult SET
+				ClinicalDiagnosisId = @ClinicalDiagnosisId 
+				,IsNormal = @IsNormal 
+				,IsConsultSeniorPathologist = @IsConsultSeniorPathologist 
+				,SeniorPathologistName = @SeniorPathologistName 
+				,SeniorPathologistRemarks = @SeniorPathologistRemarks 
+				,HPLCResultMasterId = @HPLCResultMasterId
+				,UpdatedBy = @CreatedBy 
+				,UpdatedOn = GETDATE()
+			WHERE BarcodeNo = @BarcodeNo 
+			
+			SELECT @GetId = ID FROM Tbl_HPLCDiagnosisResult WHERE BarcodeNo = @BarcodeNo 
+			
+			INSERT INTO Tbl_HPLCDiagnosisResultCaseSheet(
+				UniqueSubjectID
+				,BarcodeNo
+				,HPLCDiagnosisResultId
+				,DiagnosisSummary
+				,CreatedBy
+				,CreatedOn
+				)VALUES(
+				@UniqueSubjectId 
+				,@BarcodeNo 
+				,@GetId 
+				,@DiagnosisSummary 
+				,@CreatedBy
+				,GETDATE())
+				
+			SELECT @GetHPLCResultMasterId = HPLCResultMasterId FROM Tbl_HPLCDiagnosisResult WHERE ID = @GetId
+			SET @IsPositive = 0 
+			SET @IndexVar = 0  
+			SELECT @TotalCount = COUNT(value) FROM [dbo].[FN_Split](@GetHPLCResultMasterId,',')  
+			WHILE @Indexvar < @TotalCount  
+			BEGIN
+				SELECT @IndexVar = @IndexVar + 1
+				SELECT @CurrentIndex = Value FROM  [dbo].[FN_Split](@GetHPLCResultMasterId,',') WHERE id = @Indexvar
+				SELECT @ResultName = HPLCResultName FROM Tbl_HPLCResultMaster WHERE ID = CAST(@CurrentIndex AS INT)
+				IF @ResultName = 'Beta Thalassemia' OR @ResultName = 'Sickle Cell Disease'
+				BEGIN
+					SET @IsPositive = 1
+				END
+				SET @Results = @Results + @ResultName + ', '
+			END	
+			SET @HPLCResults = (SELECT LEFT(@Results,LEN(@Results)-1))
+			
+			UPDATE Tbl_HPLCTestResult SET 
+				IsPositive = @IsPositive
+				,IsNormal = @IsNormal
+				,HPLCResult = @HPLCResults
+				,UpdatedBy = @CreatedBy 
+				,UpdatedOn = GETDATE()
+				,UpdatedToANM = NULL
+				,HPLCResultUpdatedOn = GETDATE()
+				,ResultUpdatedPathologistId = @CreatedBy 
+			WHERE BarcodeNo = @BarcodeNo AND ID = @HPLCTestResultId
 		END
 	
 	END TRY

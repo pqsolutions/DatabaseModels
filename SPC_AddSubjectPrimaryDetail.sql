@@ -144,7 +144,7 @@ BEGIN
 					IF @SubjectTypeID = 2 OR @ChildSubjectTypeID = 2 
 					BEGIN
 						UPDATE Tbl_SubjectPrimaryDetail  SET 
-							SpouseSubjectID = @UniqueSubjectId
+							SpouseSubjectID = @NewUniqueSubjectID
 							,Spouse_ContactNo = @MobileNo
 							,Spouse_FirstName = @FirstName
 							,Spouse_MiddleName = @MiddleName
@@ -152,6 +152,13 @@ BEGIN
 							,Spouse_GovIdType_ID = @GovIdType_ID 
 							,Spouse_GovIdDetail = @GovIdDetail 
 						WHERE  UniqueSubjectID  = @SpouseSubjectID
+						
+						UPDATE Tbl_PositiveResultSubjectsDetail SET 
+							HPLCNotifiedStatus = 1
+							,HPLCNotifiedBy = @CreatedBy
+							,HPLCNotifiedOn = GETDATE()
+						WHERE  UniqueSubjectID  = @SpouseSubjectID 
+						
 					END
 				END
 				ELSE

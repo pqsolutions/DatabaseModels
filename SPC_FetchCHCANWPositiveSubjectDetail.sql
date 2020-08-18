@@ -7,7 +7,7 @@ SET QUOTED_IDENTIFIER ON
 GO
 IF EXISTS (Select 1 from sys.objects where name='SPC_FetchCHCANWPositiveSubjectDetail' and [type] = 'p')
 Begin
-	DROP PROCEDURE SPC_FetchCHCANWPositiveSubjectDetail 
+	DROP PROCEDURE SPC_FetchCHCANWPositiveSubjectDetail
 End
 GO
 CREATE PROCEDURE [dbo].[SPC_FetchCHCANWPositiveSubjectDetail]
@@ -114,10 +114,13 @@ BEGIN
 	LEFT JOIN [dbo].[Tbl_ReligionMaster] RM WITH (NOLOCK) ON RM.[ID] = SAD.[Religion_Id]  
 	LEFT JOIN [dbo].[Tbl_CasteMaster] CAM WITH (NOLOCK) ON CAM.[ID] = SAD.[Caste_Id]   
 	LEFT JOIN [dbo].[Tbl_Gov_IDTypeMaster] GIM WITH (NOLOCK) ON GIM.[ID] = SPRD.[GovIdType_ID]    
-	LEFT JOIN [dbo].[Tbl_CommunityMaster] COM WITH (NOLOCK) ON COM.[ID] = SAD.[Community_Id] 
+	LEFT JOIN [dbo].[Tbl_CommunityMaster] COM WITH (NOLOCK) ON COM.[ID] = SAD.[Community_Id]
+	LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.[SubjectID] = SPRD.[ID]
+	LEFT JOIN [dbo].[Tbl_PositiveResultSubjectsDetail] PRSD WITH (NOLOCK) ON PRSD.[BarcodeNo]  = SC .[BarcodeNo] 
 	WHERE  SPRD.[CHCID]  = @CHCId AND SPRD.[RegisteredFrom] = @RegisteredFrom AND ISNULL(SPRD.[SpouseSubjectID],'') = '' 
 	AND SPRD.[UniqueSubjectID] NOT IN (SELECT SpouseSubjectID  FROM [dbo].[Tbl_SubjectPrimaryDetail] WHERE (SPRD.[SubjectTypeID] = 2 OR SPRD.[ChildSubjectTypeID] = 2))
-	AND SPRD.[ID] IN( SELECT SubjectID FROM[dbo].[Tbl_PositiveResultSubjectsDetail] WHERE UPPER(HPLCStatus) = 'P' )
+	AND PRSD.[HPLCStatus] = 'P'
+	--AND SPRD.[ID] IN( SELECT SubjectID FROM[dbo].[Tbl_PositiveResultSubjectsDetail] WHERE UPPER(HPLCStatus) = 'P' )
 	AND (CONVERT(DATE,SPRD.[DateofRegister],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103))
 	AND (SPRD.[SubjectTypeID] = 1 OR SPRD.[ChildSubjectTypeID] = 1)-- AND SPRD.[IsActive] = 1
 	ORDER BY [GestationalAge] DESC

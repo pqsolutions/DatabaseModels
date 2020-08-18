@@ -19,6 +19,8 @@ Begin
 			,ut.[Usertype]
 			,um.[UserRole_ID] 
 			,ur.[Userrolename]
+			,ur.[Descriptions] UserRoleDescription
+			,ur.[AccessModules]
 			,um.[User_gov_code]  
 			,um.[Username]  
 			,um.[Password]
@@ -56,11 +58,11 @@ Begin
 			,um.[Comments] 
 			,um.[Isactive] 
 			,um.[DigitalSignature] 
-			,CASE WHEN UserType_ID =1 THEN (SELECT ID FROM Tbl_ConstantValues WHERE CommonName = 'ANM' AND comments = 'RegisterFrom')
+			,CASE WHEN ut.[Usertype] = 'ANM' THEN (SELECT ID FROM Tbl_ConstantValues WHERE CommonName = 'ANM' AND comments = 'RegisterFrom')
 				ELSE (SELECT ID FROM Tbl_ConstantValues WHERE CommonName = 'CHC' AND comments = 'RegisterFrom')END AS RegisteredFrom
-			,CASE WHEN UserType_ID =1 THEN (SELECT ID FROM Tbl_ConstantValues WHERE CommonName = 'ANM' AND comments = 'SampleCollectionFrom')
+			,CASE WHEN ut.[Usertype] = 'ANM' THEN (SELECT ID FROM Tbl_ConstantValues WHERE CommonName = 'ANM' AND comments = 'SampleCollectionFrom')
 				ELSE (SELECT ID FROM Tbl_ConstantValues WHERE CommonName = 'CHC' AND comments = 'SampleCollectionFrom') END AS SampleCollectionFrom
-			,CASE WHEN UserType_ID =1 THEN (SELECT ID FROM Tbl_ConstantValues WHERE CommonName = 'ANM - CHC' AND comments = 'ShipmentFrom')
+			,CASE WHEN ut.[Usertype] = 'ANM' THEN (SELECT ID FROM Tbl_ConstantValues WHERE CommonName = 'ANM - CHC' AND comments = 'ShipmentFrom')
 				ELSE (SELECT ID FROM Tbl_ConstantValues WHERE CommonName = 'CHC - CHC' AND comments = 'ShipmentFrom') END AS ShipmentFrom     
 	FROM [dbo].[Tbl_UserMaster] um
 	LEFT JOIN [dbo].[Tbl_UserRoleMaster] ur WITH (NOLOCK) ON ur.ID = um.UserRole_ID

@@ -10,7 +10,7 @@ GO
 
 IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_FetchANMCHCShipmentLog' AND [type] = 'p')
 BEGIN
-	DROP PROCEDURE SPC_FetchANMCHCShipmentLog
+	DROP PROCEDURE SPC_FetchANMCHCShipmentLog 
 END
 GO
 CREATE PROCEDURE [dbo].[SPC_FetchANMCHCShipmentLog] 
@@ -36,6 +36,7 @@ BEGIN
 		  ,IM.[ILRPoint]
 		  ,RM.[RIsite] AS RIPoint
 		  ,CONVERT(VARCHAR,S.[DateofShipment],103) + ' ' + CONVERT(VARCHAR(5),S.[TimeofShipment]) AS ShipmentDateTime
+		  ,CONVERT(DATETIME,(CONVERT(VARCHAR,S.[DateofShipment],103) + ' ' + CONVERT(VARCHAR(5),S.[TimeofShipment])),103) AS ShipmentDate
 		  ,SD.[UniqueSubjectID]
 		  ,SD.[BarcodeNo]
 		  ,SPR.[RCHID]
@@ -52,7 +53,7 @@ BEGIN
 		LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail] SPR   WITH (NOLOCK) ON SPR.UniqueSubjectID = SD.UniqueSubjectID
 		LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.BarcodeNo = SD.BarcodeNo
 		WHERE S.[ANM_ID] = @UserID AND S.[ShipmentFrom] = @ShipmentFrom
-		ORDER BY S.[DateofShipment] ,[S].[TimeofShipment]  DESC  
+		ORDER BY ShipmentDate  DESC 
 	END
 	ELSE IF @ShipFrom = 'CHC - CHC'
 	BEGIN
@@ -66,6 +67,7 @@ BEGIN
 		  ,S.[DeliveryExecutiveName] 
 		  ,S.[ExecutiveContactNo]  AS ContactNo
 		  ,CONVERT(VARCHAR,S.[DateofShipment],103) + ' ' + CONVERT(VARCHAR(5),S.[TimeofShipment]) AS ShipmentDateTime
+		  ,CONVERT(DATETIME,(CONVERT(VARCHAR,S.[DateofShipment],103) + ' ' + CONVERT(VARCHAR(5),S.[TimeofShipment])),103) AS ShipmentDate
 		  ,SD.[UniqueSubjectID]
 		  ,SD.[BarcodeNo]
 		  ,SPR.[RCHID]
@@ -82,7 +84,7 @@ BEGIN
 		LEFT JOIN [dbo].[Tbl_UserMaster] UM1 WITH (NOLOCK) ON UM1.ID = SP.AssignANM_ID  
 		LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.BarcodeNo = SD.BarcodeNo
 		WHERE  S.[ShipmentFrom] = @ShipmentFrom AND S.[CollectionCHCID] = @CHCID
-		ORDER BY S.[DateofShipment],S.[TimeofShipment] DESC  
+		ORDER BY ShipmentDate  DESC 
 	END
 	
 END

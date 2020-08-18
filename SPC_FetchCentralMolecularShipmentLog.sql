@@ -26,6 +26,7 @@ BEGIN
 		,S.[DeliveryExecutiveName] 
 		,S.[ExecutiveContactNo]  AS ContactNo
 		,CONVERT(VARCHAR,S.[DateofShipment],103) + ' ' + CONVERT(VARCHAR(5),S.[TimeofShipment]) AS ShipmentDateTime
+		,CONVERT(DATETIME,(CONVERT(VARCHAR,S.[DateofShipment],103) + ' ' + CONVERT(VARCHAR(5),S.[TimeofShipment])),103) AS ShipmentDate
 		,SD.[UniqueSubjectID]
 		,SD.[BarcodeNo]
 		,SPR.[RCHID]
@@ -39,5 +40,5 @@ BEGIN
 	LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail] SPR   WITH (NOLOCK) ON SPR.UniqueSubjectID = SD.UniqueSubjectID
 	LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.BarcodeNo = SD.BarcodeNo
 	WHERE S.[CentralLabId] = @CentralLabId  
-	ORDER BY S.[DateofShipment],S.[TimeofShipment] DESC    
+	ORDER BY ShipmentDate DESC    
 END

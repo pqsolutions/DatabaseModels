@@ -23,6 +23,7 @@ BEGIN
 		,SPR.[RCHID] 
 		,SC.[BarcodeNo]
 		,(CONVERT(VARCHAR,SC.[SampleCollectionDate],103) + ' ' + CONVERT(VARCHAR(5),SC.[SampleCollectionTime])) AS SampleDateTime
+		,CONVERT(DATETIME,(CONVERT(VARCHAR,SC.[SampleCollectionDate],103) + ' ' + CONVERT(VARCHAR(5),SC.[SampleCollectionTime])),103) AS SDT
 		,CAST((SELECT [dbo].[FN_CalculateGestationalAge](SPR.[SubjectID])) AS DECIMAL(18,1)) AS GestationalAge
 	FROM Tbl_SampleCollection SC
 	LEFT JOIN Tbl_SubjectPrimaryDetail SP WITH (NOLOCK) ON SP.ID = SC.SubjectID
@@ -30,9 +31,11 @@ BEGIN
 	LEFT JOIN Tbl_CHCMaster CM WITH (NOLOCK) ON CM.ID = SP.CHCID
 	LEFT JOIN Tbl_CHCMaster C WITH (NOLOCK) ON C.ID = CM.TestingCHCID
 	LEFT JOIN Tbl_PositiveResultSubjectsDetail PSD WITH (NOLOCK) ON  PSD.BarcodeNo = SC.BarcodeNo
-	WHERE CM.TestingCHCID = @CHCID AND SC.BarcodeNo IN (SELECT BarcodeNo FROM Tbl_CBCTestResult WHERE TestingCHCId = @CHCID)  
+	WHERE CM.TestingCHCID = @CHCID 
+		AND SC.SampleDamaged = 0 AND SC.SampleTimeoutExpiry = 0
+		AND SC.BarcodeNo IN (SELECT BarcodeNo FROM Tbl_CBCTestResult WHERE TestingCHCId = @CHCID)  
 		AND SC.BarcodeNo IN (SELECT BarcodeNo FROM Tbl_SSTestResult WHERE TestingCHCId = @CHCID)
 		AND SC.BarcodeNo IN (SELECT BarcodeNo FROM Tbl_PositiveResultSubjectsDetail WHERE CBCStatus = 'P' OR SSTStatus = 'P') 
 		AND SC.BarcodeNo NOT IN (SELECT BarcodeNo FROM Tbl_CHCShipmentsDetail)
-	ORDER BY GestationalAge DESC
+	ORDER BY SDT DESC
 END

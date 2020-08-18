@@ -26,6 +26,10 @@ BEGIN
 			UPDATE Tbl_ANMLogin SET DeviceId = '', LoginStatus = 0 WHERE UserName = @UserName 
 			Set @Allow = 1
 			SET @Msg = 'Reset successfully'
+			
+			UPDATE Tbl_LoginDetails SET LogoutResetTime = GETDATE(),IsReset = 1 
+			WHERE  UserId  = (SELECT TOP 1 UserId FROM Tbl_LoginDetails WHERE UserName = @UserName AND IsReset IS NULL ORDER BY ID DESC)
+			
 		END
 		SELECT @Allow AS Allow, @Msg as Msg
 	END TRY

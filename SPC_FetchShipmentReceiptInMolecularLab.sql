@@ -6,25 +6,22 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_FetchCHCCentralShipmentLog' AND [type] = 'p')
+IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_FetchShipmentReceiptInMolecularLab' AND [type] = 'p')
 BEGIN
-	DROP PROCEDURE SPC_FetchCHCCentralShipmentLog
+	DROP PROCEDURE SPC_FetchShipmentReceiptInMolecularLab 
 END
 GO
-CREATE PROCEDURE [dbo].[SPC_FetchCHCCentralShipmentLog] 
+CREATE PROCEDURE [dbo].[SPC_FetchShipmentReceiptInMolecularLab] 
 (
-	@TestingCHCID INT
+	@MolecularLabId INT
 )
 AS
 BEGIN
 	SELECT S.[ID]
 		,S.[GenratedShipmentID] AS ShipmentID
 		,S.[LabTechnicianName] 
-		,CM.[CHCname] AS TestingCHC
-		,LPM.[ProviderName] AS LogisticsProviderName
-		,CLM.[CentralLabName] AS ReceivingCentralLab
-		,S.[DeliveryExecutiveName] 
-		,S.[ExecutiveContactNo]  AS ContactNo
+		,CLM.[CentralLabName]
+		,ML.[MLabName] AS MolecularLabName
 		,CONVERT(VARCHAR,S.[DateofShipment],103) + ' ' + CONVERT(VARCHAR(5),S.[TimeofShipment]) AS ShipmentDateTime
 		,CONVERT(DATETIME,(CONVERT(VARCHAR,S.[DateofShipment],103) + ' ' + CONVERT(VARCHAR(5),S.[TimeofShipment])),103) AS ShipmentDate
 		,SD.[UniqueSubjectID]
@@ -32,15 +29,16 @@ BEGIN
 		,SPR.[RCHID]
 		,(SP.[FirstName] + ' ' + SP.[MiddleName] + ' '+ SP.[LastName] ) AS SubjectName
 		,CONVERT(VARCHAR,SC.[SampleCollectionDate],103) + ' ' + CONVERT(VARCHAR(5),SC.[SampleCollectionTime]) AS SampleCollectionDateTime
-
-	FROM [dbo].[Tbl_CHCShipments] S 
-	LEFT JOIN [dbo].[Tbl_CHCMaster] CM WITH (NOLOCK) ON CM.ID = S.TestingCHCID
-	LEFT JOIN [dbo].[Tbl_CentralLabMaster] CLM WITH (NOLOCK) ON CLM.ID = S.ReceivingCentralLabId 
-	LEFT JOIN [dbo].[Tbl_LogisticsProviderMaster]  LPM WITH (NOLOCK) ON LPM.ID = S.LogisticsProviderId
-	LEFT JOIN [dbo].[Tbl_CHCShipmentsDetail]  SD WITH (NOLOCK) ON SD.ShipmentID = S.ID
+		,(CONVERT(VARCHAR,HT.[HPLCTestCompletedOn],103) + ' ' + CONVERT(VARCHAR(5),SC.[SampleCollectionTime],108)) AS HPLCTestDateTime
+	FROM [dbo].[Tbl_CentralLabShipments] S 
+	LEFT JOIN [dbo].[Tbl_CentralLabMaster] CLM WITH (NOLOCK) ON CLM.ID = S.CentralLabId 
+	LEFT JOIN [dbo].[Tbl_MolecularLabMaster] ML WITH (NOLOCK) ON S.ReceivingMolecularLabId = ML.ID
+	LEFT JOIN [dbo].[Tbl_CentralLabShipmentsDetail]  SD WITH (NOLOCK) ON SD.ShipmentID = S.ID
+	LEFT JOIN [dbo].[Tbl_HPLCTestResult] HT WITH (NOLOCK) ON SD.BarcodeNo = HT.BarcodeNo 
 	LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP   WITH (NOLOCK) ON SP.UniqueSubjectID = SD.UniqueSubjectID
 	LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail] SPR   WITH (NOLOCK) ON SPR.UniqueSubjectID = SD.UniqueSubjectID
 	LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.BarcodeNo = SD.BarcodeNo
-	WHERE S.[TestingCHCID] = @TestingCHCID 
-	ORDER BY ShipmentDate DESC   
+	WHERE ISNULL(S.[ReceivedDate],'') = '' AND S.[ReceivingMolecularLabId] = @MolecularLabId   
+	ORDER BY ShipmentDate DESC
+
 END

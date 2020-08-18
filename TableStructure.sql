@@ -27,6 +27,38 @@ PRIMARY KEY CLUSTERED
 
 END
 
+
+-------------------------------------------------------------------
+
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_LoginDetails' AND [type] = 'U')
+BEGIN
+
+CREATE TABLE [dbo].[Tbl_LoginDetails](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[UserId] [int] NOT NULL,
+	[UserName] [varchar](200) NOT NULL,
+	[DeviceId] [varchar](max) NULL,
+	[LoginTime] [datetime] NULL,
+	[LoginFrom] [varchar] (100) NULL,
+	[LogoutResetTime] [datetime]NULL,
+	[IsLogout] [bit] NULL,
+	[IsReset] [bit] NULL
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END
+
 -------------------------------------------------------------
 
 
@@ -367,6 +399,8 @@ END
 
 ----------------------------------------------------------------------------------------------------------------
 
+
+
 USE [Eduquaydb]
 GO
 
@@ -383,6 +417,8 @@ CREATE TABLE [dbo].[Tbl_UserRoleMaster](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
 	[UsertypeID] [int] NOT NULL,
 	[Userrolename] [varchar](150) NOT NULL,
+	[Descriptions] [varchar](max) NULL,
+	[AccessModules] [varchar](max) NULL,
 	[Createdon] [datetime] NULL,
 	[Createdby] [int] NULL,
 	[Updatedon] [datetime] NULL,
@@ -756,6 +792,8 @@ END
 
 -------------------------------------------------------------------------------------------------------------------------
 
+
+
 USE [Eduquaydb]
 GO
 
@@ -805,8 +843,8 @@ CREATE TABLE [dbo].[Tbl_SubjectPrimaryDetail](
 	[CreatedOn] [datetime] NULL,
 	[UpdatedBy] [int] NULL,
 	[UpdatedOn] [datetime] NULL,
-	[IsActive] [bit] NULL
-	
+	[IsActive] [bit] NULL,
+	[UpdatedToANM] [bit] NULL,
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
@@ -960,6 +998,8 @@ PRIMARY KEY CLUSTERED
 END
 -----------------------------------------------------------------------------------------------------------------------
 
+
+
 USE [Eduquaydb]
 GO
 
@@ -994,6 +1034,7 @@ CREATE TABLE [dbo].[Tbl_SampleCollection](
 	[UpdatedBy] [int] NULL,
 	[UpdatedOn] [datetime] NULL,
 	[RejectAt] [varchar](250) NULL,
+	[UpdatedToANM] [bit] NULL
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
@@ -1305,6 +1346,8 @@ CREATE TABLE [dbo].[Tbl_CBCTestResult](
 	[UpdatedBy] [int] NULL,
 	[UpdatedOn] [datetime] NULL,
 	[UpdatedToANM] [bit] NULL,
+	[FileName] [varchar] (max) NULL,
+	[TestCompleteOn] [datetime] NULL,
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
@@ -1414,6 +1457,8 @@ END
 
 -------------------------------------------------------------------------------------------------
 
+
+
 USE [Eduquaydb]
 GO
 
@@ -1448,6 +1493,8 @@ CREATE TABLE [dbo].[Tbl_HPLCTestResult](
 	[UpdatedBy] [int] NULL,
 	[UpdatedOn] [datetime] NULL,
 	[UpdatedToANM] [bit] NULL,
+	[FileName] [varchar] (max) NULL,
+	
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
@@ -1481,6 +1528,34 @@ PRIMARY KEY CLUSTERED
 ) ON [PRIMARY]
 END
 -------------------------------------------------------------------------------------------------------------
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO  
+
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_HPLCDiagnosisResultCaseSheet' AND [type] = 'U')
+BEGIN
+CREATE TABLE [dbo].[Tbl_HPLCDiagnosisResultCaseSheet](
+[ID] [int] IDENTITY(1,1) NOT NULL,
+	[UniqueSubjectID] [varchar](200) NOT NULL,
+	[BarcodeNo] [varchar] (200) NOT NULL,
+	[HPLCDiagnosisResultId] [int] NULL,
+	[DiagnosisSummary] [varchar](max) NULL,
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+END
+
+----------------------------------------------------------------------------------------------------------------------------
+
+
 
 USE [Eduquaydb]
 GO
@@ -1504,7 +1579,6 @@ CREATE TABLE [dbo].[Tbl_HPLCDiagnosisResult](
 	[SeniorPathologistRemarks] [varchar](max) NULL,
 	[IsNormal] [bit] NULL,
 	[CentralLabId] [int] NULL,
-	[DiagnosisSummary] [varchar](max) NULL,
 	[CreatedBy] [int] NULL,
 	[CreatedOn] [datetime] NULL,
 	[UpdatedBy] [int] NULL,
@@ -1543,7 +1617,7 @@ CREATE TABLE [dbo].[Tbl_CentralLabShipments](
 	[ExecutiveContactNo] [varchar] (150) NULL,
 	[DateofShipment][date] NULL,
 	[TimeofShipment] [time](2)NULL,
-	[ReceivedDate] [date] NULL,
+	[ReceivedDate] [datetime] NULL,
 	[CreatedBy] [int] NULL,
 	[CreatedOn] [datetime] NULL,
 	[UpdatedBy] [int] NULL,
