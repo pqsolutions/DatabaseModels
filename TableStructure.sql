@@ -361,6 +361,8 @@ PRIMARY KEY CLUSTERED
 END
 ---------------------------------------------------------------------------------------------------------------------------------
 
+
+
 USE [Eduquaydb]
 GO
 
@@ -390,6 +392,7 @@ CREATE TABLE [dbo].[Tbl_RIMaster](
 	[Isactive] [bit] NULL,
 	[Latitude] [varchar](150) NULL,
 	[Longitude] [varchar](150) NULL,
+	[ANMID] [int] NULL
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
@@ -1573,7 +1576,8 @@ CREATE TABLE [dbo].[Tbl_HPLCDiagnosisResult](
 	[BarcodeNo] [varchar] (200) NOT NULL,
 	[HPLCTestResultId] [int] NULL,
 	[ClinicalDiagnosisId] [int] NULL,
-	[HPLCResultMasterId] [varchar] (200), -- multicheck more than one value
+	[HPLCResultMasterId] [varchar] (200) NULL, -- multicheck more than one value
+	[OthersResult] [varchar](max)NULL, 
 	[IsConsultSeniorPathologist] [bit] NULL,
 	[SeniorPathologistName] [varchar](250) NULL,
 	[SeniorPathologistRemarks] [varchar](max) NULL,

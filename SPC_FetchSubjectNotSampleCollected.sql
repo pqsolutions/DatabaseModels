@@ -68,7 +68,7 @@ BEGIN
 		WHERE SP.[AssignANM_ID] = @UserID  
 			AND (CONVERT(DATE,SP.[DateofRegister],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103))
 			AND (@SubjectType = 0 OR SP.[SubjectTypeID] = @SubjectType)
-			AND SP.[RegisteredFrom] = @RegisteredFrom
+		--	AND SP.[RegisteredFrom] = @RegisteredFrom
 			AND SP.[ID]  IN (SELECT TOP 1 SubjectID  FROM Tbl_SubjectAddressDetail WHERE SubjectID = SP.ID)
 			AND SP.[ID]  IN (SELECT TOP 1 SubjectID FROM Tbl_SubjectPregnancyDetail  WHERE SubjectID = SP.ID) 
 			AND SP.[ID]  IN (SELECT TOP 1 SubjectID FROM Tbl_SubjectParentDetail   WHERE SubjectID  = SP.ID)

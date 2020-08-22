@@ -13,25 +13,27 @@ GO
 CREATE PROCEDURE [dbo].[SPC_FetchAllAssociatedANMByCHC] (@CHCId VARCHAR(10))
 AS
 BEGIN
-	SELECT P.[ID] AS PHCID
+	SELECT RI.[PHCID]
 	,P.[PHCname] AS PHCName
-	,SC.[ID] AS SCID
+	,RI.[SCID]
 	,SC.[SCname] AS SCName
 	,SC.[SCAddress]
 	,SC.[Pincode]
 	,RI.[ID] AS RIID
 	,RI.[RIsite] AS RIPoint
-	,(SELECT ID FROM Tbl_UserMaster WHERE  '1' = [dbo].[FN_TableToColumn] ([RIID],',',RI.[ID],'contains')) AS AssignANMID
-	,(SELECT (FirstName +' '+LastName)FROM Tbl_UserMaster WHERE  '1' = [dbo].[FN_TableToColumn] ([RIID],',',RI.[ID],'contains'))AS ANMName
-	,(SELECT ContactNo1 FROM Tbl_UserMaster WHERE  '1' = [dbo].[FN_TableToColumn] ([RIID],',',RI.[ID],'contains'))AS ContactNo
-	,CM.TestingCHCID
-	,C.[CHCname] AS TestingCHC
-	FROM Tbl_CHCMaster CM
-	LEFT JOIN Tbl_CHCMaster C WITH (NOLOCK) ON C.[ID] = CM.[TestingCHCID]
-	LEFT JOIN Tbl_PHCMaster P WITH (NOLOCK) ON P.[CHCID] = CM.[ID]
-	LEFT JOIN Tbl_SCMaster SC WITH (NOLOCK) ON SC.[CHCID] = CM.[ID]
-	LEFT JOIN Tbl_RIMaster RI WITH (NOLOCK) ON SC.[ID] = RI.[SCID]
-	where CM.[ID] = @CHCId
+	,RI.[ANMID] AS AssignANMID
+	,(U.[FirstName] + ' ' +U.[LastName] ) AS ANMName
+	,U.[ContactNo1] AS ContactNo 
+	,RI.TestingCHCID
+	,CM.[CHCname] AS TestingCHC
+	,RI.[CHCID]
+	FROM Tbl_RIMaster RI
+	LEFT JOIN Tbl_CHCMaster C WITH (NOLOCK) ON  C.ID = RI.[CHCID]
+	LEFT JOIN Tbl_SCMaster SC WITH (NOLOCK) ON SC.ID = RI.[SCID]
+	LEFT JOIN Tbl_PHCMaster P WITH (NOLOCK) ON P.ID = RI.[PHCID]
+	LEFT JOIN Tbl_CHCMaster CM WITH (NOLOCK) ON  CM.ID = RI.[TestingCHCID]
+	LEFT JOIN Tbl_UserMaster U WITH (NOLOCK) ON U.ID = RI.[ANMID] 
+	where RI.[CHCID] = @CHCId
 END
 
 

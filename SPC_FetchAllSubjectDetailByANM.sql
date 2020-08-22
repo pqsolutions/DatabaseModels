@@ -1,3 +1,5 @@
+
+
 USE [Eduquaydb]
 GO
 
@@ -5,37 +7,23 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-IF EXISTS (Select 1 from sys.objects where name='SPC_FetchAllSubjectDetailByANM' and [type] = 'p')
-Begin
-	DROP PROCEDURE SPC_FetchAllSubjectDetailByANM 
-End
+IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_FetchAllSubjectDetailByANM' AND [type] = 'p')
+BEGIN
+	DROP PROCEDURE SPC_FetchAllSubjectDetailByANM
+END
 GO
 CREATE PROCEDURE [dbo].[SPC_FetchAllSubjectDetailByANM]
 (
-	@UserId VARCHAR(200)
-	,@FromDate VARCHAR(50)
-	,@ToDate VARCHAR(50)
+	@UserId INT
 )AS
+
 BEGIN
-	DECLARE  @StartDate VARCHAR(50), @EndDate VARCHAR(50)
-	
-	IF @FromDate = NULL OR @FromDate = ''
-	BEGIN
-		SET @StartDate = (SELECT CONVERT(VARCHAR,DATEADD(YEAR ,-1,GETDATE()),103))
-	END
-	ELSE
-	BEGIN
-		SET @StartDate = @FromDate
-	END
-	IF @ToDate = NULL OR @ToDate = ''
-	BEGIN
-		SET @EndDate = (SELECT CONVERT(VARCHAR,GETDATE(),103))
-	END
-	ELSE
-	BEGIN
-		SET @EndDate = @ToDate
-	END
-	SELECT SPRD.[ID] 
+
+	SELECT CASE WHEN ISNULL(SPRD.[DateofRegister],'') = '' THEN '' 
+			 ELSE CONVERT(VARCHAR,SPRD.[DateofRegister],103)
+			 END  AS  [DateofRegister]
+			 ,(SELECT CommonName FROM Tbl_ConstantValues WHERE ID = SPRD.[RegisteredFrom]) AS RegisterBy
+			,SPRD.[ID] 
 			,SPRD.[SubjectTypeID]
 			,STM.[SubjectType]
 			,SPRD.[ChildSubjectTypeID]
@@ -63,9 +51,6 @@ BEGIN
 			,SPRD.[MaritalStatus]
 			,SPRD.[MobileNo]
 			,SPRD.[EmailId]
-			,CASE WHEN ISNULL(SPRD.[DateofRegister],'') = '' THEN '' 
-			 ELSE CONVERT(VARCHAR,SPRD.[DateofRegister],103)
-			 END  AS  [DateofRegister]
 			,SPRD.[SpouseSubjectID]
 			,SPRD.[Spouse_FirstName]
 			,SPRD.[Spouse_MiddleName]
@@ -128,6 +113,9 @@ BEGIN
 			,SPAD.[Standard]
 			,SPAD.[Section]
 			,SPAD.[RollNo]
+			,CASE WHEN ISNULL(SPRD.[DateofRegister],'') = '' THEN '' 
+			 ELSE SPRD.[DateofRegister]
+			 END  AS  [RegisterDate]
 	FROM [dbo].[Tbl_SubjectPrimaryDetail] AS SPRD
 	LEFT JOIN [dbo].[Tbl_SubjectTypeMaster] STM WITH (NOLOCK) ON STM.[ID] = SPRD.[SubjectTypeID]
 	LEFT JOIN [dbo].[Tbl_SubjectTypeMaster] STM1 WITH (NOLOCK) ON STM1.[ID] = SPRD.[ChildSubjectTypeID]
@@ -147,6 +135,8 @@ BEGIN
 	LEFT JOIN [dbo].[Tbl_Gov_IDTypeMaster] GIMM WITH (NOLOCK) ON GIMM.[ID] = SPAD.[Mother_GovIdType_ID]      
 	LEFT JOIN [dbo].[Tbl_Gov_IDTypeMaster] GIMG WITH (NOLOCK) ON GIMG.[ID] = SPAD.[Guardian_GovIdType_ID]       
 	LEFT JOIN [dbo].[Tbl_CommunityMaster] COM WITH (NOLOCK) ON COM.[ID] = SAD.[Community_Id]    
-	WHERE  [SPRD].AssignANM_ID = @UserId --AND SPRD.[IsActive] = 1
-	AND (CONVERT(DATE,SPRD.[DateofRegister],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103))
+	WHERE  [SPRD].AssignANM_ID = @UserId 
+	AND (CONVERT(DATE,SPRD.[DateofRegister],103) BETWEEN DATEADD(MONTH ,-3,GETDATE()) AND GETDATE())
+	AND SPAD.[SubjectID] IN (SELECT ID FROM Tbl_SubjectPrimaryDetail WHERE AssignANM_ID = @UserId)
+	ORDER BY RegisterDate DESC
 END
