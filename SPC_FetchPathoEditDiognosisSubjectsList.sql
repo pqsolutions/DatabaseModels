@@ -5,12 +5,12 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-IF EXISTS (Select 1 from sys.objects where name='SPC_FetchPathoDiognosticSubjectsList' and [type] = 'p')
+IF EXISTS (Select 1 from sys.objects where name='SPC_FetchPathoEditDiognosisSubjectsList' and [type] = 'p')
 Begin
-	DROP PROCEDURE SPC_FetchPathoDiognosticSubjectsList
+	DROP PROCEDURE SPC_FetchPathoEditDiognosisSubjectsList
 End
 GO
-CREATE PROCEDURE [dbo].[SPC_FetchPathoDiognosticSubjectsList]
+CREATE PROCEDURE [dbo].[SPC_FetchPathoEditDiognosisSubjectsList]
 (
 	@CentralLabId INT
 )AS
@@ -23,7 +23,7 @@ BEGIN
 			,SPRD.[RIID]
 			,RM.[RIsite] AS RIPoint
 			,SPRD.[Age] 
-			,HR.[BarcodeNo] 
+			,HD.[BarcodeNo] 
 			,(SPRD.[SubjectTitle] +' '+SPRD.[FirstName] + ' ' + SPRD.[MiddleName] + ' ' + SPRD.[LastName]) AS SubjectName
 			,SPRD.[MobileNo] AS ContactNo
 			,(SPRD.[Spouse_FirstName]+ ' ' + SPRD.[Spouse_MiddleName] + ' ' + SPRD.[Spouse_LastName])AS SpouseName
@@ -45,10 +45,18 @@ BEGIN
 			,HR.[HbD]
 			,HR.[HbF]
 			,HR.[HbS]
-			,HR.[IsNormal]
-			,HR.[ID] AS HPLCTestResultId 
+			,HD.[HPLCTestResultId]
 			,(CONVERT(VARCHAR,HR.[HPLCTestCompletedOn],103)) AS DateofTest
-	FROM [dbo].[Tbl_HPLCTestResult]  HR
+			,HD.[IsNormal]
+			,HD.[ClinicalDiagnosisId]
+			,HD.[IsConsultSeniorPathologist]
+			,HD.[SeniorPathologistName]
+			,HD.[SeniorPathologistRemarks]
+			,HD.[HPLCResultMasterId]
+			,HD.[OthersResult] 
+			,HD.[DiagnosisSummary]
+	FROM [dbo].[Tbl_HPLCDiagnosisResult]   HD	
+	LEFT JOIN [dbo].[Tbl_HPLCTestResult]  HR WITH (NOLOCK) ON HD.[HPLCTestResultId] = HR.[ID]
 	LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SPRD WITH (NOLOCK) ON HR.[UniqueSubjectID] = SPRD.[UniqueSubjectID] 
 	LEFT JOIN [dbo].[Tbl_SubjectAddressDetail] SAD WITH (NOLOCK) ON SAD.[UniqueSubjectID] = SPRD.[UniqueSubjectID] 
 	LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail] SPD WITH (NOLOCK) ON SPD.[UniqueSubjectID] = SPRD.[UniqueSubjectID]
@@ -57,6 +65,5 @@ BEGIN
 	LEFT JOIN [dbo].[Tbl_CHCMaster] CM WITH (NOLOCK) ON CM.[ID] = SPRD.[CHCID] 
 	LEFT JOIN [dbo].[Tbl_CHCMaster] C WITH (NOLOCK) ON C.[ID]  = CM.[TestingCHCID] 
 	LEFT JOIN [dbo].[Tbl_RIMaster] RM WITH (NOLOCK) ON RM.[ID] = SPRD.[RIID]  
-	WHERE  HR.[CentralLabId] = @CentralLabId  AND HR.[ID] NOT IN (SELECT HPLCTestResultId FROM Tbl_HPLCDiagnosisResult)
-	ORDER BY [GestationalAge] DESC
+	WHERE  HD.[CentralLabId] = @CentralLabId  AND HD.[IsDiagnosisComplete] IS NULL
 END

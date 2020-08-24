@@ -12,10 +12,15 @@ End
 GO
 CREATE PROCEDURE [dbo].[SPC_FetchSubjectDetail]
 (
-	@UniqueSubjectID VARCHAR(200)
+	@UserId INT
+	,@UniqueSubjectID VARCHAR(200)
 )AS
 BEGIN
-	SELECT SPRD.[ID] 
+	 SELECT CASE WHEN ISNULL(SPRD.[DateofRegister],'') = '' THEN '' 
+			 ELSE CONVERT(VARCHAR,SPRD.[DateofRegister],103)
+			 END  AS  [DateofRegister]
+			 ,(SELECT CommonName FROM Tbl_ConstantValues WHERE ID = SPRD.[RegisteredFrom]) AS RegisterBy
+			,SPRD.[ID] 
 			,SPRD.[SubjectTypeID]
 			,STM.[SubjectType]
 			,SPRD.[ChildSubjectTypeID]
@@ -43,9 +48,6 @@ BEGIN
 			,SPRD.[MaritalStatus]
 			,SPRD.[MobileNo]
 			,SPRD.[EmailId]
-			,CASE WHEN ISNULL(SPRD.[DateofRegister],'') = '' THEN '' 
-			 ELSE CONVERT(VARCHAR,SPRD.[DateofRegister],103)
-			 END  AS  [DateofRegister]
 			,SPRD.[SpouseSubjectID]
 			,SPRD.[Spouse_FirstName]
 			,SPRD.[Spouse_MiddleName]
@@ -108,6 +110,9 @@ BEGIN
 			,SPAD.[Standard]
 			,SPAD.[Section]
 			,SPAD.[RollNo]
+			,CASE WHEN ISNULL(SPRD.[DateofRegister],'') = '' THEN '' 
+			 ELSE SPRD.[DateofRegister]
+			 END  AS  [RegisterDate]
 			,(SELECT [dbo].[FN_FindResult](SPAD.[UniqueSubjectID],'CBC')) AS CBCTestResult
 			,(SELECT [dbo].[FN_FindResult](SPAD.[UniqueSubjectID],'SST')) AS SSTestResult
 			,(SELECT [dbo].[FN_FindResult](SPAD.[UniqueSubjectID],'HPLC')) AS HPLCTestResult
@@ -130,6 +135,7 @@ BEGIN
 	LEFT JOIN [dbo].[Tbl_Gov_IDTypeMaster] GIMM WITH (NOLOCK) ON GIMM.[ID] = SPAD.[Mother_GovIdType_ID]      
 	LEFT JOIN [dbo].[Tbl_Gov_IDTypeMaster] GIMG WITH (NOLOCK) ON GIMG.[ID] = SPAD.[Guardian_GovIdType_ID]       
 	LEFT JOIN [dbo].[Tbl_CommunityMaster] COM WITH (NOLOCK) ON COM.[ID] = SAD.[Community_Id]    
-	WHERE  (SPRD.[UniqueSubjectID] = @UniqueSubjectID OR SPRD.[MobileNo] = @UniqueSubjectID OR 
-	SPD.[RCHID] = @UniqueSubjectID )
+	WHERE  SPRD.[AssignANM_ID] = @UserId  AND (SPRD.[UniqueSubjectID]  like '%'+ @UniqueSubjectID +'%' OR SPRD.[MobileNo]like '%'+ @UniqueSubjectID +'%' OR 
+	SPD.[RCHID] like '%'+ @UniqueSubjectID +'%' OR SPRD.[FirstName] like '%'+ @UniqueSubjectID +'%' OR
+	SPRD.[LastName] like '%'+ @UniqueSubjectID +'%' ) 
 END

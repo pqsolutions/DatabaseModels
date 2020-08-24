@@ -1586,7 +1586,9 @@ CREATE TABLE [dbo].[Tbl_HPLCDiagnosisResult](
 	[CreatedBy] [int] NULL,
 	[CreatedOn] [datetime] NULL,
 	[UpdatedBy] [int] NULL,
-	[UpdatedOn] [datetime] NULL
+	[UpdatedOn] [datetime] NULL,
+	[IsDiagnosisComplete] [bit] NULL,
+	[DiagnosisCompletedThrough] [varchar] (max) NULL
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC

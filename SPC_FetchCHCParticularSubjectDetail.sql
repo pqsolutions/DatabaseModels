@@ -1,5 +1,3 @@
-
-
 USE [Eduquaydb]
 GO
 
@@ -7,39 +5,21 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_FetchAllSubjectDetailByANM' AND [type] = 'p')
-BEGIN
-	DROP PROCEDURE SPC_FetchAllSubjectDetailByANM
-END
+IF EXISTS (Select 1 from sys.objects where name='SPC_FetchCHCParticularSubjectDetail' and [type] = 'p')
+Begin
+	DROP PROCEDURE SPC_FetchCHCParticularSubjectDetail 
+End
 GO
-CREATE PROCEDURE [dbo].[SPC_FetchAllSubjectDetailByANM]
+CREATE PROCEDURE [dbo].[SPC_FetchCHCParticularSubjectDetail]
 (
 	@UserId INT
-	,@FromDate VARCHAR(50)
-	,@ToDate VARCHAR(50)
-	
+	,@UniqueSubjectID VARCHAR(200)
 )AS
-
+DECLARE @CHCID INT , @RegisterdFrom INT 
 BEGIN
-	DECLARE  @StartDate VARCHAR(50), @EndDate VARCHAR(50)
-	IF @FromDate = NULL OR @FromDate = ''
-	BEGIN
-		SET @StartDate = (SELECT CONVERT(VARCHAR,DATEADD(MONTH ,-3,GETDATE()),103))
-	END
-	ELSE
-	BEGIN
-		SET @StartDate = @FromDate
-	END
-	IF @ToDate = NULL OR @ToDate = ''
-	BEGIN
-		SET @EndDate = (SELECT CONVERT(VARCHAR,GETDATE(),103))
-	END
-	ELSE
-	BEGIN
-		SET @EndDate = @ToDate
-	END
-
-	SELECT CASE WHEN ISNULL(SPRD.[DateofRegister],'') = '' THEN '' 
+	 SET @CHCID =  (SELECT CHCID FROM Tbl_UserMaster WHERE ID = @UserId)
+	 SET @RegisterdFrom = (SELECT ID FROM Tbl_ConstantValues WHERE CommonName = 'CHC' AND comments = 'RegisterFrom')  
+	 SELECT CASE WHEN ISNULL(SPRD.[DateofRegister],'') = '' THEN '' 
 			 ELSE CONVERT(VARCHAR,SPRD.[DateofRegister],103)
 			 END  AS  [DateofRegister]
 			 ,(SELECT CommonName FROM Tbl_ConstantValues WHERE ID = SPRD.[RegisteredFrom]) AS RegisterBy
@@ -158,8 +138,8 @@ BEGIN
 	LEFT JOIN [dbo].[Tbl_Gov_IDTypeMaster] GIMM WITH (NOLOCK) ON GIMM.[ID] = SPAD.[Mother_GovIdType_ID]      
 	LEFT JOIN [dbo].[Tbl_Gov_IDTypeMaster] GIMG WITH (NOLOCK) ON GIMG.[ID] = SPAD.[Guardian_GovIdType_ID]       
 	LEFT JOIN [dbo].[Tbl_CommunityMaster] COM WITH (NOLOCK) ON COM.[ID] = SAD.[Community_Id]    
-	WHERE  [SPRD].AssignANM_ID = @UserId 
-	AND (CONVERT(DATE,SPRD.[DateofRegister],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103))
-	AND SPAD.[SubjectID] IN (SELECT ID FROM Tbl_SubjectPrimaryDetail WHERE AssignANM_ID = @UserId)
-	ORDER BY RegisterDate DESC
+	WHERE  [SPRD].CHCID  = @CHCID AND SPRD.[RegisteredFrom] = @RegisterdFrom   
+	AND (SPRD.[UniqueSubjectID]  like '%'+ @UniqueSubjectID +'%' OR SPRD.[MobileNo]like '%'+ @UniqueSubjectID +'%' OR 
+	SPD.[RCHID] like '%'+ @UniqueSubjectID +'%' OR SPRD.[FirstName] like '%'+ @UniqueSubjectID +'%' OR
+	SPRD.[LastName] like '%'+ @UniqueSubjectID +'%' ) 
 END

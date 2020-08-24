@@ -24,6 +24,7 @@ CREATE PROCEDURE [dbo].[SPC_AddHPLCTest]
 	,@HbS DECIMAL(10,3)
 	,@HbC DECIMAL(10,3)
 	,@HbD DECIMAL(10,3)
+	,@TestCompleteOn VARCHAR(250)
 	,@CreatedBy INT
 )
 AS
@@ -68,7 +69,7 @@ BEGIN
            ,@HbD
            ,@IsNormal
            ,1
-           ,GETDATE()
+           ,CONVERT(DATETIME,@TestCompleteOn,103)
            ,GETDATE()
            ,@CreatedBy)
 	END TRY
