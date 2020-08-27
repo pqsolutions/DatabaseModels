@@ -9,7 +9,7 @@ GO
 
 IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_AddHPLCDiagnosisResultByAutomatic' AND [type] = 'p')
 BEGIN
-	DROP PROCEDURE SPC_AddHPLCDiagnosisResultByAutomatic
+	DROP PROCEDURE SPC_AddHPLCDiagnosisResultByAutomatic 
 END
 GO
 CREATE PROCEDURE [dbo].[SPC_AddHPLCDiagnosisResultByAutomatic] 
@@ -41,7 +41,7 @@ BEGIN
 		CREATE  TABLE #TempTable(code int identity(1,1), id int,hplctestresultid int)
 				
 		INSERT INTO #TempTable(id,hplctestresultid) (SELECT id,hplctestresultid FROM Tbl_HPLCDiagnosisResult
-		WHERE IsDiagnosisComplete IS NULL AND CentralLabId = @CentralLabId  AND hplctestresultid in(SELECT ID FROM Tbl_HPLCTestResult WHERE
+		WHERE (IsDiagnosisComplete IS NULL OR IsDiagnosisComplete = 0) AND CentralLabId = @CentralLabId  AND hplctestresultid in(SELECT ID FROM Tbl_HPLCTestResult WHERE
 		DATEADD(DAY,7,HPLCTestCompletedOn) <= GETDATE()) )
 		
 		SELECT @TotalCount = COUNT(code) FROM #TempTable
@@ -62,7 +62,7 @@ BEGIN
 			BEGIN
 				
 				SELECT @IndexVar1 = @IndexVar1 + 1
-				SELECT @CurrentIndex = Value FROM  [dbo].[FN_Split](@GetHPLCResultMasterId,',') WHERE id = @Indexvar
+				SELECT @CurrentIndex = Value FROM  [dbo].[FN_Split](@GetHPLCResultMasterId,',') WHERE id = @Indexvar1
 				SELECT @ResultName = HPLCResultName FROM Tbl_HPLCResultMaster WHERE ID = CAST(@CurrentIndex AS INT)
 				IF @ResultName = 'Beta Thalassemia' OR @ResultName = 'Sickle Cell Disease'
 				BEGIN
@@ -76,39 +76,41 @@ BEGIN
 				BEGIN
 					SET @Results = @Results + @ResultName + ', '
 				END
-			END
-			SET @HPLCResults = (SELECT LEFT(@Results,LEN(@Results)-1))
-			
-			UPDATE Tbl_HPLCDiagnosisResult  SET 
-				IsDiagnosisComplete = 1 
-				,UpdatedBy = CreatedBy   
-				,UpdatedOn = GETDATE()
-				,DiagnosisCompletedThrough = 'Automatically updated Diagnosis Result, because HPLC Test completed more than 7 days'
-			WHERE ID = @CurrentHPLCDiagnosisId
-			
-			UPDATE Tbl_HPLCTestResult SET 
-					IsPositive = @IsPositive
-					,HPLCResult = @HPLCResults
+				
+				SET @HPLCResults = (SELECT LEFT(@Results,LEN(@Results)-1))
+				
+				UPDATE Tbl_HPLCDiagnosisResult  SET 
+					IsDiagnosisComplete = 1 
+					,UpdatedBy = CreatedBy   
 					,UpdatedOn = GETDATE()
-					,UpdatedToANM = NULL
-					,HPLCResultUpdatedOn = GETDATE()
-					,ResultUpdatedPathologistId = ResultUpdatedPathologistId  
-			WHERE ID = @CurrentHPLCTestResultId
-			
-			IF @IsPositive = 0
-			BEGIN
-				SET @HPLCStatus = 'N'
+					,DiagnosisCompletedThrough = 'Automatically updated Diagnosis Result, because HPLC Test completed more than 7 days'
+				WHERE ID = @CurrentHPLCDiagnosisId
+				
+				UPDATE Tbl_HPLCTestResult SET 
+						IsPositive = @IsPositive
+						,HPLCResult = @HPLCResults
+						,UpdatedOn = GETDATE()
+						,UpdatedToANM = NULL
+						,HPLCResultUpdatedOn = GETDATE()
+						,ResultUpdatedPathologistId = ResultUpdatedPathologistId  
+				WHERE ID = @CurrentHPLCTestResultId
+				
+				IF @IsPositive = 0
+				BEGIN
+					SET @HPLCStatus = 'N'
+				END
+				ELSE
+				BEGIN
+					SET @HPLCStatus = 'P'
+				END
+				UPDATE Tbl_PositiveResultSubjectsDetail SET 
+						HPLCStatus = @HPLCStatus
+						,HPLCTestResult = @HPLCResults 
+						,HPLCUpdatedOn = GETDATE()
+						,IsActive = 1
+				WHERE BarcodeNo = @BarcodeNo
 			END
-			ELSE
-			BEGIN
-				SET @HPLCStatus = 'P'
-			END
-			UPDATE Tbl_PositiveResultSubjectsDetail SET 
-					HPLCStatus = @HPLCStatus
-					,HPLCTestResult = @HPLCResults 
-					,HPLCUpdatedOn = GETDATE()
-					,IsActive = 1
-			WHERE BarcodeNo = @BarcodeNo
+			SET @Results =''
 		END	
 			
 		DROP TABLE #TempTable

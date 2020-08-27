@@ -104,8 +104,9 @@ BEGIN
 	LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail] SPD WITH (NOLOCK) ON SPD.[UniqueSubjectID] = SPRD.[UniqueSubjectID]
 	LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.[SubjectID] = SPRD.[ID]
 	LEFT JOIN [dbo].[Tbl_PositiveResultSubjectsDetail] PRSD WITH (NOLOCK) ON PRSD.[BarcodeNo]  = SC .[BarcodeNo] 
-	WHERE  SPRD.[CHCID] = @CHCId AND SPRD.[RegisteredFrom] = @RegisteredFrom  AND PRSD.[HPLCNotifiedStatus]   != 1 AND PRSD.[HPLCStatus] = 'P'
-	AND (SPRD.[SubjectTypeID] != 1 OR SPRD.[ChildSubjectTypeID] != 1) --AND SPRD.[IsActive] = 1
+	WHERE  SPRD.[CHCID] = @CHCId AND SPRD.[RegisteredFrom] = @RegisteredFrom  AND ( PRSD.[HPLCNotifiedStatus] IS NULL OR PRSD.[HPLCNotifiedStatus] = 0)
+	AND PRSD.[HPLCStatus] = 'P'
+	AND (SPRD.[SubjectTypeID] = 2 OR SPRD.[ChildSubjectTypeID] = 2 OR  SPRD.[ChildSubjectTypeID] = 4) --AND SPRD.[IsActive] = 1
 	
 	ORDER BY [GestationalAge] DESC
 END

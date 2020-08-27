@@ -1733,3 +1733,440 @@ PRIMARY KEY CLUSTERED
 ) ON [PRIMARY]
 
 END
+
+--------------------------------------------------------------------------------------------------------------------------
+
+
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO  
+
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_PrePNDTScheduling' AND [type] = 'U')
+BEGIN
+CREATE TABLE [dbo].[Tbl_PrePNDTScheduling](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[ANWSubjectId] [varchar](250)NULL,
+	[SpouseSubjectId] [varchar](250) NULL,
+	[CounsellorId] [int] NULL,
+	[CounsellingDateTime] [datetime] NULL,
+	[IsCounselled] [bit] NULL,
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
+	
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END
+
+
+--------------------------------------------------------------------------------------------------------------------------
+
+
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO  
+
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_PrePNDTCounselling' AND [type] = 'U')
+BEGIN
+CREATE TABLE [dbo].[Tbl_PrePNDTCounselling](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[AssignedObstetricianId] [int] NULL,
+	[PrePNDTSchedulingId] [int] NULL,
+	[ANWSubjectId] [varchar](250)NULL,
+	[SpouseSubjectId] [varchar](250) NULL,
+	[CounsellorId] [int] NULL,
+	[CounsellingRemarks] [varchar] (max) NULL,
+	[IsPNDTTestdAgreeYes] [bit] NULL,
+	[IsPNDTTestdAgreeNo] [bit] NULL,
+	[IsPNDTTestdAgreePending] [bit] NULL,
+	[SchedulePNDTDate] [date] NULL,
+	[SchedulePNDTTime] [time](2) NULL,
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
+	[IsNotified] [bit] NULL,
+	[NotifiedOn] [datetime] NULL,
+	[NotifiedBy] [int] NULL
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END
+
+
+--------------------------------------------------------------------------------------------------------------------------
+
+
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO  
+
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_PNDTest' AND [type] = 'U')
+BEGIN
+CREATE TABLE [dbo].[Tbl_PNDTest](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[PrePNDTCounsellingId] [int] NULL,
+	[ANWSubjectId] [varchar](250)NULL,
+	[SpouseSubjectId] [varchar](250) NULL,
+	[CounsellorId] [int] NULL,
+	[ObstetricianId] [int] NULL,
+	[ClinicalHistory] [varchar](max) NULL,
+	[Examination] [varchar](max) NULL,
+	[ProcedureofTesting] [varchar](max) NULL,
+	[PNDTDiagnosisId] [int] NULL,
+	[PNDTResultId] [int] NULL,
+	[PNDTComplecationsId] [int] NULL,
+	[OthersComplecations] [varchar] (max) NULL,
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
+	
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END
+
+
+--------------------------------------------------------------------------------------------------------------------------
+
+
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO  
+
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_PostPNDTScheduling' AND [type] = 'U')
+BEGIN
+CREATE TABLE [dbo].[Tbl_PostPNDTScheduling](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[ANWSubjectId] [varchar](250)NULL,
+	[SpouseSubjectId] [varchar](250) NULL,
+	[CounsellorId] [int] NULL,
+	[CounsellingDateTime] [datetime] NULL,
+	[IsCounselled] [bit] NULL,
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
+	
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END
+
+
+--------------------------------------------------------------------------------------------------------------------------
+
+
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO  
+
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_PostPNDTCounselling' AND [type] = 'U')
+BEGIN
+CREATE TABLE [dbo].[Tbl_PostPNDTCounselling](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[AssignedObstetricianId] [int] NULL,
+	[PostPNDTSchedulingId] [int] NULL,
+	[ANWSubjectId] [varchar](250)NULL,
+	[SpouseSubjectId] [varchar](250) NULL,
+	[CounsellorId] [int] NULL,
+	[CounsellingRemarks] [varchar] (max) NULL,
+	[IsMTPTestdAgreedYes] [bit] NULL,
+	[IsMTPTestdAgreedNo] [bit] NULL,
+	[IsMTPTestdAgreedPending] [bit] NULL,
+	[ScheduleMTPDate] [date] NULL,
+	[ScheduleMTPTime] [time](2) NULL,
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
+	[IsNotified] [bit] NULL,
+	[NotifiedOn] [datetime] NULL,
+	[NotifiedBy] [int] NULL
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END
+
+
+--------------------------------------------------------------------------------------------------------------------------
+
+
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO  
+
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_MTPTest' AND [type] = 'U')
+BEGIN
+CREATE TABLE [dbo].[Tbl_MTPTest](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[PostPNDTCounsellingId] [int] NULL,
+	[ANWSubjectId] [varchar](250)NULL,
+	[SpouseSubjectId] [varchar](250) NULL,
+	[CounsellorId] [int] NULL,
+	[ObstetricianId] [int] NULL,
+	[ClinicalHistory] [varchar](max) NULL,
+	[Examination] [varchar](max) NULL,
+	[ProcedureofTesting] [varchar](max) NULL,
+	[MTPComplecationsId] [int] NULL,
+	[DischargeConditionId] [int] NULL,
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
+	[FirstFollowupStatusId] [int] NULL,
+	[FirstStatusUpdatedOn] [datetime] NULL,
+	[SecondFollowupStatusId] [int] NULL,
+	[SecondStatusUpdatedOn] [datetime] NULL,
+	[ThirdFollowupStatusId] [int] NULL,
+	[ThirdStatusUpdatedOn] [datetime] NULL,
+	[IsFollowupCompleted] [bit] NULL
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END
+
+
+--------------------------------------------------------------------------------------------------------------------------
+
+
+
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_PNDTDiagnosisMaster' AND [type] = 'U')
+BEGIN
+
+CREATE TABLE [dbo].[Tbl_PNDTDiagnosisMaster](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[DiagnosisName] [varchar](250) NOT NULL,	
+	[Createdon] [datetime] NULL,
+	[Createdby] [int] NULL,
+	[Updatedon] [datetime] NULL,
+	[Updatedby] [int] NULL,
+	[Comments] [varchar](max) NULL,
+	[Isactive] [bit] NULL,
+	
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END
+
+-------------------------------------------------------------------------------------------------------------------------
+
+
+
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_PNDTResultMaster' AND [type] = 'U')
+BEGIN
+
+CREATE TABLE [dbo].[Tbl_PNDTResultMaster](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[ResultName] [varchar](250) NOT NULL,	
+	[Createdon] [datetime] NULL,
+	[Createdby] [int] NULL,
+	[Updatedon] [datetime] NULL,
+	[Updatedby] [int] NULL,
+	[Comments] [varchar](max) NULL,
+	[Isactive] [bit] NULL,
+	
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END
+
+-------------------------------------------------------------------------------------------------------------------------
+
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_PNDTComplicationsMaster' AND [type] = 'U')
+BEGIN
+
+CREATE TABLE [dbo].[Tbl_PNDTComplicationsMaster](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[ComplecationsName] [varchar](250) NOT NULL,	
+	[Createdon] [datetime] NULL,
+	[Createdby] [int] NULL,
+	[Updatedon] [datetime] NULL,
+	[Updatedby] [int] NULL,
+	[Comments] [varchar](max) NULL,
+	[Isactive] [bit] NULL,
+	
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END
+
+-------------------------------------------------------------------------------------------------------------------------
+
+
+
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_MTPComplicationsMaster' AND [type] = 'U')
+BEGIN
+
+CREATE TABLE [dbo].[Tbl_MTPComplicationsMaster](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[ComplecationsName] [varchar](250) NOT NULL,	
+	[Createdon] [datetime] NULL,
+	[Createdby] [int] NULL,
+	[Updatedon] [datetime] NULL,
+	[Updatedby] [int] NULL,
+	[Comments] [varchar](max) NULL,
+	[Isactive] [bit] NULL,
+	
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END
+
+-------------------------------------------------------------------------------------------------------------------------
+
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_DischargeConditionMaster' AND [type] = 'U')
+BEGIN
+
+CREATE TABLE [dbo].[Tbl_DischargeConditionMaster](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[DischargeConditionName] [varchar](250) NOT NULL,	
+	[Createdon] [datetime] NULL,
+	[Createdby] [int] NULL,
+	[Updatedon] [datetime] NULL,
+	[Updatedby] [int] NULL,
+	[Comments] [varchar](max) NULL,
+	[Isactive] [bit] NULL,
+	
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END
+
+-------------------------------------------------------------------------------------------------------------------------
+
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_UserDistrictMaster' AND [type] = 'U')
+BEGIN
+
+CREATE TABLE [dbo].[Tbl_UserDistrictMaster](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[UserId] [int] NULL,
+	[DistrictId] [int] NULL,
+	[Createdon] [datetime] NULL,
+	[Createdby] [int] NULL,
+	[Updatedon] [datetime] NULL,
+	[Updatedby] [int] NULL,
+	[Comments] [varchar](max) NULL,
+	[Isactive] [bit] NULL,
+	
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END

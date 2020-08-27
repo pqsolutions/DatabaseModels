@@ -65,5 +65,5 @@ BEGIN
 	LEFT JOIN [dbo].[Tbl_CHCMaster] CM WITH (NOLOCK) ON CM.[ID] = SPRD.[CHCID] 
 	LEFT JOIN [dbo].[Tbl_CHCMaster] C WITH (NOLOCK) ON C.[ID]  = CM.[TestingCHCID] 
 	LEFT JOIN [dbo].[Tbl_RIMaster] RM WITH (NOLOCK) ON RM.[ID] = SPRD.[RIID]  
-	WHERE  HD.[CentralLabId] = @CentralLabId  AND HD.[IsDiagnosisComplete] IS NULL
+	WHERE  HD.[CentralLabId] = @CentralLabId  AND ( HD.[IsDiagnosisComplete] IS NULL  OR  HD.[IsDiagnosisComplete] = 0)
 END

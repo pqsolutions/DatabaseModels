@@ -62,7 +62,7 @@ BEGIN
 	LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.[SubjectID] = SP.[ID]
 	LEFT JOIN [dbo].[Tbl_PositiveResultSubjectsDetail] PRSD WITH (NOLOCK) ON PRSD.[BarcodeNo]  = SC .[BarcodeNo]
 	WHERE  SP.[AssignANM_ID] = @ANMID AND( PRSD.[HPLCNotifiedStatus] IS NULL OR PRSD.[HPLCNotifiedStatus] = 0) AND PRSD.[HPLCStatus] = 'P'
-	AND (SP.[SubjectTypeID] != 1 OR SP.[ChildSubjectTypeID] != 1)  AND SP.[UpdatedToANM] IS NULL
+	AND (SP.[SubjectTypeID] = 2 OR SP.[ChildSubjectTypeID] = 2 OR  SP.[ChildSubjectTypeID] = 4)  AND SP.[UpdatedToANM] IS NULL
 	ORDER BY [GestationalAge] DESC
 	
 END

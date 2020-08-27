@@ -11,12 +11,11 @@ BEGIN
 	DROP PROCEDURE SPC_FetchCHCByDistrict
 END
 GO
-CREATE Procedure [dbo].[SPC_FetchCHCByDistrict] (@Id INT)
+CREATE PROCEDURE [dbo].[SPC_FetchCHCByDistrict] (@Id INT)
 AS
 BEGIN
-	SELECT C.[ID]
-		,(C.[CHC_gov_code] + ' - ' +  C.[CHCname] )AS [CHCname]
-		,C.[CHC_gov_code]
+	SELECT C.[ID] AS Id
+		, C.[CHCname] AS  Name
 	FROM [dbo].[Tbl_CHCMaster] C
 	LEFT JOIN [dbo].[Tbl_DistrictMaster] D WITH (NOLOCK) ON C.DistrictID  = D.ID
 	WHERE C.DistrictID = @Id AND C.[Isactive] = 1
