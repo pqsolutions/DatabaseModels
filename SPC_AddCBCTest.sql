@@ -31,6 +31,7 @@ DECLARE
 	,@SubjectId INT
 	,@CBCStatus CHAR(1)
 	,@HoursDiff INT  -- New logic added for expire
+	,@IsActive BIT
 BEGIN
 	BEGIN TRY
 		
@@ -90,17 +91,28 @@ BEGIN
 			 END
 		 --------------------------------------------------------
 		END
+		
+		SET @HoursDiff = (SELECT DATEDIFF(HH,CONVERT(DATETIME,@SampleDateTime,103) ,CONVERT(DATETIME,@TestCompleteOn,103)) HoursDifference)
+		IF @HoursDiff > 24 
+		BEGIN
+			SET @IsActive = 0
+		END
+		ELSE
+		BEGIN
+			SET @IsActive = 1
+		END
 		IF EXISTS(SELECT 1 FROM Tbl_PositiveResultSubjectsDetail WHERE BarcodeNo = @Barcode )
 		BEGIN
 			UPDATE Tbl_PositiveResultSubjectsDetail SET 
 				CBCStatus = @CBCStatus 
 				,CBCResult = @CBCResult 
 				,CBCUpdatedOn = GETDATE()
-				,IsActive = 1
+				,IsActive = @IsActive 
 			WHERE BarcodeNo = @Barcode 
 		END
 		ELSE
 		BEGIN
+			
 			INSERT INTO Tbl_PositiveResultSubjectsDetail(
 				SubjectID 
 				,UniqueSubjectID
@@ -116,7 +128,7 @@ BEGIN
 				,@CBCResult
 				,@CBCStatus 
 				,GETDATE()
-				,1)				
+				,@IsActive)				
 		END
 		
 	END TRY

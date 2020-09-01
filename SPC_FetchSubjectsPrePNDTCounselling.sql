@@ -6,12 +6,12 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_FetchSubjectsPrePNDTScheduled' AND [type] = 'p')
+IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_FetchSubjectsPrePNDTCounselling' AND [type] = 'p')
 BEGIN
-	DROP PROCEDURE SPC_FetchSubjectsPrePNDTScheduled
+	DROP PROCEDURE SPC_FetchSubjectsPrePNDTCounselling
 END
 GO
-CREATE PROCEDURE [dbo].[SPC_FetchSubjectsPrePNDTScheduled] 
+CREATE PROCEDURE [dbo].[SPC_FetchSubjectsPrePNDTCounselling] 
 (
 	  @UserId INT
 	 ,@DistrictId INT
@@ -39,6 +39,15 @@ BEGIN
 		,(UM.[FirstName] +' '+UM.[LastName] ) AS CounsellorName
 		,(CONVERT(VARCHAR,PPS.[CounsellingDateTime],103) + ' ' +
 		  CONVERT(VARCHAR(5),CONVERT(TIME(2),CounsellingDateTime,103))) AS CounsellingDateTime
+		,PRSD.[CBCResult] AS ANWCBCResult
+		,CASE WHEN PRSD.[SSTStatus] = 'P' THEN 'Positive' ELSE 'Negative' END AS ANWSSTResult
+		,PRSD.[HPLCTestResult] AS ANWHPLCResult
+		,(SELECT Top 1 [CBCResult] FROM Tbl_PositiveResultSubjectsDetail WHERE UniqueSubjectID = SPD.[SpouseSubjectID] 
+			AND HPLCStatus ='P' AND IsActive = 1 ORDER BY ID DESC) AS SpouseCBCResult
+		, CASE WHEN (SELECT TOP 1 [SSTStatus] FROM Tbl_PositiveResultSubjectsDetail WHERE UniqueSubjectID = SPD.[SpouseSubjectID] 
+			AND HPLCStatus ='P' AND IsActive = 1 ORDER BY ID DESC) = 'P' THEN 'Positive' ELSE 'Negative' END AS SpouseSSTResult
+		,(SELECT TOP 1 [HPLCTestResult] FROM Tbl_PositiveResultSubjectsDetail WHERE UniqueSubjectID = SPD.[SpouseSubjectID] 
+			AND HPLCStatus ='P' AND IsActive = 1 ORDER BY ID DESC) AS SpouseHPLCResult
 	FROM Tbl_PositiveResultSubjectsDetail PRSD
 	LEFT JOIN Tbl_SubjectPrimaryDetail SPD WITH (NOLOCK) ON SPD.[UniqueSubjectID] = PRSD.[UniqueSubjectID] 
 	LEFT JOIN Tbl_SubjectPregnancyDetail SPR WITH (NOLOCK) ON SPD.[UniqueSubjectID] = SPR.[UniqueSubjectID] 
@@ -49,6 +58,7 @@ BEGIN
 	AND PRSD.[IsActive]  = 1
 	AND  (SPD.[SubjectTypeID] = 1 OR SPD.ChildSubjectTypeID =1)
 	AND PPS.[IsCounselled] = 0 
+	AND PPS.[ANWSubjectId] NOT IN(SELECT ANWSubjectId FROM Tbl_PrePNDTCounselling)
 	AND (SPD.[DistrictID] = @DistrictId OR SPD.[DistrictID] IN (SELECT DistrictID FROM Tbl_UserDistrictMaster WHERE UserId = @UserId))
 	AND (@CHCId = 0 OR SPD.[CHCID] = @CHCId)
 	AND (@PHCId = 0 OR SPD.[PHCID] = @PHCId)

@@ -15,7 +15,6 @@ GO
 CREATE PROCEDURE [dbo].[SPC_AddHPLCDiagnosisResultByAutomatic] 
 (
 	@CentralLabId INT
-	
 )
 AS
 DECLARE
@@ -41,7 +40,7 @@ BEGIN
 		CREATE  TABLE #TempTable(code int identity(1,1), id int,hplctestresultid int)
 				
 		INSERT INTO #TempTable(id,hplctestresultid) (SELECT id,hplctestresultid FROM Tbl_HPLCDiagnosisResult
-		WHERE (IsDiagnosisComplete IS NULL OR IsDiagnosisComplete = 0) AND CentralLabId = @CentralLabId  AND hplctestresultid in(SELECT ID FROM Tbl_HPLCTestResult WHERE
+		WHERE (IsDiagnosisComplete IS NULL OR IsDiagnosisComplete = 0) AND CentralLabId = @CentralLabId  AND hplctestresultid IN(SELECT ID FROM Tbl_HPLCTestResult WHERE
 		DATEADD(DAY,7,HPLCTestCompletedOn) <= GETDATE()) )
 		
 		SELECT @TotalCount = COUNT(code) FROM #TempTable

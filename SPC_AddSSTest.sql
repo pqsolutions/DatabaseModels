@@ -24,6 +24,7 @@ CREATE PROCEDURE [dbo].[SPC_AddSSTest]
 AS
 DECLARE
 	@SubjectId INT
+	,@SSTStatus CHAR(1)
 BEGIN
 	BEGIN TRY
 		SELECT @SubjectId = ID FROM Tbl_SubjectPrimaryDetail WHERE UniqueSubjectID = @UniqueSubjectId 
@@ -45,34 +46,37 @@ BEGIN
 			,GETDATE(),
 			@CreatedBy)
 			
-		IF(@IsPositive = 1)
+		IF @IsPositive = 1
 		BEGIN
-			IF EXISTS(SELECT 1 FROM Tbl_PositiveResultSubjectsDetail WHERE BarcodeNo = @Barcode )
-			BEGIN
-				UPDATE Tbl_PositiveResultSubjectsDetail SET 
-					SSTStatus  = 'P'
-					,SSTUpdatedOn = GETDATE()
-					,IsActive = 1
-				WHERE BarcodeNo = @Barcode 
-			END
-			ELSE
-			BEGIN
-				INSERT INTO Tbl_PositiveResultSubjectsDetail(
-					SubjectID 
-					,UniqueSubjectID
-					,BarcodeNo
-					,SSTStatus 
-					,SSTUpdatedOn
-					,IsActive)
-				VALUES(
-					@SubjectId
-					,@UniqueSubjectId
-					,@Barcode
-					,'P'
-					,GETDATE()
-					,1)	
-			END
+			SET @SSTStatus = 'P'
 		END
+		ELSE
+		BEGIN
+			SET @SSTStatus = 'N'
+		END
+		IF EXISTS(SELECT 1 FROM Tbl_PositiveResultSubjectsDetail WHERE BarcodeNo = @Barcode )
+		BEGIN
+			UPDATE Tbl_PositiveResultSubjectsDetail SET 
+				SSTStatus  = @SSTStatus
+				,SSTUpdatedOn = GETDATE()
+			WHERE BarcodeNo = @Barcode 
+		END
+		ELSE
+		BEGIN
+			INSERT INTO Tbl_PositiveResultSubjectsDetail(
+				SubjectID 
+				,UniqueSubjectID
+				,BarcodeNo
+				,SSTStatus 
+				,SSTUpdatedOn)
+			VALUES(
+				@SubjectId
+				,@UniqueSubjectId
+				,@Barcode
+				,@SSTStatus
+				,GETDATE())	
+		END
+		
 		
 	END TRY
 	BEGIN CATCH

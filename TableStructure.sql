@@ -1789,9 +1789,9 @@ CREATE TABLE [dbo].[Tbl_PrePNDTCounselling](
 	[SpouseSubjectId] [varchar](250) NULL,
 	[CounsellorId] [int] NULL,
 	[CounsellingRemarks] [varchar] (max) NULL,
-	[IsPNDTTestdAgreeYes] [bit] NULL,
-	[IsPNDTTestdAgreeNo] [bit] NULL,
-	[IsPNDTTestdAgreePending] [bit] NULL,
+	[IsPNDTAgreeYes] [bit] NULL,
+	[IsPNDTAgreeNo] [bit] NULL,
+	[IsPNDTAgreePending] [bit] NULL,
 	[SchedulePNDTDate] [date] NULL,
 	[SchedulePNDTTime] [time](2) NULL,
 	[CreatedBy] [int] NULL,
@@ -1800,7 +1800,11 @@ CREATE TABLE [dbo].[Tbl_PrePNDTCounselling](
 	[UpdatedOn] [datetime] NULL,
 	[IsNotified] [bit] NULL,
 	[NotifiedOn] [datetime] NULL,
-	[NotifiedBy] [int] NULL
+	[NotifiedBy] [int] NULL,
+	[FileName] [varchar](max) NULL,
+	[FileData] [varbinary](max) NULL,
+	[IsActive] [bit] NULL,
+	[ReasonForClose] [varchar] (max) NULL
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
@@ -1811,7 +1815,6 @@ END
 
 
 --------------------------------------------------------------------------------------------------------------------------
-
 
 USE [Eduquaydb]
 GO
@@ -1832,11 +1835,17 @@ CREATE TABLE [dbo].[Tbl_PNDTest](
 	[ObstetricianId] [int] NULL,
 	[ClinicalHistory] [varchar](max) NULL,
 	[Examination] [varchar](max) NULL,
-	[ProcedureofTesting] [varchar](max) NULL,
+	[ProcedureofTestingId] [int] NULL,
+	[OthersProcedureofTesting] [varchar](max) NULL,
 	[PNDTDiagnosisId] [int] NULL,
 	[PNDTResultId] [int] NULL,
-	[PNDTComplecationsId] [int] NULL,
+	[PNDTComplecationsId] [varchar](100) NULL,
 	[OthersComplecations] [varchar] (max) NULL,
+	[IsCompletePNDT] [bit] NULL,
+	[MotherVoided] [bit] NULL,
+	[MotherVitalStable] [bit] NULL,
+	[FoetalHeartRateDocumentScan] [bit] NULL,
+	[PlanForPregnencyContinue] [bit] NULL,
 	[CreatedBy] [int] NULL,
 	[CreatedOn] [datetime] NULL,
 	[UpdatedBy] [int] NULL,
@@ -2008,8 +2017,6 @@ END
 
 -------------------------------------------------------------------------------------------------------------------------
 
-
-
 USE [Eduquaydb]
 GO
 
@@ -2024,7 +2031,40 @@ BEGIN
 
 CREATE TABLE [dbo].[Tbl_PNDTResultMaster](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
-	[ResultName] [varchar](250) NOT NULL,	
+	[ResultName] [varchar](250) NOT NULL,
+	[IsPositive] [bit] NULL,	
+	[Createdon] [datetime] NULL,
+	[Createdby] [int] NULL,
+	[Updatedon] [datetime] NULL,
+	[Updatedby] [int] NULL,
+	[Comments] [varchar](max) NULL,
+	[Isactive] [bit] NULL,
+	
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END
+
+----------------------------------------------------------------------------------------------------------------------
+
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_PNDTProcedureOfTestingMaster' AND [type] = 'U')
+BEGIN
+
+CREATE TABLE [dbo].[Tbl_PNDTProcedureOfTestingMaster](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[ProcedureName] [varchar](250) NOT NULL,
 	[Createdon] [datetime] NULL,
 	[Createdby] [int] NULL,
 	[Updatedon] [datetime] NULL,

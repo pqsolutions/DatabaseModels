@@ -51,6 +51,14 @@ BEGIN
 				,UpdatedBy = @UpdatedBy 
 				,UpdatedOn = GETDATE()
 		WHERE  LTRIM(RTRIM(BarcodeNo)) = LTRIM(RTRIM(@Barcode))
+		
+		IF @IsAccept = 0
+		BEGIN
+			UPDATE Tbl_PositiveResultSubjectsDetail SET
+				IsActive = 0
+			WHERE BarcodeNo = @Barcode 
+		END
+		
 	
 	END TRY
 	BEGIN CATCH

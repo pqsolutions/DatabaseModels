@@ -41,7 +41,7 @@ BEGIN
 				@ANWSubjectId 
 				,@SpouseSubjectId 
 				,@CounsellorId 
-				,@CounsellingDateTime 
+				,(CONVERT(DATETIME,@CounsellingDateTime,103))
 				,0 
 				,@CreatedBy 
 				,GETDATE())
@@ -56,7 +56,7 @@ BEGIN
 		BEGIN
 			UPDATE  Tbl_PrePNDTScheduling SET
 				CounsellorId = @CounsellorId 
-				,CounsellingDateTime = @CounsellingDateTime
+				,CounsellingDateTime = CONVERT(DATETIME,@CounsellingDateTime,103)
 				,UpdatedBy = @CreatedBy 
 				,UpdatedOn = GETDATE()
 			WHERE ANWSubjectId = @ANWSubjectId
