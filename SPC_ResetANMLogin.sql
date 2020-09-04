@@ -28,7 +28,7 @@ BEGIN
 			SET @Msg = 'Reset successfully'
 			
 			UPDATE Tbl_LoginDetails SET LogoutResetTime = GETDATE(),IsReset = 1 
-			WHERE  UserId  = (SELECT TOP 1 UserId FROM Tbl_LoginDetails WHERE UserName = @UserName AND IsReset IS NULL ORDER BY ID DESC)
+			WHERE  ID  = (SELECT TOP 1 ID FROM Tbl_LoginDetails WHERE UserName = @UserName AND IsReset IS NULL ORDER BY ID DESC)
 			
 		END
 		SELECT @Allow AS Allow, @Msg as Msg

@@ -6,12 +6,12 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_FetchSubjectsPrePNDTScheduled' AND [type] = 'p')
+IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_FetchSubjectsPostPNDTScheduled' AND [type] = 'p')
 BEGIN
-	DROP PROCEDURE SPC_FetchSubjectsPrePNDTScheduled
+	DROP PROCEDURE SPC_FetchSubjectsPostPNDTScheduled
 END
 GO
-CREATE PROCEDURE [dbo].[SPC_FetchSubjectsPrePNDTScheduled] 
+CREATE PROCEDURE [dbo].[SPC_FetchSubjectsPostPNDTScheduled] 
 (
 	  @UserId INT
 	 ,@DistrictId INT
@@ -21,7 +21,7 @@ CREATE PROCEDURE [dbo].[SPC_FetchSubjectsPrePNDTScheduled]
 )
 AS
 BEGIN
-	SELECT SPD.[UniqueSubjectID] AS ANWSubjectId
+	SELECT PPS.[ANWSubjectId] 
 		,SPD.[SpouseSubjectID]
 		,(SPD.[FirstName] + ' ' + SPD.[LastName] )AS SubjectName
 		,SPR.[RCHID]
@@ -39,16 +39,14 @@ BEGIN
 		,(UM.[FirstName] +' '+UM.[LastName] ) AS CounsellorName
 		,(CONVERT(VARCHAR,PPS.[CounsellingDateTime],103) + ' ' +
 		  CONVERT(VARCHAR(5),CONVERT(TIME(2),PPS.[CounsellingDateTime],103))) AS CounsellingDateTime
-	FROM Tbl_PositiveResultSubjectsDetail PRSD
-	LEFT JOIN Tbl_SubjectPrimaryDetail SPD WITH (NOLOCK) ON SPD.[UniqueSubjectID] = PRSD.[UniqueSubjectID] 
+		  
+	FROM 	Tbl_PostPNDTScheduling PPS  
+	LEFT JOIN Tbl_SubjectPrimaryDetail SPD WITH (NOLOCK) ON SPD.[UniqueSubjectID] = PPS.[ANWSubjectId]  
 	LEFT JOIN Tbl_SubjectPregnancyDetail SPR WITH (NOLOCK) ON SPD.[UniqueSubjectID] = SPR.[UniqueSubjectID] 
-	LEFT JOIN Tbl_PrePNDTScheduling PPS WITH (NOLOCK) ON SPD.[UniqueSubjectID] = PPS.[ANWSubjectId]
 	LEFT JOIN Tbl_UserMaster UM WITH(NOLOCK) ON PPS.[CounsellorId] = UM.[ID]
-	WHERE SPD.[UniqueSubjectID] IN (SELECT UniqueSubjectID FROM Tbl_PositiveResultSubjectsDetail WHERE HPLCStatus ='P' AND IsActive = 1) 
-	AND SPD.[SpouseSubjectID] IN (SELECT UniqueSubjectID FROM Tbl_PositiveResultSubjectsDetail WHERE HPLCStatus ='P' AND IsActive = 1)
-	AND PRSD.[IsActive]  = 1
-	AND  (SPD.[SubjectTypeID] = 1 OR SPD.ChildSubjectTypeID =1)
+	WHERE (SPD.[SubjectTypeID] = 1 OR SPD.ChildSubjectTypeID =1)
 	AND PPS.[IsCounselled] = 0 
+	AND PPS.[ANWSubjectId] NOT IN (SELECT ANWSubjectId FROM Tbl_PostPNDTCounselling)
 	AND (SPD.[DistrictID] = @DistrictId OR SPD.[DistrictID] IN (SELECT DistrictID FROM Tbl_UserDistrictMaster WHERE UserId = @UserId))
 	AND (@CHCId = 0 OR SPD.[CHCID] = @CHCId)
 	AND (@PHCId = 0 OR SPD.[PHCID] = @PHCId)

@@ -40,7 +40,7 @@ AS
 
 BEGIN
 	BEGIN TRY
-		IF NOT EXISTS(SELECT 1 FROM Tbl_PNDTest  WHERE PrePNDTCounsellingId = @ProcedureOfTestingId)
+		IF NOT EXISTS(SELECT 1 FROM Tbl_PNDTest  WHERE PrePNDTCounsellingId = @PrePNDTCounsellingId )
 		BEGIN
 			INSERT INTO Tbl_PNDTest (
 				PrePNDTCounsellingId 

@@ -48,7 +48,7 @@ BEGIN
 		BEGIN
 			SET @ScheduleDate = CONVERT(DATE,@SchedulePNDTDate,103)
 		END
-		IF ISNULL(@SchedulePNDTDate,'') = ''
+		IF ISNULL(@SchedulePNDTTime,'') = ''
 		BEGIN
 			SET @ScheduleTime = NULL
 		END
@@ -79,6 +79,8 @@ BEGIN
 				,IsPNDTAgreePending
 				,CreatedBy 
 				,CreatedOn
+				,UpdatedBy
+				,UpdatedOn
 				,IsActive
 			)VALUES(
 				@AssignedObstetricianId
@@ -94,6 +96,8 @@ BEGIN
 				,@IsPNDTAgreeYes
 				,@IsPNDTAgreeNo
 				,@IsPNDTAgreePending 
+				,@CreatedBy 
+				,GETDATE()
 				,@CreatedBy 
 				,GETDATE()
 				,1)

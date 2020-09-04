@@ -1926,7 +1926,12 @@ CREATE TABLE [dbo].[Tbl_PostPNDTCounselling](
 	[UpdatedOn] [datetime] NULL,
 	[IsNotified] [bit] NULL,
 	[NotifiedOn] [datetime] NULL,
-	[NotifiedBy] [int] NULL
+	[NotifiedBy] [int] NULL,
+	[FileName] [varchar](max) NULL,
+	[FileData] [varbinary] (max) NULL,
+	[IsFoetalDisease] [bit] NULL,
+	[IsActive] [bit] NULL,
+	[ReasonForClose] [varchar] (max) NULL,
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
@@ -1937,7 +1942,6 @@ END
 
 
 --------------------------------------------------------------------------------------------------------------------------
-
 
 USE [Eduquaydb]
 GO
@@ -1959,7 +1963,7 @@ CREATE TABLE [dbo].[Tbl_MTPTest](
 	[ClinicalHistory] [varchar](max) NULL,
 	[Examination] [varchar](max) NULL,
 	[ProcedureofTesting] [varchar](max) NULL,
-	[MTPComplecationsId] [int] NULL,
+	[MTPComplecationsId] [varchar](100) NULL,
 	[DischargeConditionId] [int] NULL,
 	[CreatedBy] [int] NULL,
 	[CreatedOn] [datetime] NULL,

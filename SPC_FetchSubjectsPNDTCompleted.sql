@@ -12,9 +12,9 @@ BEGIN
 END
 GO
 CREATE PROCEDURE [dbo].[SPC_FetchSubjectsPNDTCompleted] 
-(
-	@UserInput  VARCHAR(MAX)
-)
+--(
+--	@UserInput  VARCHAR(MAX)
+--)
 AS
 BEGIN
 	SELECT SPD.[UniqueSubjectID] AS ANWSubjectId
@@ -82,8 +82,8 @@ BEGIN
 	AND  (SPD.[SubjectTypeID] = 1 OR SPD.ChildSubjectTypeID =1)
 	AND PPC.[IsPNDTAgreeYes] = 1 AND PPC.[IsActive] = 0
 	AND PT.IsCompletePNDT = 1
-	AND (@UserInput = '' OR SPD.[FirstName] LIKE '%'+@UserInput+'%' OR SPD.[LastName] LIKE '%'+@UserInput+'%'  
-	OR PT.[ANWSubjectId] LIKE '%'+@UserInput+'%' OR SPR.[RCHID] LIKE '%'+@UserInput+'%'  OR SPD.[MobileNo] LIKE '%'+@UserInput+'%' )
+	--AND (@UserInput = '' OR SPD.[FirstName] LIKE '%'+@UserInput+'%' OR SPD.[LastName] LIKE '%'+@UserInput+'%'  
+	--OR PT.[ANWSubjectId] LIKE '%'+@UserInput+'%' OR SPR.[RCHID] LIKE '%'+@UserInput+'%'  OR SPD.[MobileNo] LIKE '%'+@UserInput+'%' )
 	ORDER BY PT.[UpdatedOn] DESC
 END
 
