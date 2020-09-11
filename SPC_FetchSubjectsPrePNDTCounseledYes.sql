@@ -29,7 +29,7 @@ BEGIN
 		,SPD.[MobileNo] AS ContactNo
 		,('G'+CONVERT(VARCHAR,SPR.[G])+'-P'+CONVERT(VARCHAR,SPR.[P])+'-L'+CONVERT(VARCHAR,SPR.[L])+'-A'+
 			CONVERT(VARCHAR,SPR.[A])) AS ObstetricScore
-		,(SELECT [dbo].[FN_CalculateGestationalAge](SPD.[ID])) AS [GestationalAge]
+		,CONVERT(DECIMAL(10,1),(SELECT [dbo].[FN_CalculateGestationalAge](SPD.[ID]))) AS [GestationalAge]
 		,SPD.[AssignANM_ID] 
 		,SPD.[Age]
 		,SPR.[ECNumber] 
@@ -76,5 +76,6 @@ BEGIN
 	AND (@PHCId = 0 OR SPD.[PHCID] = @PHCId)
 	AND (@ANMId = 0 OR SPD.[AssignANM_ID] = @ANMId)
 	AND (SELECT [dbo].[FN_CalculateGestationalAgeBySubId](PPC.[ANWSubjectId])) <= 30
+	ORDER BY [GestationalAge] DESC 
 END
 

@@ -36,6 +36,10 @@ BEGIN
 			AND HPLCStatus ='P' AND IsActive = 1 ORDER BY ID DESC) = 'P' THEN 'Positive' ELSE 'Negative' END AS SpouseSSTResult
 		,(SELECT TOP 1 [HPLCTestResult] FROM Tbl_PositiveResultSubjectsDetail WHERE UniqueSubjectID = SPD.[SpouseSubjectID] 
 			AND HPLCStatus ='P' AND IsActive = 1 ORDER BY ID DESC) AS SpouseHPLCResult
+		, (SELECT DiagnosisName FROM Tbl_ClinicalDiagnosisMaster WHERE ID =(SELECT TOP 1 ClinicalDiagnosisId FROM Tbl_HPLCDiagnosisResult
+			WHERE UniqueSubjectID = SPD.[UniqueSubjectID])) AS ANWHPLCDiagnosis
+		,(SELECT DiagnosisName FROM Tbl_ClinicalDiagnosisMaster WHERE ID =(SELECT TOP 1 ClinicalDiagnosisId FROM Tbl_HPLCDiagnosisResult
+			WHERE UniqueSubjectID = SPD.[SpouseSubjectID])) AS SPouseHPLCDiagnosis
 		,(UM1.[FirstName] +' '+UM1.[LastName] ) AS PrePNDTCounsellorName
 		,(CONVERT(VARCHAR,PPC.[UpdatedOn],103) + ' ' +
 		  CONVERT(VARCHAR(5),CONVERT(TIME(2),PPC.[UpdatedOn] ,103))) AS PrePNDTCounsellingDateTime
@@ -72,6 +76,7 @@ BEGIN
 		,MTP.[ObstetricianId] AS MTPObstetricianId
 		,MTP.[CounsellorId] AS MTPCounsellorId
 		,(UMM.[FirstName] +' '+UMM.[LastName] ) AS MTPCounsellorName
+		,(UMMM.[FirstName] +' '+UMMM.[LastName] ) AS MTPObstetricianName
 		,MTP.[ClinicalHistory] AS MTPClinicalHistory
 		,MTP.[Examination] AS MTPExamination
 		,MTP.[ProcedureofTesting] AS MTPProcedureOfTesting
@@ -96,7 +101,8 @@ BEGIN
 	LEFT JOIN Tbl_UserMaster UM1 WITH (NOLOCK) ON UM1.[ID] = PPC.[CounsellorId] 
 	LEFT JOIN Tbl_UserMaster UM2 WITH (NOLOCK) ON UM2.[ID] = PT.[ObstetricianId]
 	LEFT JOIN Tbl_UserMaster UM3 WITH (NOLOCK) ON UM3.[ID] = PPCC.[AssignedObstetricianId]
-	LEFT JOIN Tbl_UserMaster UMM WITH (NOLOCK) ON UMM.[ID] = MTP.[CounsellorId]  
+	LEFT JOIN Tbl_UserMaster UMM WITH (NOLOCK) ON UMM.[ID] = MTP.[CounsellorId]
+	LEFT JOIN Tbl_UserMaster UMMM WITH (NOLOCK) ON UMMM.[ID] = MTP.[ObstetricianId]  
 	WHERE (SPD.[SubjectTypeID] = 1 OR SPD.ChildSubjectTypeID =1)
 	AND PPS.[IsCounselled] = 1 
 	AND PPCC.[IsMTPTestdAgreedYes] = 1 AND PPCC.[IsActive] = 0

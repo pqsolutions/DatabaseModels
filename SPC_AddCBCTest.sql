@@ -108,6 +108,7 @@ BEGIN
 				,CBCResult = @CBCResult 
 				,CBCUpdatedOn = GETDATE()
 				,IsActive = @IsActive 
+				,UpdatedToANM = 0
 			WHERE BarcodeNo = @Barcode 
 		END
 		ELSE
@@ -121,6 +122,7 @@ BEGIN
 				,CBCStatus 
 				,CBCUpdatedOn
 				,IsActive
+				,UpdatedToANM
 				)VALUES(
 				@SubjectId
 				,@UniqueSubjectId
@@ -128,7 +130,8 @@ BEGIN
 				,@CBCResult
 				,@CBCStatus 
 				,GETDATE()
-				,@IsActive)				
+				,@IsActive
+				,0)				
 		END
 		
 	END TRY

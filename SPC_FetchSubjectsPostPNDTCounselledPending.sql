@@ -29,7 +29,7 @@ BEGIN
 		,SPD.[MobileNo] AS ContactNo
 		,('G'+CONVERT(VARCHAR,SPR.[G])+'-P'+CONVERT(VARCHAR,SPR.[P])+'-L'+CONVERT(VARCHAR,SPR.[L])+'-A'+
 			CONVERT(VARCHAR,SPR.[A])) AS ObstetricScore
-		,(SELECT [dbo].[FN_CalculateGestationalAge](SPD.[ID])) AS [GestationalAge]
+		,CONVERT(DECIMAL(10,1),(SELECT [dbo].[FN_CalculateGestationalAge](SPD.[ID]))) AS [GestationalAge]
 		,SPD.[AssignANM_ID] 
 		,SPD.[Age]
 		,SPR.[ECNumber] 
@@ -47,18 +47,18 @@ BEGIN
 		,(CONVERT(VARCHAR,PPC.[UpdatedOn] ,103) + ' ' +
 		  CONVERT(VARCHAR(5),CONVERT(TIME(2),PPC.[UpdatedOn] ,103))) AS PrePNDTCounsellingDateTime
 		  ,'The couple has agreed for Pre-natal Diagnosis' AS PreNDTCounsellingStatus
-		  	,CONVERT(VARCHAR,PPC.[SchedulePNDTDate],103) AS PrePNDTSchedulePNDTDate
-		,CONVERT(VARCHAR(5),PPC.[SchedulePNDTTime]) AS PrePNDSchedulePNDTTime
+		  	,CONVERT(VARCHAR,PPC.[SchedulePNDTDate],103) AS SchedulePNDTDate
+		,CONVERT(VARCHAR(5),PPC.[SchedulePNDTTime]) AS SchedulePNDTTime
 		,PPC.[CounsellingRemarks] AS PrePNDTCounsellingRemarks
 		
 		,PT.[PNDTResultId] 
 		,PRM.[ResultName] AS PNDTResults
 		,CASE WHEN PRM.[IsPositive] = 1 THEN  1 ELSE 0 END AS FoetalDisease 
 		,PT.[ObstetricianId] 
-		,(UM.[FirstName] +' '+UM.[LastName] ) AS PNDTestObstetrician
+		,(UM2.[FirstName] +' '+UM2.[LastName] ) AS PNDTestObstetrician
 		,(CONVERT(VARCHAR,PT.[UpdatedOn],103) + ' ' +
 		  CONVERT(VARCHAR(5),CONVERT(TIME(2),PT.[UpdatedOn],103))) AS PNDDateTime
-		  ,PD.[DiagnosisName] AS PNDTDiagnosisName
+		,PD.[DiagnosisName] AS PNDTDiagnosisName
 		,PPS.[ID] AS PostPNDTSchedulingId
 		,PPS.[CounsellorId] 
 		,(UM.[FirstName] +' '+UM.[LastName] ) AS PostPNDTCounsellorName
@@ -99,4 +99,5 @@ BEGIN
 	AND (@PHCId = 0 OR SPD.[PHCID] = @PHCId)
 	AND (@ANMId = 0 OR SPD.[AssignANM_ID] = @ANMId) 
 	AND (SELECT [dbo].[FN_CalculateGestationalAgeBySubId](PPCC.[ANWSubjectId])) <= 30
+	ORDER BY [GestationalAge] DESC
 END

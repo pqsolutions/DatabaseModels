@@ -72,6 +72,7 @@ BEGIN
 		
 		IF NOT EXISTS(SELECT 1 FROM Tbl_PostPNDTCounselling  WHERE PostPNDTSchedulingId  = @PostPNDTSchedulingId)
 		BEGIN
+						
 			UPDATE Tbl_PostPNDTScheduling SET 
 				IsCounselled = 1
 			WHERE ID = @PostPNDTSchedulingId
@@ -119,9 +120,18 @@ BEGIN
 				,@ReasonForClose 
 				,@IsFoetalDisease)
 				
+			SET @GetId = (SELECT SCOPE_IDENTITY())
+				
 			IF @IsMTPAgreeYes = 1
 			BEGIN
-				SET @GetId = (SELECT SCOPE_IDENTITY())
+				UPDATE Tbl_MTPReferal SET 
+					MTPScheduleDateTime = CONVERT(DATETIME,(@ScheduleMTPDate+ ' ' +@ScheduleMTPTime),103)
+					,IsNotified = 0
+					,UpdatedBy = @CreatedBy
+					,UpdatedOn = GETDATE()
+					,IsMTPAccept = 1
+				WHERE ANWSubjectId = @ANWSubjectId	
+			
 				SELECT CONVERT(VARCHAR,ScheduleMTPDate,103) AS ScheduleMTPDate 
 					,CONVERT(VARCHAR(5),ScheduleMTPTime) AS ScheduleMTPTime
 				FROM Tbl_PostPNDTCounselling 
@@ -129,11 +139,18 @@ BEGIN
 			END
 			ELSE
 			BEGIN
+				UPDATE Tbl_MTPReferal SET 
+					UpdatedBy = @CreatedBy
+					,UpdatedOn = GETDATE()
+					,IsMTPAccept = 0
+					,ReasonForClose = 'Decision Pending / MTP service not agreed'
+				WHERE ANWSubjectId = @ANWSubjectId
 				SELECT '' AS ScheduleMTPDate, '' AS ScheduleMTPTime
 			END 
 		END
 		ELSE
 		BEGIN
+		
 			UPDATE  Tbl_PostPNDTCounselling SET
 				AssignedObstetricianId = @AssignedObstetricianId
 				,CounsellorId = @CounsellorId
@@ -153,6 +170,14 @@ BEGIN
 			
 			IF @IsMTPAgreeYes = 1
 			BEGIN
+				UPDATE Tbl_MTPReferal SET 
+					MTPScheduleDateTime = CONVERT(DATETIME,(@ScheduleMTPDate+ ' ' +@ScheduleMTPTime),103)
+					,IsNotified = 0
+					,UpdatedBy = @CreatedBy
+					,UpdatedOn = GETDATE()
+					,IsMTPAccept = 1
+				WHERE ANWSubjectId = @ANWSubjectId
+			
 				SELECT CONVERT(VARCHAR,ScheduleMTPDate,103) AS ScheduleMTPDate 
 					,CONVERT(VARCHAR(5),ScheduleMTPTime) AS ScheduleMTPTime
 				FROM Tbl_PostPNDTCounselling
@@ -160,6 +185,13 @@ BEGIN
 			END
 			ELSE
 			BEGIN
+				UPDATE Tbl_MTPReferal SET 
+					UpdatedBy = @CreatedBy
+					,UpdatedOn = GETDATE()
+					,IsMTPAccept = 0
+					,ReasonForClose = 'Decision Pending / MTP service not agreed'
+				WHERE ANWSubjectId = @ANWSubjectId
+				
 				SELECT '' AS ScheduleMTPDate, '' AS ScheduleMTPTime
 			END
 		END

@@ -141,6 +141,7 @@ BEGIN
 						,HPLCTestResult = @HPLCResults 
 						,HPLCUpdatedOn = GETDATE()
 						,IsActive = 1
+						,UpdatedToANM = 0
 				WHERE BarcodeNo = @BarcodeNo
 			END
 		END
@@ -213,6 +214,7 @@ BEGIN
 						,HPLCTestResult = @HPLCResults 
 						,HPLCUpdatedOn = GETDATE()
 						,IsActive = 1
+						,UpdatedToANM = 0
 				WHERE BarcodeNo = @BarcodeNo
 			END
 		END

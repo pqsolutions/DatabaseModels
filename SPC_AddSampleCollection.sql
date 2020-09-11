@@ -84,6 +84,7 @@ BEGIN
 					  ,SampleTimeoutExpiry
 					  ,IsRecollected 
 					  ,NotifiedStatus
+					  ,FollowUpStatus
 					  )
 					  VALUES
 					  (@SubjectID
@@ -100,6 +101,7 @@ BEGIN
 					  ,0
 					  ,0
 					  ,'N'
+					  ,0
 					  ,0)
 				SET @tempId = IDENT_CURRENT('Tbl_SampleCollection')
 				SET @Scope_output = 1

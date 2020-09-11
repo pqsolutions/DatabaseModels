@@ -72,6 +72,13 @@ BEGIN
 				,UpdatedOn = GETDATE()
 			WHERE ID = @PostPNDTCounsellingId 
 			
+			UPDATE Tbl_MTPReferal SET 
+				IsMTPCompleted = 1 
+				,ReasonForClose = 'MTP Service Completed'
+				,UpdatedBy = @CreatedBy 
+				,UpdatedOn = GETDATE()
+			WHERE ANWSubjectId = @ANWSubjectId 
+			
 			SELECT 'MTP Service detail submitted successfully' AS MSG
 		END
 		ELSE
@@ -93,6 +100,13 @@ BEGIN
 				,UpdatedBy = @CreatedBy 
 				,UpdatedOn = GETDATE()
 			WHERE ID = @PostPNDTCounsellingId 
+			
+			UPDATE Tbl_MTPReferal SET 
+				IsMTPCompleted = 1 
+				,ReasonForClose = 'MTP Service Completed'
+				,UpdatedBy = @CreatedBy 
+				,UpdatedOn = GETDATE()
+			WHERE ANWSubjectId = @ANWSubjectId 
 			
 			SELECT 'MTP service detail updated successfully' AS MSG
 			

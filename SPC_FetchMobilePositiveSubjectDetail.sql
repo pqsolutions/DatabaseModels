@@ -30,7 +30,7 @@ BEGIN
 		,CASE WHEN PRSD.[HPLCNotifiedOn] IS NULL THEN NULL ELSE CONVERT(VARCHAR, PRSD.[HPLCNotifiedOn],103) END AS NotifiedOn
 		,PRSD.[BarcodeNo] 
 		,PRSD.[HPLCTestResult] 
-		,(SELECT [dbo].[FN_CalculateGestationalAge](SPR.[SubjectID])) AS [GestationalAge]
+		,CONVERT(DECIMAL(10,1),(SELECT [dbo].[FN_CalculateGestationalAge](SPR.[SubjectID]))) AS [GestationalAge]
 	FROM [dbo].[Tbl_SubjectPrimaryDetail] AS SP
 	LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail] SPR WITH (NOLOCK) ON SPR.[UniqueSubjectID] = SP.[UniqueSubjectID]
 	LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.[SubjectID] = SP.[ID]
@@ -56,7 +56,7 @@ BEGIN
 		,CASE WHEN PRSD.[HPLCNotifiedOn] IS NULL THEN NULL ELSE CONVERT(VARCHAR, PRSD.[HPLCNotifiedOn],103) END AS NotifiedOn
 		,PRSD.[BarcodeNo] 
 		,PRSD.[HPLCTestResult] 
-		,(SELECT [dbo].[FN_CalculateGestationalAge](SPR.[SubjectID])) AS [GestationalAge]
+		,CONVERT(DECIMAL(10,1),(SELECT [dbo].[FN_CalculateGestationalAge](SPR.[SubjectID]))) AS [GestationalAge]
 	FROM [dbo].[Tbl_SubjectPrimaryDetail] AS SP
 	LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail] SPR WITH (NOLOCK) ON SPR.[UniqueSubjectID] = SP.[UniqueSubjectID]
 	LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.[SubjectID] = SP.[ID]

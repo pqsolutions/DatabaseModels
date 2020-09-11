@@ -34,7 +34,7 @@ BEGIN
 			,CASE WHEN SPRD.[SubjectTypeID] != 1 AND  SPRD.[ChildSubjectTypeID] = 1 THEN NULL ELSE
 			('G'+CONVERT(VARCHAR,SPD.[G])+'-P'+CONVERT(VARCHAR,SPD.[P])+'-L'+CONVERT(VARCHAR,SPD.[L])+'-A'+
 			CONVERT(VARCHAR,SPD.[A]))END AS ObstetricsScore
-			,(SELECT [dbo].[FN_CalculateGestationalAge](SPD.[SubjectID])) AS [GestationalAge]
+			,CONVERT(DECIMAL(10,1),(SELECT [dbo].[FN_CalculateGestationalAge](SPRD.[ID]))) AS [GestationalAge]
 			,CASE WHEN (SELECT TOP 1 [IsPositive] FROM [dbo] .[Tbl_SSTestResult] WHERE [UniqueSubjectID] = HR.[UniqueSubjectID] ORDER BY ID DESC) = 1 THEN 'Positive' ELSE 'Negative' END  SSTResult
 			,(SELECT TOP 1 [CBCResult] FROM [dbo].[Tbl_CBCTestResult] WHERE [UniqueSubjectID] = HR.[UniqueSubjectID] ORDER BY ID DESC) [CBCResult]
 			,(SELECT TOP 1 [MCV]  FROM [dbo].[Tbl_CBCTestResult] WHERE [UniqueSubjectID] = HR.[UniqueSubjectID] ORDER BY ID DESC) [MCV]
@@ -66,4 +66,5 @@ BEGIN
 	LEFT JOIN [dbo].[Tbl_CHCMaster] C WITH (NOLOCK) ON C.[ID]  = CM.[TestingCHCID] 
 	LEFT JOIN [dbo].[Tbl_RIMaster] RM WITH (NOLOCK) ON RM.[ID] = SPRD.[RIID]  
 	WHERE  HD.[CentralLabId] = @CentralLabId  AND ( HD.[IsDiagnosisComplete] IS NULL  OR  HD.[IsDiagnosisComplete] = 0)
+	ORDER BY [GestationalAge] DESC
 END

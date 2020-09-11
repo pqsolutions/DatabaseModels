@@ -16,24 +16,13 @@ CREATE PROCEDURE [dbo].[SPC_AddResultAcknowledgement]
 )AS
 BEGIN
 	BEGIN TRY
-		IF EXISTS(SELECT TOP 1 * FROM Tbl_CBCTestResult WHERE UniqueSubjectID = @UniqueSubjectId ORDER BY ID DESC)
+		IF EXISTS(SELECT TOP 1 * FROM Tbl_PositiveResultSubjectsDetail WHERE UniqueSubjectID = @UniqueSubjectId ORDER BY ID DESC)
 		BEGIN
-			UPDATE Tbl_CBCTestResult SET 
+			UPDATE Tbl_PositiveResultSubjectsDetail SET 
 				UpdatedToANM = 1
 			WHERE UniqueSubjectID = @UniqueSubjectId
 		END
-		IF EXISTS(SELECT TOP 1 * FROM Tbl_SSTestResult WHERE UniqueSubjectID = @UniqueSubjectId ORDER BY ID DESC)
-		BEGIN
-			UPDATE Tbl_SSTestResult SET 
-				UpdatedToANM = 1
-			WHERE UniqueSubjectID = @UniqueSubjectId
-		END
-		IF EXISTS(SELECT TOP 1 * FROM Tbl_HPLCTestResult WHERE UniqueSubjectID = @UniqueSubjectId ORDER BY ID DESC)
-		BEGIN
-			UPDATE Tbl_HPLCTestResult SET 
-				UpdatedToANM = 1
-			WHERE UniqueSubjectID = @UniqueSubjectId
-		END
+		
 	END TRY
 	BEGIN CATCH
 		IF @@TRANCOUNT > 0

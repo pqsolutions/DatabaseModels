@@ -1037,7 +1037,10 @@ CREATE TABLE [dbo].[Tbl_SampleCollection](
 	[UpdatedBy] [int] NULL,
 	[UpdatedOn] [datetime] NULL,
 	[RejectAt] [varchar](250) NULL,
-	[UpdatedToANM] [bit] NULL
+	[UpdatedToANM] [bit] NULL,
+	[FollowUpBy] [int] NULL,
+	[FollowUpStatus] [bit] NULL,
+	[FollowUpOn] [datetime] NULL,
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
@@ -1725,7 +1728,11 @@ CREATE TABLE [dbo].[Tbl_PositiveResultSubjectsDetail](
 	[HPLCNotifiedStatus] [bit] NULL,
 	[HPLCNotifiedOn] [datetime] NULL,
 	[HPLCNotifiedBy][int] NULL,
-	[IsActive] [bit] NULL
+	[IsActive] [bit] NULL,
+	[UpdatedToANM] [bit] NULL,
+	[FollowUpBy] [int] NULL,
+	[FollowUpStatus] [bit] NULL,
+	[FollowUpOn] [datetime] NULL
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
@@ -1815,6 +1822,48 @@ END
 
 
 --------------------------------------------------------------------------------------------------------------------------
+
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO  
+
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_PrePNDTReferal' AND [type] = 'U')
+BEGIN
+CREATE TABLE [dbo].[Tbl_PrePNDTReferal](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[ANWSubjectId] [varchar](250)NULL,
+	[SpouseSubjectId] [varchar](250) NULL,
+	[PrePNDTCounsellingDate] [datetime] NULL,
+	[PNDTScheduleDateTime] [datetime] NULL,
+	[IsPNDTAccept] [bit] NULL,
+	[IsPNDTCompleted] [bit] NULL,
+	[ReasonForClose] [varchar](max) NULL,
+	[IsNotified] [bit] NULL,
+	[NotifiedOn] [datetime] NULL,
+	[NotifiedByANM] [int] NULL,
+	[FollowUpStatus] [bit] NULL,
+	[FollowUpOn] [datetime] NULL,
+	[FollowUpByDC] [int] NULL,
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
+	
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END
+
+
+--------------------------------------------------------------------------------------------------------------------------
+
 
 USE [Eduquaydb]
 GO
@@ -1942,6 +1991,48 @@ END
 
 
 --------------------------------------------------------------------------------------------------------------------------
+
+
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO  
+
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_MTPReferal' AND [type] = 'U')
+BEGIN
+CREATE TABLE [dbo].[Tbl_MTPReferal](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[ANWSubjectId] [varchar](250)NULL,
+	[SpouseSubjectId] [varchar](250) NULL,
+	[PostPNDTCounsellingDate] [datetime] NULL,
+	[MTPScheduleDateTime] [datetime] NULL,
+	[IsNotified] [bit] NULL,
+	[NotifiedOn] [datetime] NULL,
+	[NotifiedByANM] [int] NULL,
+	[FollowUpStatus] [bit] NULL,
+	[FollowUpOn] [datetime] NULL,
+	[FollowUpByDC] [int] NULL,
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
+	[IsMTPAccept] [bit] NULL,
+	[IsMTPCompleted] [bit] NULL,
+	[ReasonForClose] [varchar](max) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END
+
+
+--------------------------------------------------------------------------------------------------------------------------
+
 
 USE [Eduquaydb]
 GO

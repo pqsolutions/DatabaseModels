@@ -196,7 +196,6 @@ BEGIN
 					  ,Spouse_GovIdDetail = @Spouse_GovIdDetail
 					  ,AssignANM_ID = @AssignANM_ID
 					  ,DateofRegister = @DateofReg
-					  ,RegisteredFrom = @RegisteredFrom 				  				 
 					  ,UpdatedBy = @UpdatedBy
 					  ,UpdatedOn = GETDATE()
 					  ,IsActive = @IsActive

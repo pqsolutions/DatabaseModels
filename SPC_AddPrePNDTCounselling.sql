@@ -59,6 +59,7 @@ BEGIN
 		
 		IF NOT EXISTS(SELECT 1 FROM Tbl_PrePNDTCounselling  WHERE PrePNDTSchedulingId  = @PrePNDTSchedulingId)
 		BEGIN
+		
 			UPDATE Tbl_PrePNDTScheduling SET 
 				IsCounselled = 1
 			WHERE ID = @PrePNDTSchedulingId
@@ -101,10 +102,18 @@ BEGIN
 				,@CreatedBy 
 				,GETDATE()
 				,1)
+				SET @GetId = (SELECT SCOPE_IDENTITY())
 				
 			IF @IsPNDTAgreeYes = 1
 			BEGIN
-				SET @GetId = (SELECT SCOPE_IDENTITY())
+				UPDATE Tbl_PrePNDTReferal SET 
+					PNDTScheduleDateTime = CONVERT(DATETIME,(@SchedulePNDTDate+ ' ' +@SchedulePNDTTime),103)
+					,IsNotified = 0
+					,UpdatedBy = @CreatedBy
+					,UpdatedOn = GETDATE()
+					,IsPNDTAccept = 1
+				WHERE ANWSubjectId = @ANWSubjectId
+				
 				SELECT CONVERT(VARCHAR,SchedulePNDTDate,103) AS SchedulePNDTDate 
 					,CONVERT(VARCHAR(5),SchedulePNDTTime) AS SchedulePNDTTime
 				FROM Tbl_PrePNDTCounselling 
@@ -112,11 +121,19 @@ BEGIN
 			END
 			ELSE
 			BEGIN
+				UPDATE Tbl_PrePNDTReferal SET 
+					UpdatedBy = @CreatedBy
+					,UpdatedOn = GETDATE()
+					,IsPNDTAccept = 0
+					,ReasonForClose = 'Decision Pending / PNDT Not Agreed'
+				WHERE ANWSubjectId = @ANWSubjectId
+			
 				SELECT '' AS SchedulePNDTDate, '' AS SchedulePNDTTime
 			END 
 		END
 		ELSE
 		BEGIN
+			
 			UPDATE  Tbl_PrePNDTCounselling SET
 				AssignedObstetricianId = @AssignedObstetricianId
 				,CounsellorId = @CounsellorId
@@ -135,6 +152,15 @@ BEGIN
 			
 			IF @IsPNDTAgreeYes = 1
 			BEGIN
+			
+				UPDATE Tbl_PrePNDTReferal SET 
+					PNDTScheduleDateTime = CONVERT(DATETIME,(@SchedulePNDTDate+ ' ' +@SchedulePNDTTime),103)
+					,IsNotified = 0
+					,UpdatedBy = @CreatedBy
+					,UpdatedOn = GETDATE()
+					,IsPNDTAccept = 1
+				WHERE ANWSubjectId = @ANWSubjectId
+			
 				SELECT CONVERT(VARCHAR,SchedulePNDTDate,103) AS SchedulePNDTDate 
 					,CONVERT(VARCHAR(5),SchedulePNDTTime) AS SchedulePNDTTime
 				FROM Tbl_PrePNDTCounselling
@@ -142,6 +168,13 @@ BEGIN
 			END
 			ELSE
 			BEGIN
+				UPDATE Tbl_PrePNDTReferal SET 
+					UpdatedBy = @CreatedBy
+					,UpdatedOn = GETDATE()
+					,IsPNDTAccept = 0
+					,ReasonForClose = 'Decision Pending / PNDT Not Agreed'
+				WHERE ANWSubjectId = @ANWSubjectId	
+			
 				SELECT '' AS SchedulePNDTDate, '' AS SchedulePNDTTime
 			END
 		END

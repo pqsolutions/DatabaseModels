@@ -28,7 +28,7 @@ BEGIN
 		,SPD.[MobileNo] AS ContactNo
 		,('G'+CONVERT(VARCHAR,SPR.[G])+'-P'+CONVERT(VARCHAR,SPR.[P])+'-L'+CONVERT(VARCHAR,SPR.[L])+'-A'+
 			CONVERT(VARCHAR,SPR.[A])) AS ObstetricScore
-		,(SELECT [dbo].[FN_CalculateGestationalAge](SPD.[ID])) AS [GestationalAge]
+		,CONVERT(DECIMAL(10,1),(SELECT [dbo].[FN_CalculateGestationalAge](SPD.[ID]))) AS [GestationalAge]
 		,SPD.[AssignANM_ID] 
 		,SPD.[Age]
 		,SPR.[ECNumber] 
@@ -42,6 +42,10 @@ BEGIN
 			AND HPLCStatus ='P' AND IsActive = 1 ORDER BY ID DESC) = 'P' THEN 'Positive' ELSE 'Negative' END AS SpouseSSTResult
 		,(SELECT TOP 1 [HPLCTestResult] FROM Tbl_PositiveResultSubjectsDetail WHERE UniqueSubjectID = SPD.[SpouseSubjectID] 
 			AND HPLCStatus ='P' AND IsActive = 1 ORDER BY ID DESC) AS SpouseHPLCResult
+		, (SELECT DiagnosisName FROM Tbl_ClinicalDiagnosisMaster WHERE ID =(SELECT TOP 1 ClinicalDiagnosisId FROM Tbl_HPLCDiagnosisResult
+			WHERE UniqueSubjectID = SPD.[UniqueSubjectID])) AS ANWHPLCDiagnosis
+		,(SELECT DiagnosisName FROM Tbl_ClinicalDiagnosisMaster WHERE ID =(SELECT TOP 1 ClinicalDiagnosisId FROM Tbl_HPLCDiagnosisResult
+			WHERE UniqueSubjectID = SPD.[SpouseSubjectID])) AS SPouseHPLCDiagnosis
 		,(UM1.[FirstName] +' '+UM1.[LastName] ) AS PrePNDTCounsellorName
 		,(CONVERT(VARCHAR,PPC.[UpdatedOn],103) + ' ' +
 		  CONVERT(VARCHAR(5),CONVERT(TIME(2),PPC.[UpdatedOn] ,103))) AS PrePNDTCounsellingDateTime
@@ -74,15 +78,18 @@ BEGIN
 		,CONVERT(VARCHAR(5),PPCC.[ScheduleMTPTime]) AS ScheduleMTPTime
 		,PPCC.[CounsellingRemarks] AS PostPNDTCounsellingRemarks
 		,'The couple has agreed for MTP Service' AS PostPNDTCounsellingStatus 
-		,MTP.[ID] AS MTPID
+			,MTP.[ID] AS MTPID
 		,MTP.[ObstetricianId] AS MTPObstetricianId
 		,MTP.[CounsellorId] AS MTPCounsellorId
 		,(UMM.[FirstName] +' '+UMM.[LastName] ) AS MTPCounsellorName
+		,(UMMM.[FirstName] +' '+UMMM.[LastName] ) AS MTPObstetricianName
 		,MTP.[ClinicalHistory] AS MTPClinicalHistory
 		,MTP.[Examination] AS MTPExamination
 		,MTP.[ProcedureofTesting] AS MTPProcedureOfTesting
 		,MTP.[DischargeConditionId]
+		,DCM.[DischargeConditionName]
 		,MTP.[MTPComplecationsId] 
+		,(SELECT [dbo].[FN_GetMTPSubjectComplications](MTP.[ID])) AS MTPComplications
 	FROM Tbl_MTPTest  MTP
 	LEFT JOIN  Tbl_PostPNDTCounselling  PPCC WITH (NOLOCK) ON PPCC.[ID] = MTP.[PostPNDTCounsellingId] 
 	LEFT JOIN Tbl_PostPNDTScheduling PPS WITH (NOLOCK) ON PPS.[ANWSubjectId] = PPCC.[ANWSubjectId] 
@@ -95,11 +102,13 @@ BEGIN
 	LEFT JOIN Tbl_PNDTResultMaster  PRM WITH (NOLOCK) ON PRM.[ID] = PT.[PNDTResultId]
 	LEFT JOIN Tbl_PNDTProcedureOfTestingMaster POT  WITH (NOLOCK) ON POT.[ID] = PT.[ProcedureofTestingId] 
 	LEFT JOIN Tbl_PNDTDiagnosisMaster PD WITH (NOLOCK) ON PD.[ID] = PT.[PNDTDiagnosisId] 
+	LEFT JOIN Tbl_DischargeConditionMaster DCM WITH (NOLOCK) ON DCM.[ID] = MTP.[DischargeConditionId] 
 	LEFT JOIN Tbl_UserMaster UM WITH(NOLOCK) ON PPS.[CounsellorId] = UM.[ID] 
 	LEFT JOIN Tbl_UserMaster UM1 WITH (NOLOCK) ON UM1.[ID] = PPC.[CounsellorId] 
 	LEFT JOIN Tbl_UserMaster UM2 WITH (NOLOCK) ON UM2.[ID] = PT.[ObstetricianId]
 	LEFT JOIN Tbl_UserMaster UM3 WITH (NOLOCK) ON UM3.[ID] = PPCC.[AssignedObstetricianId]
-	LEFT JOIN Tbl_UserMaster UMM WITH (NOLOCK) ON UMM.[ID] = MTP.[CounsellorId]  
+	LEFT JOIN Tbl_UserMaster UMM WITH (NOLOCK) ON UMM.[ID] = MTP.[CounsellorId]
+	LEFT JOIN Tbl_UserMaster UMMM WITH (NOLOCK) ON UMMM.[ID] = MTP.[ObstetricianId]  
 	WHERE (SPD.[SubjectTypeID] = 1 OR SPD.ChildSubjectTypeID =1)
 	AND PPS.[IsCounselled] = 1 
 	AND PPCC.[IsMTPTestdAgreedYes] = 1 AND PPCC.[IsActive] = 0
@@ -108,4 +117,5 @@ BEGIN
 	AND (@PHCId = 0 OR SPD.[PHCID] = @PHCId)
 	AND (@ANMId = 0 OR SPD.[AssignANM_ID] = @ANMId) 
 	AND (SELECT [dbo].[FN_CalculateGestationalAgeBySubId](PPCC.[ANWSubjectId])) <= 30
+	ORDER BY [GestationalAge] DESC
 END

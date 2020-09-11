@@ -29,17 +29,75 @@ CREATE PROCEDURE [dbo].[SPC_AddPNDTest]
 	,@OthersComplecations VARCHAR(MAX)
 	,@PNDTDiagnosisId INT
 	,@PNDTResultId INT
-	,@MotherVoided BIT
-	,@MotherVitalStable BIT
-	,@FoetalHeartRateDocumentScan BIT
-	,@PlanForPregnencyContinue BIT
+	,@MotherVoided VARCHAR(10)
+	,@MotherVitalStable VARCHAR(10)
+	,@FoetalHeartRateDocumentScan VARCHAR(10)
+	,@PlanForPregnencyContinue VARCHAR(10)
 	,@IsCompletePNDT BIT
 	,@CreatedBy INT
 )
 AS
-
+DECLARE @MV BIT
+		,@MVS BIT
+		,@FHRDS BIT
+		,@PPC BIT
+		
 BEGIN
 	BEGIN TRY
+	
+	IF ISNULL(@MotherVoided,'') = ''
+	BEGIN 
+		SET @MV = NULL
+	END
+	ELSE IF UPPER(@MotherVoided)= 'TRUE'
+	BEGIN
+		SET @MV = 1
+	END
+	ELSE
+	BEGIN
+		SET @MV = 0
+	END
+	----------------------------
+	IF ISNULL(@MotherVitalStable,'') = ''
+	BEGIN 
+		SET @MVS  = NULL
+	END
+	ELSE IF UPPER(@MotherVitalStable)= 'TRUE'
+	BEGIN
+		SET @MVS = 1
+	END
+	ELSE
+	BEGIN
+		SET @MVS = 0
+	END
+	
+	----------------------------
+	IF ISNULL(@FoetalHeartRateDocumentScan,'') = ''
+	BEGIN 
+		SET @FHRDS   = NULL
+	END
+	ELSE IF UPPER(@FoetalHeartRateDocumentScan)= 'TRUE'
+	BEGIN
+		SET @FHRDS = 1
+	END
+	ELSE
+	BEGIN
+		SET @FHRDS = 0
+	END
+	-----------------------------------------
+	IF ISNULL(@PlanForPregnencyContinue,'') = ''
+	BEGIN 
+		SET @PPC    = NULL
+	END
+	ELSE IF UPPER(@PlanForPregnencyContinue)= 'TRUE'
+	BEGIN
+		SET @PPC = 1
+	END
+	ELSE
+	BEGIN
+		SET @PPC = 0
+	END
+	
 		IF NOT EXISTS(SELECT 1 FROM Tbl_PNDTest  WHERE PrePNDTCounsellingId = @PrePNDTCounsellingId )
 		BEGIN
 			INSERT INTO Tbl_PNDTest (
@@ -79,10 +137,10 @@ BEGIN
 				,@OthersComplecations
 				,@PNDTDiagnosisId
 				,@PNDTResultId
-				,@MotherVoided 
-				,@MotherVitalStable
-				,@FoetalHeartRateDocumentScan
-				,@PlanForPregnencyContinue
+				,@MV 
+				,@MVS
+				,@FHRDS 
+				,@PPC
 				,@IsCompletePNDT
 				,@CreatedBy
 				,GETDATE()
@@ -95,6 +153,13 @@ BEGIN
 				,UpdatedBy = @CreatedBy 
 				,UpdatedOn = GETDATE()
 			WHERE ID = @PrePNDTCounsellingId 
+			
+			UPDATE Tbl_PrePNDTReferal SET 
+				IsPNDTCompleted = 1 
+				,ReasonForClose = 'PND Test Completed'
+				,UpdatedBy = @CreatedBy 
+				,UpdatedOn = GETDATE()
+			WHERE ANWSubjectId = @ANWSubjectId 
 			
 			SELECT 'PNDT detail submitted successfully' AS MSG
 		END
@@ -110,10 +175,10 @@ BEGIN
 				,OthersComplecations = @OthersComplecations
 				,PNDTDiagnosisId = @PNDTDiagnosisId
 				,PNDTResultId = @PNDTResultId
-				,MotherVoided = @MotherVoided
-				,MotherVitalStable = @MotherVitalStable
-				,FoetalHeartRateDocumentScan = @FoetalHeartRateDocumentScan
-				,PlanForPregnencyContinue = @PlanForPregnencyContinue
+				,MotherVoided = @MV
+				,MotherVitalStable = @MVS
+				,FoetalHeartRateDocumentScan = @FHRDS 
+				,PlanForPregnencyContinue = @PPC 
 				,IsCompletePNDT = @IsCompletePNDT
 				,UpdatedBy = @CreatedBy
 				,UpdatedOn = GETDATE()
@@ -125,6 +190,13 @@ BEGIN
 				,UpdatedBy = @CreatedBy 
 				,UpdatedOn = GETDATE()
 			WHERE ID = @PrePNDTCounsellingId 
+			
+			UPDATE Tbl_PrePNDTReferal SET 
+				IsPNDTCompleted = 1 
+				,ReasonForClose = 'PND Test Completed'
+				,UpdatedBy = @CreatedBy 
+				,UpdatedOn = GETDATE()
+			WHERE ANWSubjectId = @ANWSubjectId 
 			
 			SELECT 'PNDT detail updated successfully' AS MSG
 			

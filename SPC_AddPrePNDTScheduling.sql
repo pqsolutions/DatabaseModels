@@ -29,6 +29,27 @@ BEGIN
 	BEGIN TRY
 		IF NOT EXISTS(SELECT 1 FROM Tbl_PrePNDTScheduling WHERE ANWSubjectId = @ANWSubjectId)
 		BEGIN
+			INSERT INTO Tbl_PrePNDTReferal(
+				ANWSubjectId 
+				,SpouseSubjectId 
+				,PrePNDTCounsellingDate
+				,IsNotified
+				,CreatedBy
+				,CreatedOn
+				,IsPNDTCompleted
+				,IsPNDTAccept
+				,FollowUpStatus)
+			VALUES(
+				@ANWSubjectId 
+				,@SpouseSubjectId 
+				,(CONVERT(DATETIME,@CounsellingDateTime,103))
+				,0
+				,@CreatedBy 
+				,GETDATE()
+				,0
+				,0
+				,0) 
+			
 			INSERT INTO Tbl_PrePNDTScheduling (
 				ANWSubjectId 
 				,SpouseSubjectId 
@@ -54,6 +75,14 @@ BEGIN
 		END
 		ELSE
 		BEGIN
+			
+			UPDATE Tbl_PrePNDTReferal SET 
+				PrePNDTCounsellingDate = CONVERT(DATETIME,@CounsellingDateTime,103)
+				,IsNotified = 0
+				,UpdatedBy = @CreatedBy
+				,UpdatedOn = GETDATE()
+			WHERE ANWSubjectId = @ANWSubjectId	
+			
 			UPDATE  Tbl_PrePNDTScheduling SET
 				CounsellorId = @CounsellorId 
 				,CounsellingDateTime = CONVERT(DATETIME,@CounsellingDateTime,103)

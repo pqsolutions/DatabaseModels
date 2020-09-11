@@ -59,6 +59,7 @@ BEGIN
 			UPDATE Tbl_PositiveResultSubjectsDetail SET 
 				SSTStatus  = @SSTStatus
 				,SSTUpdatedOn = GETDATE()
+				,UpdatedToANM = 0
 			WHERE BarcodeNo = @Barcode 
 		END
 		ELSE
@@ -68,13 +69,17 @@ BEGIN
 				,UniqueSubjectID
 				,BarcodeNo
 				,SSTStatus 
-				,SSTUpdatedOn)
+				,SSTUpdatedOn
+				,IsActive
+				,UpdatedToANM)
 			VALUES(
 				@SubjectId
 				,@UniqueSubjectId
 				,@Barcode
 				,@SSTStatus
-				,GETDATE())	
+				,GETDATE()
+				,1
+				,0)	
 		END
 		
 		
