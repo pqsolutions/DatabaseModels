@@ -41,11 +41,10 @@ BEGIN
 		,(SELECT DiagnosisName FROM Tbl_ClinicalDiagnosisMaster WHERE ID =(SELECT TOP 1 ClinicalDiagnosisId FROM Tbl_HPLCDiagnosisResult
 			WHERE UniqueSubjectID = SPD.[SpouseSubjectID])) AS SPouseHPLCDiagnosis
 		,(UM1.[FirstName] +' '+UM1.[LastName] ) AS PrePNDTCounsellorName
-		,(CONVERT(VARCHAR,PPC.[UpdatedOn],103) + ' ' +
-		  CONVERT(VARCHAR(5),CONVERT(TIME(2),PPC.[UpdatedOn] ,103))) AS PrePNDTCounsellingDateTime
+		,(CONVERT(VARCHAR,PPSS.[CounsellingDateTime],103) + ' ' + CONVERT(VARCHAR(5),PPSS.[CounsellingDateTime],108)) AS PrePNDTCounsellingDateTime
 		  ,'The couple has agreed for Pre-natal Diagnosis' AS PrePNDTCounsellingStatus
-		  	,CONVERT(VARCHAR,PPC.[SchedulePNDTDate],103) AS PrePNDTSchedulePNDTDate
-		,CONVERT(VARCHAR(5),PPC.[SchedulePNDTTime]) AS PrePNDSchedulePNDTTime
+		  	,CONVERT(VARCHAR,PPC.[SchedulePNDTDate],103) AS SchedulePNDTDate
+		,CONVERT(VARCHAR(5),PPC.[SchedulePNDTTime]) AS SchedulePNDTTime
 		,PPC.[CounsellingRemarks] AS PrePNDTCounsellingRemarks
 		, CASE WHEN POT.[ProcedureName] = 'Others' THEN POT.[ProcedureName] + '(' + PT.[OthersProcedureofTesting] + ')'
 			ELSE POT.[ProcedureName] END AS PNDTProcedureOfTesting
@@ -54,17 +53,15 @@ BEGIN
 		,PRM.[ResultName] AS PNDTResults
 		,CASE WHEN PRM.[IsPositive] = 1 THEN  1 ELSE 0 END AS FoetalDisease 
 		,PT.[ObstetricianId] 
-		,(UM.[FirstName] +' '+UM.[LastName] ) AS PNDTestObstetrician
-		,(CONVERT(VARCHAR,PT.[UpdatedOn],103) + ' ' +
-		  CONVERT(VARCHAR(5),CONVERT(TIME(2),PT.[UpdatedOn],103))) AS PNDDateTime
+		,(UM2.[FirstName] +' '+UM2.[LastName] ) AS PNDTestObstetrician
+		,(CONVERT(VARCHAR,PT.[PNDTDateTime],103) + ' ' + CONVERT(VARCHAR(5),PT.[PNDTDateTime],108)) AS PNDDateTime
 		  ,PT.[ClinicalHistory]  AS PNDTClinicalHistory
 		  ,PT.[Examination] AS PNDTExamination
 		  ,PD.[DiagnosisName] AS PNDTDiagnosisName
 		,PPS.[ID] AS PostPNDTSchedulingId
 		,PPS.[CounsellorId] 
 		,(UM.[FirstName] +' '+UM.[LastName] ) AS PostPNDTCounsellorName
-		,(CONVERT(VARCHAR,PPCC.[UpdatedOn],103) + ' ' +
-		  CONVERT(VARCHAR(5),CONVERT(TIME(2),PPCC.[UpdatedOn],103))) AS CounsellingDateTime
+		,(CONVERT(VARCHAR,PPSS.[CounsellingDateTime],103) + ' ' + CONVERT(VARCHAR(5),PPSS.[CounsellingDateTime],108)) AS PostPNDTCounsellingDateTime
 		,PPCC.[ID]  AS PostPNDTCounsellingId
 		,PPCC.[AssignedObstetricianId]	
 		,(UM3.[FirstName] +' '+UM3.[LastName] ) AS PostPNDTObsetricianName

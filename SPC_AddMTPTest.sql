@@ -19,6 +19,7 @@ CREATE PROCEDURE [dbo].[SPC_AddMTPTest]
 	@PostPNDTCounsellingId INT
 	,@ANWSubjectId VARCHAR(250)
 	,@SpouseSubjectId VARCHAR(250)
+	,@MTPDateTime VARCHAR(100)
 	,@CounsellorId INT
 	,@ObstetricianId INT
 	,@ClinicalHistory VARCHAR(MAX)
@@ -38,6 +39,7 @@ BEGIN
 				PostPNDTCounsellingId 
 				,ANWSubjectId 
 				,SpouseSubjectId
+				,MTPDateTime
 				,CounsellorId
 				,ObstetricianId
 				,ClinicalHistory
@@ -53,6 +55,7 @@ BEGIN
 				@PostPNDTCounsellingId 
 				,@ANWSubjectId 
 				,@SpouseSubjectId
+				,CONVERT(DATETIME,@MTPDateTime,103)
 				,@CounsellorId
 				,@ObstetricianId
 				,@ClinicalHistory
@@ -84,7 +87,8 @@ BEGIN
 		ELSE
 		BEGIN
 			UPDATE Tbl_MTPTest SET 
-				ObstetricianId = @ObstetricianId 
+				ObstetricianId = @ObstetricianId
+				,MTPDateTime = CONVERT(DATETIME,@MTPDateTime,103) 
 				,ClinicalHistory = @ClinicalHistory
 				,Examination = @Examination
 				,ProcedureOfTesting = @ProcedureOfTesting

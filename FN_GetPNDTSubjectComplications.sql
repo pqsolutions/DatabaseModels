@@ -37,7 +37,7 @@ BEGIN
 			SELECT @ComplicationsName = ComplecationsName FROM Tbl_PNDTComplicationsMaster WHERE ID = CAST(@CurrentIndex AS INT)
 			IF @ComplicationsName = 'Any other complication/s of invasive procedure'
 			BEGIN
-				SET @Complications = @Complications + @ComplicationsName + ' ('+ @Others + ') '
+				SET @Complications = @Complications + @ComplicationsName + ' ('+ @Others + ')) '
 			END
 			ELSE
 			BEGIN

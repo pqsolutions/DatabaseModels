@@ -19,6 +19,7 @@ CREATE PROCEDURE [dbo].[SPC_AddPNDTest]
 	@PrePNDTCounsellingId INT
 	,@ANWSubjectId VARCHAR(250)
 	,@SpouseSubjectId VARCHAR(250)
+	,@PNDTDateTime VARCHAR(100)
 	,@CounsellorId INT
 	,@ObstetricianId INT
 	,@ClinicalHistory VARCHAR(MAX)
@@ -104,6 +105,7 @@ BEGIN
 				PrePNDTCounsellingId 
 				,ANWSubjectId 
 				,SpouseSubjectId
+				,PNDTDateTime
 				,CounsellorId
 				,ObstetricianId
 				,ClinicalHistory
@@ -127,6 +129,7 @@ BEGIN
 				@PrePNDTCounsellingId 
 				,@ANWSubjectId 
 				,@SpouseSubjectId
+				,CONVERT(DATETIME,@PNDTDateTime,103)
 				,@CounsellorId
 				,@ObstetricianId
 				,@ClinicalHistory
@@ -167,6 +170,7 @@ BEGIN
 		BEGIN
 			UPDATE Tbl_PNDTest SET 
 				ObstetricianId = @ObstetricianId 
+				,PNDTDateTime = CONVERT(DATETIME,@PNDTDateTime,103)
 				,ClinicalHistory = @ClinicalHistory
 				,Examination = @Examination
 				,ProcedureOfTestingId = @ProcedureOfTestingId
