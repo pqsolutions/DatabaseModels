@@ -23,7 +23,7 @@ BEGIN
 	SELECT SP.[UniqueSubjectID] AS ANWSubjectId 
 		,SP1.[UniqueSubjectID] AS SpouseSubjectId
 		,(SP.[FirstName] + ' ' + SP.[MiddleName] + ' ' + SP.[LastName]) AS ANWSubjectName
-		,(SP1.[FirstName] + ' ' + SP1.[MiddleName] + ' ' + SP1.[LastName]) AS ANWSubjectName
+		,(SP1.[FirstName] + ' ' + SP1.[MiddleName] + ' ' + SP1.[LastName]) AS SpouseSubjectName
 		,SPR.[RCHID] 
 		,(SELECT [dbo].[FN_FindBarcodesByUser](SP.[ID])) AS ANWBarcodeNo
 		,(SELECT [dbo].[FN_FindBarcodesByUser](SP1.[ID])) AS SpouseBarcodeNo
@@ -32,7 +32,7 @@ BEGIN
 		,SP.[Age] AS ANWAge
 		,SP1.[Age] AS SpouseAge
 		,SPR.[ECNumber]
-		,SP.[Gender] AS ANWGenger
+		,SP.[Gender] AS ANWGender
 		,SP1.[Gender] AS SpouseGender
 		,(SAD.[Address1] + ' ' + SAD.[Address2] + ' ' + SAD.[Address3]) AS SubjectAddress
 		,('G'+CONVERT(VARCHAR,SPR.[G])+'-P'+CONVERT(VARCHAR,SPR.[P])+'-L'+CONVERT(VARCHAR,SPR.[L])+'-A'+
@@ -73,7 +73,7 @@ BEGIN
 		
 		,(CONVERT(VARCHAR,PPR.[PrePNDTCounsellingDate],103) + ' ' + CONVERT(VARCHAR(5),PPR.[PrePNDTCounsellingDate],108)) AS PrePNDTCounsellingDate
 		,CASE WHEN ISNULL(PPR.[PNDTScheduleDateTime],'') = '' THEN
-		'' ELSE (CONVERT(VARCHAR,PPR.[PNDTScheduleDateTime],103) + ' ' + CONVERT(VARCHAR(5),PPR.[PNDTScheduleDateTime],108)) END AS PNDDate
+		'' ELSE (CONVERT(VARCHAR,PPR.[PNDTScheduleDateTime],103) + ' ' + CONVERT(VARCHAR(5),PPR.[PNDTScheduleDateTime],108)) END AS PNDTDate
 		,ISNULL(PPR.[IsNotified],0) AS NoitifiedStatus
 		,PPR.[ID] AS PNDTReferalId
 		

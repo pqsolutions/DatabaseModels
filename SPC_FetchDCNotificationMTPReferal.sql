@@ -32,7 +32,7 @@ BEGIN
 		,SP.[Age] AS ANWAge
 		,SP1.[Age] AS SpouseAge
 		,SPR.[ECNumber]
-		,SP.[Gender] AS ANWGenger
+		,SP.[Gender] AS ANWGender
 		,SP1.[Gender] AS SpouseGender
 		,(SAD.[Address1] + ' ' + SAD.[Address2] + ' ' + SAD.[Address3]) AS SubjectAddress
 		,('G'+CONVERT(VARCHAR,SPR.[G])+'-P'+CONVERT(VARCHAR,SPR.[P])+'-L'+CONVERT(VARCHAR,SPR.[L])+'-A'+

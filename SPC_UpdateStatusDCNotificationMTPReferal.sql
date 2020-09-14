@@ -31,7 +31,7 @@ BEGIN
 		BEGIN	
 			SELECT @IndexVar = @IndexVar + 1
 			SELECT @CurrentIndex = Value FROM  [dbo].[FN_Split](@MTPReferalId,',') WHERE id = @Indexvar
-			SELECT @Status = FollowUpStatus From Tbl_MTPReferal WHERE ID = @CurrentIndex
+			SELECT @Status = ISNULL(FollowUpStatus,0) From Tbl_MTPReferal WHERE ID = @CurrentIndex
 			IF ISNULL(@Status,0) = 0 
 			BEGIN
 				UPDATE Tbl_MTPReferal SET 

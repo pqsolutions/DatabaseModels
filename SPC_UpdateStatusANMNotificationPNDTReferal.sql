@@ -31,7 +31,7 @@ BEGIN
 		BEGIN	
 			SELECT @IndexVar = @IndexVar + 1
 			SELECT @CurrentIndex = Value FROM  [dbo].[FN_Split](@PNDTReferalId,',') WHERE id = @Indexvar
-			SELECT @Status = IsNotified From Tbl_PrePNDTReferal WHERE ID = @CurrentIndex
+			SELECT @Status = ISNULL(IsNotified,0) From Tbl_PrePNDTReferal WHERE ID = @CurrentIndex
 			IF ISNULL(@Status,0) = 0 
 			BEGIN
 				UPDATE Tbl_PrePNDTReferal SET 

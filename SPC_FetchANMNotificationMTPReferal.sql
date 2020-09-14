@@ -32,7 +32,7 @@ BEGIN
 		,SP.[Age] AS ANWAge
 		,SP1.[Age] AS SpouseAge
 		,SPR.[ECNumber]
-		,SP.[Gender] AS ANWGenger
+		,SP.[Gender] AS ANWGender
 		,SP1.[Gender] AS SpouseGender
 		,(SAD.[Address1] + ' ' + SAD.[Address2] + ' ' + SAD.[Address3]) AS SubjectAddress
 		,('G'+CONVERT(VARCHAR,SPR.[G])+'-P'+CONVERT(VARCHAR,SPR.[P])+'-L'+CONVERT(VARCHAR,SPR.[L])+'-A'+
@@ -103,7 +103,7 @@ BEGIN
 	LEFT JOIN Tbl_PNDTDiagnosisMaster PD WITH (NOLOCK) ON PD.[ID] = PT.[PNDTDiagnosisId] 
 	LEFT JOIN Tbl_PNDTProcedureOfTestingMaster POT  WITH (NOLOCK) ON POT.[ID] = PT.[ProcedureofTestingId] 
 	 
-	LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP WITH (NOLOCK) ON SP.[ID] = MTPR.[ANWSubjectId] 
+	LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP WITH (NOLOCK) ON SP.[UniqueSubjectID]  = MTPR.[ANWSubjectId] 
 	LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail]  SPR WITH (NOLOCK) ON SPR.[SubjectID] = SP.[ID]
 	LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP1 WITH (NOLOCK) ON SP1.[UniqueSubjectID] = SP.[SpouseSubjectID] AND SP1.[UniqueSubjectID] = MTPR.[SpouseSubjectId] 
 	LEFT JOIN  [dbo].[Tbl_SubjectAddressDetail]   SAD WITH (NOLOCK) ON SAD.[SubjectID] = SP.[ID]
