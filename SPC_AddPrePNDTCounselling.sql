@@ -83,6 +83,7 @@ BEGIN
 				,UpdatedBy
 				,UpdatedOn
 				,IsActive
+				,UpdatedToANM
 			)VALUES(
 				@AssignedObstetricianId
 				,@PrePNDTSchedulingId
@@ -101,7 +102,8 @@ BEGIN
 				,GETDATE()
 				,@CreatedBy 
 				,GETDATE()
-				,1)
+				,1
+				,0)
 				SET @GetId = (SELECT SCOPE_IDENTITY())
 				
 			IF @IsPNDTAgreeYes = 1
@@ -148,6 +150,7 @@ BEGIN
 				,UpdatedBy = @CreatedBy 
 				,UpdatedOn = GETDATE()
 				,IsActive = 1
+				,UpdatedToANM = 0
 			WHERE PrePNDTSchedulingId = @PrePNDTSchedulingId
 			
 			IF @IsPNDTAgreeYes = 1

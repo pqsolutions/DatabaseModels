@@ -1811,7 +1811,8 @@ CREATE TABLE [dbo].[Tbl_PrePNDTCounselling](
 	[FileName] [varchar](max) NULL,
 	[FileData] [varbinary](max) NULL,
 	[IsActive] [bit] NULL,
-	[ReasonForClose] [varchar] (max) NULL
+	[ReasonForClose] [varchar] (max) NULL,
+	[UpdatedToANM] [bit] NULL,
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
@@ -1900,7 +1901,7 @@ CREATE TABLE [dbo].[Tbl_PNDTest](
 	[CreatedOn] [datetime] NULL,
 	[UpdatedBy] [int] NULL,
 	[UpdatedOn] [datetime] NULL,
-	
+	[UpdatedToANM] [bit] NULL,
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
@@ -1982,6 +1983,8 @@ CREATE TABLE [dbo].[Tbl_PostPNDTCounselling](
 	[IsFoetalDisease] [bit] NULL,
 	[IsActive] [bit] NULL,
 	[ReasonForClose] [varchar] (max) NULL,
+	[UpdatedToANM] [bit] NULL,
+	
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
@@ -2034,7 +2037,6 @@ END
 
 --------------------------------------------------------------------------------------------------------------------------
 
-
 USE [Eduquaydb]
 GO
 
@@ -2064,11 +2066,19 @@ CREATE TABLE [dbo].[Tbl_MTPTest](
 	[UpdatedOn] [datetime] NULL,
 	[FirstFollowupStatusId] [int] NULL,
 	[FirstStatusUpdatedOn] [datetime] NULL,
+	[IsFirstFollowupCompleted] [bit] NULL,
 	[SecondFollowupStatusId] [int] NULL,
 	[SecondStatusUpdatedOn] [datetime] NULL,
+	[IsSecondFollowupCompleted] [bit] NULL,
 	[ThirdFollowupStatusId] [int] NULL,
 	[ThirdStatusUpdatedOn] [datetime] NULL,
-	[IsFollowupCompleted] [bit] NULL
+	[IsThirdFollowupCompleted] [bit] NULL,
+	[UpdatedToANM] [bit] NULL,
+	[IsActive] [bit] NULL,
+	[ReasonForClose] [varchar](max) NULL,
+	[FollowUpDCStatus] [bit] NULL,
+	[FollowUpDCOn] [datetime] NULL,
+	[FollowUpByDC] [int] NULL,
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
@@ -2307,3 +2317,38 @@ PRIMARY KEY CLUSTERED
 ) ON [PRIMARY]
 
 END
+
+
+-------------------------------------------------------------------------------------------------------------------------
+
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_MTPFollowUpMaster' AND [type] = 'U')
+BEGIN
+
+CREATE TABLE [dbo].[Tbl_MTPFollowUpMaster](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[StatusName] [varchar](250) NULL,
+	[Createdon] [datetime] NULL,
+	[Createdby] [int] NULL,
+	[Updatedon] [datetime] NULL,
+	[Updatedby] [int] NULL,
+	[Comments] [varchar](max) NULL,
+	[Isactive] [bit] NULL,
+	
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END
+
+---------------------------------------------------------------------------------------------------------------------------------

@@ -6,14 +6,14 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
---Fetch Subject Details  which are MTP Service for ANM Mobile
+--Fetch Subject Details  which are MTP Service for ANM not updated in Mobile
 
-IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_FetchANMMobileMTPService' AND [type] = 'p')
+IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_FetchANMMobileNotificationMTPService' AND [type] = 'p')
 BEGIN
-	DROP PROCEDURE SPC_FetchANMMobileMTPService 
+	DROP PROCEDURE SPC_FetchANMMobileNotificationMTPService 
 END
 GO
-CREATE PROCEDURE [dbo].[SPC_FetchANMMobileMTPService] 
+CREATE PROCEDURE [dbo].[SPC_FetchANMMobileNotificationMTPService] 
 (
 	@UserId INT
 )
@@ -34,7 +34,7 @@ BEGIN
 	LEFT JOIN [dbo].[Tbl_UserMaster] UM WITH (NOLOCK) ON UM.[ID] = MT.[CounsellorId] 
 	LEFT JOIN [dbo].[Tbl_UserMaster] UM1 WITH (NOLOCK) ON UM1.[ID] = MT.[ObstetricianId]  
 	LEFT JOIN Tbl_DischargeConditionMaster DCM WITH (NOLOCK) ON DCM.[ID] = MT.[DischargeConditionId]  
-	WHERE SP.[AssignANM_ID]  = @UserId    AND MT.[UpdatedToANM] = 1
+	WHERE SP.[AssignANM_ID]  = @UserId    AND ISNULL(MT.[UpdatedToANM],0) = 0
 	ORDER BY SP.[UniqueSubjectID] 
 	
 END

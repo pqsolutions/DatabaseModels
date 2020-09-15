@@ -98,6 +98,7 @@ BEGIN
 				,IsActive
 				,ReasonForClose
 				,IsFoetalDisease
+				,UpdatedToANM
 			)VALUES(
 				@AssignedObstetricianId
 				,@PostPNDTSchedulingId
@@ -118,7 +119,8 @@ BEGIN
 				,GETDATE()
 				,@Active
 				,@ReasonForClose 
-				,@IsFoetalDisease)
+				,@IsFoetalDisease
+				,0)
 				
 			SET @GetId = (SELECT SCOPE_IDENTITY())
 				
@@ -165,7 +167,8 @@ BEGIN
 				,UpdatedBy = @CreatedBy 
 				,UpdatedOn = GETDATE()
 				,IsActive = @Active
-				,ReasonForClose = @ReasonForClose 
+				,ReasonForClose = @ReasonForClose
+				,UpdatedToANM = 0 
 			WHERE PostPNDTSchedulingId = @PostPNDTSchedulingId
 			
 			IF @IsMTPAgreeYes = 1

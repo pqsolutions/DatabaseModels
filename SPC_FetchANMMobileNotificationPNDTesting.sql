@@ -6,14 +6,14 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
---Fetch Subject Details  which are PrePNDTesting for ANM Mobile
+--Fetch Subject Details  which are PrePNDTesting for ANM not updated in Mobile
 
-IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_FetchANMMobilePNDTesting' AND [type] = 'p')
+IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_FetchANMMobileNotificationPNDTesting' AND [type] = 'p')
 BEGIN
-	DROP PROCEDURE SPC_FetchANMMobilePNDTesting 
+	DROP PROCEDURE SPC_FetchANMMobileNotificationPNDTesting 
 END
 GO
-CREATE PROCEDURE [dbo].[SPC_FetchANMMobilePNDTesting] 
+CREATE PROCEDURE [dbo].[SPC_FetchANMMobileNotificationPNDTesting] 
 (
 	@UserId INT
 )
@@ -38,7 +38,7 @@ BEGIN
 	LEFT JOIN [dbo].[Tbl_PNDTProcedureOfTestingMaster] POT WITH (NOLOCK) ON PT.[ProcedureofTestingId] = POT.[ID] 
 	LEFT JOIN [dbo].[Tbl_PNDTResultMaster]  PRM WITH (NOLOCK) ON PRM.[ID] = PT.[PNDTResultId]
 	LEFT JOIN [dbo].[Tbl_PNDTDiagnosisMaster] PD WITH (NOLOCK) ON PD.[ID] = PT.[PNDTDiagnosisId] 
-	WHERE SP.[AssignANM_ID]  = @UserId  AND PT.[UpdatedToANM] = 1
+	WHERE SP.[AssignANM_ID]  = @UserId  AND ISNULL(PT.[UpdatedToANM],0) = 0
 	ORDER BY SP.[UniqueSubjectID] 
 	
 END

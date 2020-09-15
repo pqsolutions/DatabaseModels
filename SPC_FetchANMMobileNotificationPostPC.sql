@@ -6,14 +6,14 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
---Fetch Subject Details  which are PostPNDTCounselling for ANM Mobile
+--Fetch Subject Details  which are PostPNDTCounselling for ANM not updated in  Mobile
 
-IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_FetchANMMobilePostPNDTCounselling' AND [type] = 'p')
+IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_FetchANMMobileNotificationPostPC' AND [type] = 'p')
 BEGIN
-	DROP PROCEDURE SPC_FetchANMMobilePostPNDTCounselling 
+	DROP PROCEDURE SPC_FetchANMMobileNotificationPostPC 
 END
 GO
-CREATE PROCEDURE [dbo].[SPC_FetchANMMobilePostPNDTCounselling] 
+CREATE PROCEDURE [dbo].[SPC_FetchANMMobileNotificationPostPC] 
 (
 	@UserId INT
 )
@@ -33,6 +33,6 @@ BEGIN
 	LEFT JOIN [dbo].[Tbl_PostPNDTScheduling]  PPS WITH (NOLOCK) ON PPS.[ANWSubjectId] = PPC.[ANWSubjectId] 
 	LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP WITH (NOLOCK) ON SP.[UniqueSubjectID] = PPC.[ANWSubjectId]
 	LEFT JOIN [dbo].[Tbl_UserMaster] UM WITH (NOLOCK) ON UM.[ID] = PPC.[CounsellorId] 
-	WHERE SP.[AssignANM_ID]  = @UserId  AND PPC.[UpdatedToANM]  = 1
+	WHERE SP.[AssignANM_ID]  = @UserId  AND ISNULL(PPC.[UpdatedToANM],0)  = 0
 	ORDER BY SP.[UniqueSubjectID] 
 END

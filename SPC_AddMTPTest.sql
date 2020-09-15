@@ -51,6 +51,8 @@ BEGIN
 				,CreatedOn 
 				,UpdatedBy 
 				,UpdatedOn
+				,UpdatedToANM
+				,IsActive
 			)VALUES(
 				@PostPNDTCounsellingId 
 				,@ANWSubjectId 
@@ -66,7 +68,9 @@ BEGIN
 				,@CreatedBy
 				,GETDATE()
 				,@CreatedBy
-				,GETDATE())
+				,GETDATE()
+				,0
+				,1)
 				
 			UPDATE Tbl_PostPNDTCounselling SET 
 				IsActive = 0 
@@ -96,6 +100,8 @@ BEGIN
 				,DischargeConditionId  = @DischargeConditionId 
 				,UpdatedBy = @CreatedBy
 				,UpdatedOn = GETDATE()
+				,UpdatedToANM = 0
+				,IsActive = 1
 			WHERE PostPNDTCounsellingId = @PostPNDTCounsellingId
 			
 			UPDATE Tbl_PostPNDTCounselling SET 

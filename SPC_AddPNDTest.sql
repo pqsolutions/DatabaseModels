@@ -125,6 +125,7 @@ BEGIN
 				,CreatedOn 
 				,UpdatedBy 
 				,UpdatedOn
+				,UpdatedToANM
 			)VALUES(
 				@PrePNDTCounsellingId 
 				,@ANWSubjectId 
@@ -148,7 +149,8 @@ BEGIN
 				,@CreatedBy
 				,GETDATE()
 				,@CreatedBy
-				,GETDATE())
+				,GETDATE()
+				,0)
 				
 			UPDATE Tbl_PrePNDTCounselling SET 
 				IsActive = 0 
@@ -186,6 +188,7 @@ BEGIN
 				,IsCompletePNDT = @IsCompletePNDT
 				,UpdatedBy = @CreatedBy
 				,UpdatedOn = GETDATE()
+				,UpdatedToANM = 0
 			WHERE PrePNDTCounsellingId = @PrePNDTCounsellingId
 			
 			UPDATE Tbl_PrePNDTCounselling SET 
