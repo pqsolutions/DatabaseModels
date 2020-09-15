@@ -6,16 +6,16 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
---Update the status in ANM notification Post MTP followup
+--Update the status in ANM Mobile notification Post MTP followup
 
-IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_UpdatePostMTPFollowUpStatus' AND [type] = 'p')
+IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_UpdateMobilePostMTPFollowUpStatus' AND [type] = 'p')
 BEGIN
-	DROP PROCEDURE SPC_UpdatePostMTPFollowUpStatus
+	DROP PROCEDURE SPC_UpdateMobilePostMTPFollowUpStatus
 END
 GO
-CREATE PROCEDURE [dbo].[SPC_UpdatePostMTPFollowUpStatus]
+CREATE PROCEDURE [dbo].[SPC_UpdateMobilePostMTPFollowUpStatus]
 (	
-	@MTPID INT
+	@UniqueSubjectId VARCHAR(250)
 	,@FollowUpNo INT
 	,@FollowUpStatusId INT
 	,@FollowUpStatusDetail VARCHAR(500)
@@ -53,7 +53,7 @@ BEGIN
 					,UpdatedBy = @UserId 
 					,UpdatedOn = GETDATE()
 					,FollowUpStatus = 0
-				WHERE ID = @MTPID 
+				WHERE ANWSubjectId  = @UniqueSubjectId  
 		END
 		IF @FollowUpNo = 2 
 		BEGIN
@@ -67,7 +67,7 @@ BEGIN
 					,UpdatedBy = @UserId 
 					,UpdatedOn = GETDATE() 
 					,FollowUpStatus = 0
-			WHERE ID = @MTPID
+			WHERE ANWSubjectId  = @UniqueSubjectId  
 		END
 		IF @FollowUpNo = 3 
 		BEGIN
@@ -82,7 +82,7 @@ BEGIN
 					,ReasonForClose = 'This Subject Expired'
 					,UpdatedBy = @UserId 
 					,UpdatedOn = GETDATE()
-				WHERE ID = @MTPID 
+				WHERE ANWSubjectId  = @UniqueSubjectId  
 			END
 			ELSE
 			BEGIN
@@ -95,7 +95,7 @@ BEGIN
 					,ReasonForClose = 'This Subject Follow up Completed'
 					,UpdatedBy = @UserId 
 					,UpdatedOn = GETDATE()
-				WHERE ID = @MTPID 
+				WHERE ANWSubjectId  = @UniqueSubjectId  
 			END
 		END
 		

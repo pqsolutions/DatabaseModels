@@ -27,9 +27,15 @@ BEGIN
 		,SP.[AssignANM_ID] 
 		,(CONVERT(VARCHAR,MT.[MTPDateTime],103) + ' ' + CONVERT(VARCHAR,MT.[MTPDateTime],108)) AS MTPDateTime
 		,(UM.[FirstName] + ' ' + UM.[LastName]) AS ObstetritianName
+		,1 AS FirstFollowupNo
 		,ISNULL(MT.[FirstFollowupStatusId],0) AS FirstFollowup
+		,ISNULL(MT.[FirstFollowupStatusDetail],'') AS FirstFollowupStatusDetail
+		,2 AS SecondFollowupNo
 		,ISNULL(MT.[SecondFollowupStatusId],0) AS SecondFollowup
+		,ISNULL(MT.[SecondFollowupStatusDetail],'') AS SecondFollowupStatusDetail
+		,3 AS ThirdFollowupNo
 		,ISNULL(MT.[ThirdFollowupStatusId],0) AS ThirdFollowup
+		,ISNULL(MT.[ThirdFollowupStatusDetail],'') AS ThirdFollowupStatusDetail
 		,MT.[ID] AS MTPID 
 	FROM  Tbl_MTPTest MT
 	LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP WITH (NOLOCK) ON SP.[UniqueSubjectID] = MT.[ANWSubjectId] 

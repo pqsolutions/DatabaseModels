@@ -1,3 +1,4 @@
+
 USE [Eduquaydb]
 GO
 SET ANSI_NULLS ON
@@ -27,13 +28,13 @@ BEGIN
 		,@PNDTComplecations VARCHAR(MAX)
 		,@Others NVARCHAR(MAX)
 		
-		SELECT @ComplecationsId = PNDTComplecationsId, @Others = OthersComplecations  FROM Tbl_PNDTest WHERE ID = @PNDTTestID
+		SELECT @ComplecationsId = PNDTComplecationsId, @Others = OthersComplecations  FROM Tbl_PNDTest WHERE ID = ISNULL(@PNDTTestID,0)
 		SET @IndexVar = 0 
-		SELECT @TotalCount = COUNT(value) FROM [dbo].[FN_Split](@ComplecationsId,',')
+		SELECT @TotalCount = COUNT(value) FROM [dbo].[FN_Split](ISNULL(@ComplecationsId,0),',')
 		WHILE @Indexvar < @TotalCount  
 		BEGIN
 			SELECT @IndexVar = @IndexVar + 1
-			SELECT @CurrentIndex = Value FROM  [dbo].[FN_Split](@ComplecationsId,',') WHERE id = @Indexvar
+			SELECT @CurrentIndex = Value FROM  [dbo].[FN_Split](ISNULL(@ComplecationsId,0),',') WHERE id = @Indexvar
 			SELECT @ComplicationsName = ComplecationsName FROM Tbl_PNDTComplicationsMaster WHERE ID = CAST(@CurrentIndex AS INT)
 			IF @ComplicationsName = 'Any other complication/s of invasive procedure'
 			BEGIN

@@ -32,6 +32,7 @@ BEGIN
 		,CASE WHEN  ISNULL(MT.[FirstFollowupStatusId],0) = 0 THEN 'Pending' ELSE 'Completed' END AS FirstFollowup
 		,CASE WHEN  ISNULL(MT.[SecondFollowupStatusId],0) = 0 THEN 'Pending' ELSE 'Completed' END AS SecondFollowup
 		,CASE WHEN  ISNULL(MT.[ThirdFollowupStatusId],0) = 0 THEN 'Pending' ELSE 'Completed' END AS ThirdFollowup
+		,ISNULL(MT.FollowUpStatus,0) AS FollowUpStatus
 		,MT.[ID] AS MTPID 
 	FROM  Tbl_MTPTest MT
 	LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP WITH (NOLOCK) ON SP.[UniqueSubjectID] = MT.[ANWSubjectId] 

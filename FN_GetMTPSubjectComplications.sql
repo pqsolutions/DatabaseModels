@@ -28,11 +28,11 @@ BEGIN
 		
 		SELECT @ComplecationsId = MTPComplecationsId  FROM Tbl_MTPTest WHERE ID = @MTPTestID
 		SET @IndexVar = 0 
-		SELECT @TotalCount = COUNT(value) FROM [dbo].[FN_Split](@ComplecationsId,',')
+		SELECT @TotalCount = COUNT(value) FROM [dbo].[FN_Split](ISNULL(@ComplecationsId,0),',')
 		WHILE @Indexvar < @TotalCount  
 		BEGIN
 			SELECT @IndexVar = @IndexVar + 1
-			SELECT @CurrentIndex = Value FROM  [dbo].[FN_Split](@ComplecationsId,',') WHERE id = @Indexvar
+			SELECT @CurrentIndex = Value FROM  [dbo].[FN_Split](ISNULL(@ComplecationsId,0),',') WHERE id = @Indexvar
 			SELECT @ComplicationsName = ComplecationsName FROM Tbl_MTPComplicationsMaster WHERE ID = CAST(@CurrentIndex AS INT)
 			SET @Complications = @Complications + @ComplicationsName + ', '
 		END

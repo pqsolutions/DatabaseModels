@@ -2079,6 +2079,9 @@ CREATE TABLE [dbo].[Tbl_MTPTest](
 	[FollowUpDCStatus] [bit] NULL,
 	[FollowUpDCOn] [datetime] NULL,
 	[FollowUpByDC] [int] NULL,
+	[FirstFollowupStatusDetail] [varchar](500) NULL,
+	[SecondFollowupStatusDetail] [varchar](500) NULL,
+	[ThirdFollowupStatusDetail] [varchar](500) NULL
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
