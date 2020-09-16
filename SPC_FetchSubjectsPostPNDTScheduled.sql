@@ -39,11 +39,12 @@ BEGIN
 		,(UM.[FirstName] +' '+UM.[LastName] ) AS CounsellorName
 		,(CONVERT(VARCHAR,PPS.[CounsellingDateTime],103) + ' ' +
 		  CONVERT(VARCHAR(5),CONVERT(TIME(2),PPS.[CounsellingDateTime],103))) AS CounsellingDateTime
-		  
+		,(CONVERT(VARCHAR,PT.[PNDTDateTime],103) + ' ' + CONVERT(VARCHAR(5),PT.[PNDTDateTime],108))AS PNDTDateTime
 	FROM 	Tbl_PostPNDTScheduling PPS  
 	LEFT JOIN Tbl_SubjectPrimaryDetail SPD WITH (NOLOCK) ON SPD.[UniqueSubjectID] = PPS.[ANWSubjectId]  
 	LEFT JOIN Tbl_SubjectPregnancyDetail SPR WITH (NOLOCK) ON SPD.[UniqueSubjectID] = SPR.[UniqueSubjectID] 
 	LEFT JOIN Tbl_UserMaster UM WITH(NOLOCK) ON PPS.[CounsellorId] = UM.[ID]
+	LEFT JOIN Tbl_PNDTest PT WITH (NOLOCK) ON PPS.[ANWSubjectId] = PT.[ANWSubjectId] 
 	WHERE (SPD.[SubjectTypeID] = 1 OR SPD.ChildSubjectTypeID =1)
 	AND PPS.[IsCounselled] = 0 
 	AND PPS.[ANWSubjectId] NOT IN (SELECT ANWSubjectId FROM Tbl_PostPNDTCounselling)

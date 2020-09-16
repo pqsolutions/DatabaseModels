@@ -34,6 +34,7 @@ BEGIN
 		,SPD.[Age]
 		,SPR.[ECNumber] 
 		,(CONVERT(VARCHAR,SPR.[LMP_Date],103))AS LMPDate
+		,(CONVERT(VARCHAR,PT.[PNDTDateTime],103) + ' ' + CONVERT(VARCHAR(5),PT.[PNDTDateTime],108))AS PNDTDateTime
 		
 	FROM Tbl_PNDTest PT 
 	LEFT JOIN Tbl_SubjectPrimaryDetail SPD WITH (NOLOCK) ON SPD.[UniqueSubjectID] = PT.[ANWSubjectId]
