@@ -28,7 +28,9 @@ Begin
 			,s.[Statename]
 			,s.[Shortname] 
 			,um.[CentralLabId]
-			,cl.[CentralLabName] 
+			,cl.[CentralLabName]
+			,um.[molecularLabId]
+			,ml.[MLabName] 
 			,um.[DistrictID]
 			,d.[Districtname] 
 			,ISNULL(um.[BlockId],0)AS BlockID
@@ -76,5 +78,7 @@ Begin
 	LEFT JOIN [dbo].[Tbl_SCMaster] sc WITH (NOLOCK) ON sc.ID = um.SCID
 	--LEFT JOIN [dbo].[Tbl_RIMaster] ri WITH (NOLOCK) ON ri.ID = um.RIID
 	LEFT JOIN [dbo].[Tbl_Gov_IDTypeMaster] gm WITH (NOLOCK) ON gm.ID = um.GovIDType_ID
+	LEFT JOIN [dbo].[Tbl_MolecularLabMaster] ml WITH (NOLOCK) ON ml.ID = um.MolecularLabId
+	
 	WHERE um.[UserRole_ID] = @UserRoleId
 End

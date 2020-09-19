@@ -127,6 +127,7 @@ BEGIN
 					UpdatedBy = @CreatedBy
 					,UpdatedOn = GETDATE()
 					,IsPNDTAccept = 0
+					,IsNotified = 1
 					,ReasonForClose = 'Decision Pending / PNDT Not Agreed'
 				WHERE ANWSubjectId = @ANWSubjectId
 			
@@ -175,6 +176,7 @@ BEGIN
 					UpdatedBy = @CreatedBy
 					,UpdatedOn = GETDATE()
 					,IsPNDTAccept = 0
+					,IsNotified = 1
 					,ReasonForClose = 'Decision Pending / PNDT Not Agreed'
 				WHERE ANWSubjectId = @ANWSubjectId	
 			

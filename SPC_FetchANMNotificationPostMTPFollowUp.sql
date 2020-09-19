@@ -25,7 +25,7 @@ BEGIN
 		,SPR.[RCHID] 
 		,SP.[MobileNo] AS ANWContactNo
 		,SP.[AssignANM_ID] 
-		,(CONVERT(VARCHAR,MT.[MTPDateTime],103) + ' ' + CONVERT(VARCHAR,MT.[MTPDateTime],108)) AS MTPDateTime
+		,(CONVERT(VARCHAR,MT.[MTPDateTime],103) + ' ' + CONVERT(VARCHAR(5),MT.[MTPDateTime],108)) AS MTPDateTime
 		,(UM.[FirstName] + ' ' + UM.[LastName]) AS ObstetritianName
 		,1 AS FirstFollowupNo
 		,ISNULL(MT.[FirstFollowupStatusId],0) AS FirstFollowup

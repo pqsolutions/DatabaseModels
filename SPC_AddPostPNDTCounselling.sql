@@ -145,6 +145,7 @@ BEGIN
 					UpdatedBy = @CreatedBy
 					,UpdatedOn = GETDATE()
 					,IsMTPAccept = 0
+					,IsNotified = 1
 					,ReasonForClose = 'Decision Pending / MTP service not agreed'
 				WHERE ANWSubjectId = @ANWSubjectId
 				SELECT '' AS ScheduleMTPDate, '' AS ScheduleMTPTime
@@ -192,6 +193,7 @@ BEGIN
 					UpdatedBy = @CreatedBy
 					,UpdatedOn = GETDATE()
 					,IsMTPAccept = 0
+					,IsNotified = 1
 					,ReasonForClose = 'Decision Pending / MTP service not agreed'
 				WHERE ANWSubjectId = @ANWSubjectId
 				

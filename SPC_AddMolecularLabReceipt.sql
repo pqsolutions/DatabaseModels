@@ -21,29 +21,25 @@ CREATE PROCEDURE [dbo].[SPC_AddMolecularLabReceipt]
 	,@Barcode VARCHAR(200)
 	,@UpdatedBy INT
 ) AS
-DECLARE
-	@RejectAt VARCHAR(100)
 BEGIN
 	BEGIN TRY
-		SET @RejectAt = NULL
 		
-		IF @IsAccept = 0
-		BEGIN
-			SET @RejectAt = 'Molecular Lab Receipt'
-		END
-		
-	
 		UPDATE Tbl_CentralLabShipments SET 
 				ReceivedDate =CONVERT(DATETIME,@ReceivedDate,103)  
 				,UpdatedBy = @UpdatedBy 
 				,UpdatedOn = GETDATE()
 		WHERE LTRIM(RTRIM(GenratedShipmentID)) = LTRIM(RTRIM(@ShipmentId))
 		
-		UPDATE Tbl_SampleCollection SET
-				SampleDamaged = @SampleDamaged 
+		UPDATE Tbl_CentralLabShipmentsDetail SET 
+				SampleDamaged = @SampleDamaged
 				,BarcodeDamaged = @BarcodeDamaged
 				,IsAccept = @IsAccept 
-				,RejectAt = @RejectAt 
+		WHERE LTRIM(RTRIM(BarcodeNo)) = LTRIM(RTRIM(@Barcode))
+		
+		UPDATE Tbl_SampleCollection SET
+				IsDamagedMolecular = @SampleDamaged 
+				,BarcodeDamaged  = @BarcodeDamaged
+				,IsAcceptMolecular = @IsAccept 
 				,UpdatedBy = @UpdatedBy 
 				,UpdatedOn = GETDATE()
 		WHERE  LTRIM(RTRIM(BarcodeNo)) = LTRIM(RTRIM(@Barcode))

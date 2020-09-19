@@ -56,8 +56,8 @@ BEGIN
 		,CASE WHEN PRM.[IsPositive] = 1 THEN  1 ELSE 0 END AS FoetalDisease 
 		,PT.[ObstetricianId] 
 		,(UM2.[FirstName] +' '+UM2.[LastName] ) AS PNDTestObstetrician
-		,(CONVERT(VARCHAR,PT.[UpdatedOn],103) + ' ' +
-		  CONVERT(VARCHAR(5),CONVERT(TIME(2),PT.[UpdatedOn],103))) AS PNDDateTime
+		,(CONVERT(VARCHAR,PT.[PNDTDateTime],103) + ' ' +
+		  CONVERT(VARCHAR(5),CONVERT(TIME(2),PT.[PNDTDateTime],103))) AS PNDDateTime
 		  ,PD.[DiagnosisName] AS PNDTDiagnosisName
 		,PPS.[ID] AS PostPNDTSchedulingId
 		,PPS.[CounsellorId] 

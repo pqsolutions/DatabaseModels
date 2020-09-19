@@ -43,6 +43,10 @@ BEGIN
 			,um.[LastName] 
 			,um.[ContactNo1] 
 			,um.[ContactNo2]
+			,um.[CentralLabId]
+			,cl.[CentralLabName]
+			,um.[molecularLabId]
+			,ml.[MLabName]
 			,um.[Email]
 			,ISNULL(um.[GovIDType_ID],0) AS GovIDType_ID
 			,gm.[GovIDType]
@@ -70,5 +74,8 @@ BEGIN
 	INNER JOIN [dbo].[Tbl_PHCMaster] p WITH (NOLOCK) ON p.ID = um.PHCID	
 	INNER JOIN [dbo].[Tbl_SCMaster] sc WITH (NOLOCK) ON sc.ID = um.SCID
 	INNER JOIN [dbo].[Tbl_Gov_IDTypeMaster] gm WITH (NOLOCK) ON gm.ID = um.GovIDType_ID
+	LEFT JOIN [dbo].[Tbl_CentralLabMaster] cl WITH (NOLOCK) ON cl.ID = um.CentralLabId
+	LEFT JOIN [dbo].[Tbl_MolecularLabMaster] ml WITH (NOLOCK) ON ml.ID = um.MolecularLabId
+	
 	WHERE um.[ID]= @ID
 END

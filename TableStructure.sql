@@ -535,6 +535,9 @@ END
 
 
 -------------------------------------------------------------------------------------------------------------------------
+
+
+
 USE [Eduquaydb]
 GO
 
@@ -580,7 +583,8 @@ CREATE TABLE [dbo].[Tbl_UserMaster](
 	[Updatedby] [int] NULL,
 	[Comments] [varchar](max) NULL,
 	[IsActive] [bit] NULL,
-	[DigitalSignature] [image] NULL
+	[DigitalSignature] [image] NULL,
+	[MolecularLabId] [int] NULL
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
@@ -1041,6 +1045,8 @@ CREATE TABLE [dbo].[Tbl_SampleCollection](
 	[FollowUpBy] [int] NULL,
 	[FollowUpStatus] [bit] NULL,
 	[FollowUpOn] [datetime] NULL,
+	[IsDamagedMolecular] [bit] NULL,
+	[IsAcceptMolecular] [bit] NULL
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
@@ -1121,7 +1127,10 @@ CREATE TABLE [dbo].[Tbl_ANMCHCShipmentsDetail](
 	[ShipmentID] [int] NOT NULL,
 	[UniqueSubjectID] [varchar](250) NOT NULL,
 	[BarcodeNo] [varchar] (250) NULL,
-	
+	[IsAccept] [bit] NULL,
+	[SampleDamaged] [bit] NULL,
+	[SampleTimeoutExpiry] [bit] NULL,
+	[BarcodeDamaged] [bit] NULL
 
 PRIMARY KEY CLUSTERED 
 (
@@ -1453,6 +1462,11 @@ CREATE TABLE [dbo].[Tbl_CHCShipmentsDetail](
 	[ShipmentID] [int] NOT NULL,
 	[UniqueSubjectID] [varchar](250) NOT NULL,
 	[BarcodeNo] [varchar] (250) NULL,
+	[IsAccept] [bit] NULL,
+	[SampleDamaged] [bit] NULL,
+	[SampleTimeoutExpiry] [bit] NULL,
+	[BarcodeDamaged] [bit] NULL
+	
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
@@ -1660,6 +1674,11 @@ CREATE TABLE [dbo].[Tbl_CentralLabShipmentsDetail](
 	[ShipmentID] [int] NOT NULL,
 	[UniqueSubjectID] [varchar](250) NOT NULL,
 	[BarcodeNo] [varchar] (250) NULL,
+	[IsAccept] [bit] NULL,
+	[SampleDamaged] [bit] NULL,
+	[SampleTimeoutExpiry] [bit] NULL,
+	[BarcodeDamaged] [bit] NULL
+	
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
@@ -1687,6 +1706,9 @@ CREATE TABLE [dbo].[Tbl_MolecularTestResult](
 	[BarcodeNo] [varchar] (200) NOT NULL,
 	[ClinicalDiagnosisId] [int] NULL,
 	[Result] [int] NULL, -- Normal, DNA Test Positive
+	[IsDamaged] [bit] NULL,
+	[IsProcessed] [bit] NULL,
+	[ReasonForClose] [varchar] (max) NULL,
 	[UpdatedBy] [int] NULL,
 	[UpdatedOn] [datetime] NULL
 PRIMARY KEY CLUSTERED 
@@ -1696,6 +1718,39 @@ PRIMARY KEY CLUSTERED
 ) ON [PRIMARY]
 
 END	
+
+-------------------------------------------------------------------------------------------------------------------------
+
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_MolecularResultMaster' AND [type] = 'U')
+BEGIN
+
+CREATE TABLE [dbo].[Tbl_MolecularResultMaster](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[ResultName] [varchar](250) NULL,
+	[Createdon] [datetime] NULL,
+	[Createdby] [int] NULL,
+	[Updatedon] [datetime] NULL,
+	[Updatedby] [int] NULL,
+	[Comments] [varchar](max) NULL,
+	[Isactive] [bit] NULL,
+	
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END
+
 --------------------------------------------------------------------------------------------------------------------------
 
 
@@ -1723,7 +1778,6 @@ CREATE TABLE [dbo].[Tbl_PositiveResultSubjectsDetail](
 	[HPLCStatus] [char] (1) NULL, -- 'P' OR 'N'
 	[HPLCUpdatedOn] [datetime] NULL,
 	[MolecularResult] [varchar](max) NULL,
-	[MolecularStatus] [char] (1) NULL, -- 'P' OR 'N'
 	[MolecularUpdatedOn] [datetime] NULL,
 	[HPLCNotifiedStatus] [bit] NULL,
 	[HPLCNotifiedOn] [datetime] NULL,
@@ -2337,6 +2391,103 @@ IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_MTPFollowUpMaster' AND 
 BEGIN
 
 CREATE TABLE [dbo].[Tbl_MTPFollowUpMaster](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[StatusName] [varchar](250) NULL,
+	[Createdon] [datetime] NULL,
+	[Createdby] [int] NULL,
+	[Updatedon] [datetime] NULL,
+	[Updatedby] [int] NULL,
+	[Comments] [varchar](max) NULL,
+	[Isactive] [bit] NULL,
+	
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END
+
+---------------------------------------------------------------------------------------------------------------------------------
+
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_CHCSampleStatusMaster' AND [type] = 'U')
+BEGIN
+
+CREATE TABLE [dbo].[Tbl_CHCSampleStatusMaster](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[StatusName] [varchar](250) NULL,
+	[Createdon] [datetime] NULL,
+	[Createdby] [int] NULL,
+	[Updatedon] [datetime] NULL,
+	[Updatedby] [int] NULL,
+	[Comments] [varchar](max) NULL,
+	[Isactive] [bit] NULL,
+	
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END
+
+---------------------------------------------------------------------------------------------------------------------------------
+
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_CentralLabSampleStatusMaster' AND [type] = 'U')
+BEGIN
+
+CREATE TABLE [dbo].[Tbl_CentralLabSampleStatusMaster](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[StatusName] [varchar](250) NULL,
+	[Createdon] [datetime] NULL,
+	[Createdby] [int] NULL,
+	[Updatedon] [datetime] NULL,
+	[Updatedby] [int] NULL,
+	[Comments] [varchar](max) NULL,
+	[Isactive] [bit] NULL,
+	
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END
+
+---------------------------------------------------------------------------------------------------------------------------------
+
+
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_MolecularSampleStatusMaster' AND [type] = 'U')
+BEGIN
+
+CREATE TABLE [dbo].[Tbl_MolecularSampleStatusMaster](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
 	[StatusName] [varchar](250) NULL,
 	[Createdon] [datetime] NULL,

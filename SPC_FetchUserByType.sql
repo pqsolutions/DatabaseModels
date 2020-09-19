@@ -58,6 +58,8 @@ Begin
 			,um.[Comments] 
 			,um.[Isactive] 
 			,um.[DigitalSignature] 
+			,um.[molecularLabId]
+			,ml.[MLabName]
 			,CASE WHEN ut.[Usertype] = 'ANM' THEN (SELECT ID FROM Tbl_ConstantValues WHERE CommonName = 'ANM' AND comments = 'RegisterFrom')
 				ELSE (SELECT ID FROM Tbl_ConstantValues WHERE CommonName = 'CHC' AND comments = 'RegisterFrom')END AS RegisteredFrom
 			,CASE WHEN ut.[Usertype] = 'ANM' THEN (SELECT ID FROM Tbl_ConstantValues WHERE CommonName = 'ANM' AND comments = 'SampleCollectionFrom')
@@ -76,5 +78,7 @@ Begin
 	LEFT JOIN [dbo].[Tbl_SCMaster] sc WITH (NOLOCK) ON sc.ID = um.SCID
 	--LEFT JOIN [dbo].[Tbl_RIMaster] ri WITH (NOLOCK) ON ri.ID = um.RIID
 	LEFT JOIN [dbo].[Tbl_Gov_IDTypeMaster] gm WITH (NOLOCK) ON gm.ID = um.GovIDType_ID
+	LEFT JOIN [dbo].[Tbl_MolecularLabMaster] ml WITH (NOLOCK) ON ml.ID = um.MolecularLabId
+	
 	WHERE um.[UserType_ID] = @UserTypeId
 End

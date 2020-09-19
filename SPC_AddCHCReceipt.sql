@@ -57,6 +57,13 @@ BEGIN
 				,UpdatedOn = GETDATE()
 		WHERE LTRIM(RTRIM(GenratedShipmentID)) = LTRIM(RTRIM(@ShipmentId))
 		
+		UPDATE Tbl_ANMCHCShipmentsDetail SET 
+				SampleDamaged = @SampleDamaged
+				,SampleTimeoutExpiry = @SampleTimeout
+				,BarcodeDamaged = @BarcodeDamaged
+				,IsAccept = @IsAccept 
+		WHERE LTRIM(RTRIM(BarcodeNo)) = LTRIM(RTRIM(@Barcode))
+		
 		UPDATE Tbl_SampleCollection SET
 				SampleDamaged = @SampleDamaged 
 				,SampleTimeoutExpiry = @SampleTimeout

@@ -54,8 +54,8 @@ BEGIN
 			WHERE UniqueSubjectID = SPD.[SpouseSubjectID])) AS SPouseHPLCDiagnosis
 		,PT.[ObstetricianId]	AS AssignedObstetricianId
 		,(UM1.[FirstName] +' '+UM1.[LastName] ) AS ObsetricianName
-		,CONVERT(VARCHAR,PPC.[SchedulePNDTDate],103) AS SchedulePNDTDate
-		,CONVERT(VARCHAR(5),PPC.[SchedulePNDTTime]) AS SchedulePNDTTime
+		,CONVERT(VARCHAR,PT.[PNDTDateTime],103) AS SchedulePNDTDate
+		,CONVERT(VARCHAR(5),PT.[PNDTDateTime],108) AS SchedulePNDTTime
 		,PPC.[CounsellingRemarks] 
 		,'The couple has agreed for Pre-natal Diagnosis' AS CounsellingStatus
 		,PT.[ID] AS PNDTTestID
