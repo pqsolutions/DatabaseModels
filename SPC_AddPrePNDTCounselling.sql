@@ -26,8 +26,8 @@ CREATE PROCEDURE [dbo].[SPC_AddPrePNDTCounselling]
 	,@IsPNDTAgreePending BIT
 	,@SchedulePNDTDate VARCHAR(250)
 	,@SchedulePNDTTime VARCHAR(100)
-	--,@FileName VARCHAR(MAX)
-	--,@FileData VARBINARY(MAX)
+	,@FileName VARCHAR(MAX)
+	,@FileLocation VARCHAR(MAX)
 	,@CreatedBy INT
 )
 AS
@@ -36,6 +36,9 @@ DECLARE
 	,@ScheduleDate DATE
 	,@ScheduleTime TIME(2)
 	,@Active BIT
+	,@CheckAgreed BIT
+	,@FName VARCHAR(MAX)
+	,@FLocation VARCHAR(MAX)
 	
 BEGIN
 	BEGIN TRY
@@ -73,8 +76,8 @@ BEGIN
 				,CounsellingRemarks
 				,SchedulePNDTDate
 				,SchedulePNDTTime
-				--,FileName
-				--,FileData
+				,FileName
+				,FileLocation
 				,IsPNDTAgreeYes
 				,IsPNDTAgreeNo
 				,IsPNDTAgreePending
@@ -93,8 +96,8 @@ BEGIN
 				,@CounsellingRemarks
 				,@ScheduleDate
 				,@ScheduleTime
-				--,@FileName
-				--,@FileData
+				,@FileName
+				,@FileLocation
 				,@IsPNDTAgreeYes
 				,@IsPNDTAgreeNo
 				,@IsPNDTAgreePending 
@@ -136,15 +139,31 @@ BEGIN
 		END
 		ELSE
 		BEGIN
+			SELECT @CheckAgreed = IsPNDTAgreeYes,@FName = FileName , @FLocation = FileLocation FROM Tbl_PrePNDTCounselling WHERE PrePNDTSchedulingId = @PrePNDTSchedulingId 
+			IF @CheckAgreed = 1 AND @IsPNDTAgreeYes = 1
+			BEGIN
+				SET @FName = @FileName --@FName
+				SET @FLocation = @FileLocation --@FLocation
+			END
+			ELSE IF @CheckAgreed = 1 AND @IsPNDTAgreeYes = 0
+			BEGIN
+				SET @FName = NULL
+				SET @FLocation = NULL
+			END
 			
+			ELSE IF @CheckAgreed = 0 AND @IsPNDTAgreeYes = 1
+			BEGIN
+				SET @FName = @FileName 
+				SET @FLocation = @FileLocation
+			END
 			UPDATE  Tbl_PrePNDTCounselling SET
 				AssignedObstetricianId = @AssignedObstetricianId
 				,CounsellorId = @CounsellorId
 				,CounsellingRemarks = @CounsellingRemarks
 				,SchedulePNDTDate = @ScheduleDate
 				,SchedulePNDTTime = @ScheduleTime
-				--,FileName = @FileName
-				--,FileData = @FileData
+				,FileName = @FName
+				,FileLocation = @FLocation
 				,IsPNDTAgreeYes = @IsPNDTAgreeYes
 				,IsPNDTAgreeNo = @IsPNDTAgreeNo
 				,IsPNDTAgreePending =@IsPNDTAgreePending
@@ -153,6 +172,7 @@ BEGIN
 				,IsActive = 1
 				,UpdatedToANM = 0
 			WHERE PrePNDTSchedulingId = @PrePNDTSchedulingId
+			
 			
 			IF @IsPNDTAgreeYes = 1
 			BEGIN

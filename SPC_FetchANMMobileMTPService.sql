@@ -26,7 +26,7 @@ BEGIN
 		,(UM1.[FirstName] + ' ' + UM1.[LastName]) AS ObstetricianName
 		,MT.[ClinicalHistory] 
 		,MT.[Examination] 
-		,MT.[ProcedureofTesting]
+		,MT.[ProcedureofTesting] 
 		,DCM.[DischargeConditionName]
 		,(SELECT [dbo].[FN_GetMTPSubjectComplications](MT.[ID])) AS MTPComplications
 	FROM  Tbl_MTPTest MT

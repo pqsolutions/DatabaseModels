@@ -23,6 +23,7 @@ BEGIN
 			,SPRD.[RIID]
 			,RM.[RIsite] AS RIPoint
 			,SPRD.[Age] 
+			,SPRD.[Gender]
 			,HR.[BarcodeNo] 
 			,(SPRD.[SubjectTitle] +' '+SPRD.[FirstName] + ' ' + SPRD.[MiddleName] + ' ' + SPRD.[LastName]) AS SubjectName
 			,SPRD.[MobileNo] AS ContactNo

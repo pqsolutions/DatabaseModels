@@ -42,7 +42,7 @@ BEGIN
 	END
 	SET  @StatusName = (SELECT StatusName FROM Tbl_CentralLabSampleStatusMaster WHERE ID = @SampleStatus)
 	
-	IF @StatusName =  'Samples Shipped'
+	IF @StatusName =  'Samples Shipped' OR @SampleStatus = 0
 	BEGIN
 		SELECT SP.[ID] AS SubjectId
 			,(SP.[FirstName] + ' ' + SP.[MiddleName] + ' '+ SP.[LastName] ) AS SubjectName
@@ -56,7 +56,7 @@ BEGIN
 			,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN
 				CONVERT(VARCHAR,SPR.[LMP_Date],103) ELSE '' END AS LMPDate
 			,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN
-			 CONVERT(DECIMAL(10,1),(SELECT [dbo].[FN_CalculateGestationalAge](SP.[ID]))) ELSE '' END AS GestationalAge
+			 (SELECT [dbo].[FN_CalculateGestationalAge](SP.[ID])) ELSE '' END AS GestationalAge
 			,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN
 			 ('G'+CONVERT(VARCHAR,SPR.[G])+'-P'+CONVERT(VARCHAR,SPR.[P])+'-L'+CONVERT(VARCHAR,SPR.[L])+'-A'+
 			 CONVERT(VARCHAR,SPR.[A])) ELSE '' END AS ObstetricScore
@@ -97,9 +97,9 @@ BEGIN
 		LEFT JOIN [dbo].[Tbl_HPLCDiagnosisResult]   HD WITH (NOLOCK) ON HD.BarcodeNo = HT.BarcodeNo
 		LEFT JOIN [dbo].[Tbl_ClinicalDiagnosisMaster] CDM WITH (NOLOCK) ON HD.ClinicalDiagnosisId = CDM.ID 
 		WHERE  S.[ReceivingCentralLabId] = @CentralLabId 
-		AND (@CHCID  = 0 AND SP.[CHCID] = @CHCID) 
-		AND (@PHCID  = 0 AND SP.[PHCID] = @PHCID) 
-		AND (@ANMID  = 0 AND SP.[AssignANM_ID] = @ANMID) 
+		AND (@CHCID  = 0 OR SP.[CHCID] = @CHCID) 
+		AND (@PHCID  = 0 OR SP.[PHCID] = @PHCID) 
+		AND (@ANMID  = 0 OR SP.[AssignANM_ID] = @ANMID) 
 		AND (CONVERT(DATE,S.[DateofShipment],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
 	END
 	IF @StatusName =  'Samples Received'
@@ -116,7 +116,7 @@ BEGIN
 			,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN
 				CONVERT(VARCHAR,SPR.[LMP_Date],103) ELSE '' END AS LMPDate
 			,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN
-			 CONVERT(DECIMAL(10,1),(SELECT [dbo].[FN_CalculateGestationalAge](SP.[ID]))) ELSE '' END AS GestationalAge
+			 (SELECT [dbo].[FN_CalculateGestationalAge](SP.[ID])) ELSE '' END AS GestationalAge
 			,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN
 			 ('G'+CONVERT(VARCHAR,SPR.[G])+'-P'+CONVERT(VARCHAR,SPR.[P])+'-L'+CONVERT(VARCHAR,SPR.[L])+'-A'+
 			 CONVERT(VARCHAR,SPR.[A])) ELSE '' END AS ObstetricScore
@@ -157,9 +157,9 @@ BEGIN
 		LEFT JOIN [dbo].[Tbl_HPLCDiagnosisResult]   HD WITH (NOLOCK) ON HD.BarcodeNo = HT.BarcodeNo
 		LEFT JOIN [dbo].[Tbl_ClinicalDiagnosisMaster] CDM WITH (NOLOCK) ON HD.ClinicalDiagnosisId = CDM.ID 
 		WHERE  S.[ReceivedDate] IS NOT NULL AND S.[ReceivingCentralLabId] = @CentralLabId 
-		AND (@CHCID  = 0 AND SP.[CHCID] = @CHCID) 
-		AND (@PHCID  = 0 AND SP.[PHCID] = @PHCID) 
-		AND (@ANMID  = 0 AND SP.[AssignANM_ID] = @ANMID) 
+		AND (@CHCID  = 0 OR SP.[CHCID] = @CHCID) 
+		AND (@PHCID  = 0 OR SP.[PHCID] = @PHCID) 
+		AND (@ANMID  = 0 OR SP.[AssignANM_ID] = @ANMID)  
 		AND (CONVERT(DATE,S.[DateofShipment],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
 	END
 	IF @StatusName =  'Samples Tested'
@@ -176,7 +176,7 @@ BEGIN
 			,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN
 				CONVERT(VARCHAR,SPR.[LMP_Date],103) ELSE '' END AS LMPDate
 			,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN
-			 CONVERT(DECIMAL(10,1),(SELECT [dbo].[FN_CalculateGestationalAge](SP.[ID]))) ELSE '' END AS GestationalAge
+			 (SELECT [dbo].[FN_CalculateGestationalAge](SP.[ID])) ELSE '' END AS GestationalAge
 			,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN
 			 ('G'+CONVERT(VARCHAR,SPR.[G])+'-P'+CONVERT(VARCHAR,SPR.[P])+'-L'+CONVERT(VARCHAR,SPR.[L])+'-A'+
 			 CONVERT(VARCHAR,SPR.[A])) ELSE '' END AS ObstetricScore
@@ -216,9 +216,9 @@ BEGIN
 		LEFT JOIN [dbo].[Tbl_RIMaster] RI WITH (NOLOCK)ON RI.ID = SP.RIID
 		LEFT JOIN [dbo].[Tbl_UserMaster] UM  WITH (NOLOCK) ON UM.ID = SP.AssignANM_ID 
 		WHERE S.[ReceivingCentralLabId] = @CentralLabId 
-		AND (@CHCID  = 0 AND SP.[CHCID] = @CHCID) 
-		AND (@PHCID  = 0 AND SP.[PHCID] = @PHCID) 
-		AND (@ANMID  = 0 AND SP.[AssignANM_ID] = @ANMID) 
+		AND (@CHCID  = 0 OR SP.[CHCID] = @CHCID) 
+		AND (@PHCID  = 0 OR SP.[PHCID] = @PHCID) 
+		AND (@ANMID  = 0 OR SP.[AssignANM_ID] = @ANMID) 
 		AND (CONVERT(DATE,HT.[HPLCTestCompletedOn],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
 	END
 	
@@ -236,7 +236,7 @@ BEGIN
 			,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN
 				CONVERT(VARCHAR,SPR.[LMP_Date],103) ELSE '' END AS LMPDate
 			,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN
-			 CONVERT(DECIMAL(10,1),(SELECT [dbo].[FN_CalculateGestationalAge](SP.[ID]))) ELSE '' END AS GestationalAge
+			 (SELECT [dbo].[FN_CalculateGestationalAge](SP.[ID])) ELSE '' END AS GestationalAge
 			,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN
 			 ('G'+CONVERT(VARCHAR,SPR.[G])+'-P'+CONVERT(VARCHAR,SPR.[P])+'-L'+CONVERT(VARCHAR,SPR.[L])+'-A'+
 			 CONVERT(VARCHAR,SPR.[A])) ELSE '' END AS ObstetricScore
@@ -276,9 +276,9 @@ BEGIN
 		LEFT JOIN [dbo].[Tbl_HPLCDiagnosisResult]   HD WITH (NOLOCK) ON HD.BarcodeNo = HT.BarcodeNo
 		LEFT JOIN [dbo].[Tbl_ClinicalDiagnosisMaster] CDM WITH (NOLOCK) ON HD.ClinicalDiagnosisId = CDM.ID 
 		WHERE  S.[ReceivingCentralLabId] = @CentralLabId 
-		AND (@CHCID  = 0 AND SP.[CHCID] = @CHCID) 
-		AND (@PHCID  = 0 AND SP.[PHCID] = @PHCID) 
-		AND (@ANMID  = 0 AND SP.[AssignANM_ID] = @ANMID) AND SD.[BarcodeNo] NOT IN (SELECT BarcodeNo FROM Tbl_HPLCTestResult)
+		AND (@CHCID  = 0 OR SP.[CHCID] = @CHCID) 
+		AND (@PHCID  = 0 OR SP.[PHCID] = @PHCID) 
+		AND (@ANMID  = 0 OR SP.[AssignANM_ID] = @ANMID) AND SD.[BarcodeNo] NOT IN (SELECT BarcodeNo FROM Tbl_HPLCTestResult)
 		AND (SD.[SampleDamaged] = 1 OR SD.[SampleTimeoutExpiry] = 1)
 		AND (CONVERT(DATE,S.[DateofShipment],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103))  
 	END
@@ -296,7 +296,7 @@ BEGIN
 			,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN
 				CONVERT(VARCHAR,SPR.[LMP_Date],103) ELSE '' END AS LMPDate
 			,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN
-			 CONVERT(DECIMAL(10,1),(SELECT [dbo].[FN_CalculateGestationalAge](SP.[ID]))) ELSE '' END AS GestationalAge
+			  (SELECT [dbo].[FN_CalculateGestationalAge](SP.[ID])) ELSE '' END AS GestationalAge
 			,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN
 			 ('G'+CONVERT(VARCHAR,SPR.[G])+'-P'+CONVERT(VARCHAR,SPR.[P])+'-L'+CONVERT(VARCHAR,SPR.[L])+'-A'+
 			 CONVERT(VARCHAR,SPR.[A])) ELSE '' END AS ObstetricScore
@@ -335,12 +335,12 @@ BEGIN
 		LEFT JOIN [dbo].[Tbl_RIMaster] RI WITH (NOLOCK)ON RI.ID = SP.RIID
 		LEFT JOIN [dbo].[Tbl_UserMaster] UM  WITH (NOLOCK) ON UM.ID = SP.AssignANM_ID 
 		WHERE S.[ReceivingCentralLabId] = @CentralLabId AND HT.[IsPositive] = 1
-		AND (@CHCID  = 0 AND SP.[CHCID] = @CHCID) 
-		AND (@PHCID  = 0 AND SP.[PHCID] = @PHCID) 
-		AND (@ANMID  = 0 AND SP.[AssignANM_ID] = @ANMID) 
+		AND (@CHCID  = 0 OR SP.[CHCID] = @CHCID) 
+		AND (@PHCID  = 0 OR SP.[PHCID] = @PHCID) 
+		AND (@ANMID  = 0 OR SP.[AssignANM_ID] = @ANMID) 
 		AND (CONVERT(DATE,HT.[HPLCResultUpdatedOn],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
 	END
-	IF @StatusName =  'HPLC Positive Subjects'
+	IF @StatusName =  'HPLC Negative Subjects'
 	BEGIN
 		SELECT SP.[ID] AS SubjectId
 			,(SP.[FirstName] + ' ' + SP.[MiddleName] + ' '+ SP.[LastName] ) AS SubjectName
@@ -354,7 +354,7 @@ BEGIN
 			,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN
 				CONVERT(VARCHAR,SPR.[LMP_Date],103) ELSE '' END AS LMPDate
 			,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN
-			 CONVERT(DECIMAL(10,1),(SELECT [dbo].[FN_CalculateGestationalAge](SP.[ID]))) ELSE '' END AS GestationalAge
+			  (SELECT [dbo].[FN_CalculateGestationalAge](SP.[ID])) ELSE '' END AS GestationalAge
 			,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN
 			 ('G'+CONVERT(VARCHAR,SPR.[G])+'-P'+CONVERT(VARCHAR,SPR.[P])+'-L'+CONVERT(VARCHAR,SPR.[L])+'-A'+
 			 CONVERT(VARCHAR,SPR.[A])) ELSE '' END AS ObstetricScore
@@ -393,9 +393,9 @@ BEGIN
 		LEFT JOIN [dbo].[Tbl_RIMaster] RI WITH (NOLOCK)ON RI.ID = SP.RIID
 		LEFT JOIN [dbo].[Tbl_UserMaster] UM  WITH (NOLOCK) ON UM.ID = SP.AssignANM_ID 
 		WHERE S.[ReceivingCentralLabId] = @CentralLabId AND HT.[IsPositive] = 0
-		AND (@CHCID  = 0 AND SP.[CHCID] = @CHCID) 
-		AND (@PHCID  = 0 AND SP.[PHCID] = @PHCID) 
-		AND (@ANMID  = 0 AND SP.[AssignANM_ID] = @ANMID) 
+		AND (@CHCID  = 0 OR SP.[CHCID] = @CHCID) 
+		AND (@PHCID  = 0 OR SP.[PHCID] = @PHCID) 
+		AND (@ANMID  = 0 OR SP.[AssignANM_ID] = @ANMID) 
 		AND (CONVERT(DATE,HT.[HPLCResultUpdatedOn],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
 	END
 END

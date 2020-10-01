@@ -1,4 +1,4 @@
-USE [Eduquaydb]
+USE Eduquaydb
 GO
 
 SET ANSI_NULLS ON
@@ -8,7 +8,7 @@ GO
 
 IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_FetchMolecularTestReports' AND [type] = 'p')
 BEGIN
-	DROP PROCEDURE SPC_FetchMolecularTestReports
+	DROP PROCEDURE SPC_FetchMolecularTestReports 
 END
 GO
 CREATE PROCEDURE [dbo].[SPC_FetchMolecularTestReports] 
@@ -43,7 +43,7 @@ BEGIN
 	END
 	SET  @StatusName = (SELECT StatusName FROM Tbl_MolecularSampleStatusMaster WHERE ID = @SampleStatus)
 	
-	IF @StatusName =  'Test Pending'
+	IF @StatusName =  'Test Pending' 
 	BEGIN
 		SELECT SP.[ID] AS SubjectId
 			,(SP.[FirstName] + ' ' + SP.[MiddleName] + ' '+ SP.[LastName] ) AS SubjectName
@@ -57,7 +57,7 @@ BEGIN
 			,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN
 				CONVERT(VARCHAR,SPR.[LMP_Date],103) ELSE '' END AS LMPDate
 			,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN
-			 CONVERT(DECIMAL(10,1),(SELECT [dbo].[FN_CalculateGestationalAge](SP.[ID]))) ELSE '' END AS GestationalAge
+			(SELECT [dbo].[FN_CalculateGestationalAge](SP.[ID])) ELSE '' END AS GestationalAge
 			,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN
 			 ('G'+CONVERT(VARCHAR,SPR.[G])+'-P'+CONVERT(VARCHAR,SPR.[P])+'-L'+CONVERT(VARCHAR,SPR.[L])+'-A'+
 			 CONVERT(VARCHAR,SPR.[A])) ELSE '' END AS ObstetricScore
@@ -79,14 +79,14 @@ BEGIN
 		LEFT JOIN [dbo].[Tbl_DistrictMaster] DM WITH (NOLOCK)ON  DM.ID = SP.DistrictID
 		WHERE S.[ReceivedDate] IS NOT NULL AND S.[ReceivingMolecularLabId] = @MolecularLabId 
 		AND SD.[BarcodeNo]   NOT IN (SELECT BarcodeNo FROM Tbl_MolecularTestResult)
-		AND (@DistrictId = 0 AND SP.[DistrictID] = @DistrictId)
-		AND (@CHCID  = 0 AND SP.[CHCID] = @CHCID) 
-		AND (@PHCID  = 0 AND SP.[PHCID] = @PHCID) 
-		AND (@ANMID  = 0 AND SP.[AssignANM_ID] = @ANMID) 
+		AND (@DistrictId = 0 OR SP.[DistrictID] = @DistrictId)
+		AND (@CHCID  = 0 OR SP.[CHCID] = @CHCID) 
+		AND (@PHCID  = 0 OR SP.[PHCID] = @PHCID) 
+		AND (@ANMID  = 0 OR SP.[AssignANM_ID] = @ANMID) 
 		AND (CONVERT(DATE,S.[DateofShipment],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
 		
 	END
-	IF @StatusName =  'Test Completed'
+	IF @StatusName =  'Test Completed' OR @SampleStatus = 0
 	BEGIN
 		SELECT SP.[ID] AS SubjectId
 			,(SP.[FirstName] + ' ' + SP.[MiddleName] + ' '+ SP.[LastName] ) AS SubjectName
@@ -100,7 +100,7 @@ BEGIN
 			,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN
 				CONVERT(VARCHAR,SPR.[LMP_Date],103) ELSE '' END AS LMPDate
 			,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN
-			 CONVERT(DECIMAL(10,1),(SELECT [dbo].[FN_CalculateGestationalAge](SP.[ID]))) ELSE '' END AS GestationalAge
+			 (SELECT [dbo].[FN_CalculateGestationalAge](SP.[ID])) ELSE '' END AS GestationalAge
 			,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN
 			 ('G'+CONVERT(VARCHAR,SPR.[G])+'-P'+CONVERT(VARCHAR,SPR.[P])+'-L'+CONVERT(VARCHAR,SPR.[L])+'-A'+
 			 CONVERT(VARCHAR,SPR.[A])) ELSE '' END AS ObstetricScore
@@ -125,10 +125,10 @@ BEGIN
 		LEFT JOIN [dbo].[Tbl_ClinicalDiagnosisMaster] CDM WITH (NOLOCK) ON MR.ClinicalDiagnosisId = CDM.ID 
 		LEFT JOIN [dbo].[Tbl_MolecularResultMaster] MRM WITH (NOLOCK) ON MR.Result  = MRM.ID 	
 		WHERE  S.[ReceivingMolecularLabId] = @MolecularLabId 
-		AND (@DistrictId = 0 AND SP.[DistrictID] = @DistrictId)
-		AND (@CHCID  = 0 AND SP.[CHCID] = @CHCID) 
-		AND (@PHCID  = 0 AND SP.[PHCID] = @PHCID) 
-		AND (@ANMID  = 0 AND SP.[AssignANM_ID] = @ANMID)
+		AND (@DistrictId = 0 OR SP.[DistrictID] = @DistrictId)
+		AND (@CHCID  = 0 OR SP.[CHCID] = @CHCID) 
+		AND (@PHCID  = 0 OR SP.[PHCID] = @PHCID) 
+		AND (@ANMID  = 0 OR SP.[AssignANM_ID] = @ANMID)
 		AND (CONVERT(DATE,MR.[UpdatedOn],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
 		
 	END
@@ -146,7 +146,7 @@ BEGIN
 			,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN
 				CONVERT(VARCHAR,SPR.[LMP_Date],103) ELSE '' END AS LMPDate
 			,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN
-			 CONVERT(DECIMAL(10,1),(SELECT [dbo].[FN_CalculateGestationalAge](SP.[ID]))) ELSE '' END AS GestationalAge
+			 (SELECT [dbo].[FN_CalculateGestationalAge](SP.[ID])) ELSE '' END AS GestationalAge
 			,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN
 			 ('G'+CONVERT(VARCHAR,SPR.[G])+'-P'+CONVERT(VARCHAR,SPR.[P])+'-L'+CONVERT(VARCHAR,SPR.[L])+'-A'+
 			 CONVERT(VARCHAR,SPR.[A])) ELSE '' END AS ObstetricScore
@@ -154,7 +154,7 @@ BEGIN
 			,SD.[BarcodeNo]
 			,DM.[Districtname]
 			,CONVERT(VARCHAR,S.[DateofShipment],103) AS ShipmentDate
-			,'Processed' AS SampleStatus
+			,MRM.[ResultName] AS SampleStatus
 			,CASE WHEN MR.[IsProcessed] = 1 THEN CDM.[DiagnosisName] ELSE NULL END AS Diagnosis
 			,CASE WHEN MR.[IsProcessed] = 1 THEN MRM.[ResultName]  ELSE NULL END AS MolecularResult
 			,IsProcessed AS Processed
@@ -172,10 +172,10 @@ BEGIN
 		LEFT JOIN [dbo].[Tbl_MolecularResultMaster] MRM WITH (NOLOCK) ON MR.Result  = MRM.ID 
 		WHERE  S.[ReceivingMolecularLabId] = @MolecularLabId 
 		AND MR.[Result] = (SELECT ID FROM Tbl_MolecularResultMaster WHERE ResultName = 'DNA Test Positive') 
-		AND (@DistrictId = 0 AND SP.[DistrictID] = @DistrictId)
-		AND (@CHCID  = 0 AND SP.[CHCID] = @CHCID) 
-		AND (@PHCID  = 0 AND SP.[PHCID] = @PHCID) 
-		AND (@ANMID  = 0 AND SP.[AssignANM_ID] = @ANMID)
+		AND (@DistrictId = 0 OR SP.[DistrictID] = @DistrictId)
+		AND (@CHCID  = 0 OR SP.[CHCID] = @CHCID) 
+		AND (@PHCID  = 0 OR SP.[PHCID] = @PHCID) 
+		AND (@ANMID  = 0 OR SP.[AssignANM_ID] = @ANMID)
 		AND (CONVERT(DATE,MR.[UpdatedOn],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
 		
 	END
@@ -194,7 +194,7 @@ BEGIN
 			,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN
 				CONVERT(VARCHAR,SPR.[LMP_Date],103) ELSE '' END AS LMPDate
 			,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN
-			 CONVERT(DECIMAL(10,1),(SELECT [dbo].[FN_CalculateGestationalAge](SP.[ID]))) ELSE '' END AS GestationalAge
+			 (SELECT [dbo].[FN_CalculateGestationalAge](SP.[ID])) ELSE '' END AS GestationalAge
 			,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN
 			 ('G'+CONVERT(VARCHAR,SPR.[G])+'-P'+CONVERT(VARCHAR,SPR.[P])+'-L'+CONVERT(VARCHAR,SPR.[L])+'-A'+
 			 CONVERT(VARCHAR,SPR.[A])) ELSE '' END AS ObstetricScore
@@ -202,7 +202,7 @@ BEGIN
 			,SD.[BarcodeNo]
 			,DM.[Districtname]
 			,CONVERT(VARCHAR,S.[DateofShipment],103) AS ShipmentDate
-			,'Processed' AS SampleStatus
+			,MRM.[ResultName] AS SampleStatus
 			,CASE WHEN MR.[IsProcessed] = 1 THEN CDM.[DiagnosisName] ELSE NULL END AS Diagnosis
 			,CASE WHEN MR.[IsProcessed] = 1 THEN MRM.[ResultName]  ELSE NULL END AS MolecularResult
 			,IsProcessed AS Processed
@@ -219,10 +219,10 @@ BEGIN
 		LEFT JOIN [dbo].[Tbl_MolecularResultMaster] MRM WITH (NOLOCK) ON MR.Result  = MRM.ID 
 		WHERE  S.[ReceivingMolecularLabId] = @MolecularLabId 
 		AND MR.[Result] = (SELECT ID FROM Tbl_MolecularResultMaster WHERE ResultName = 'Normal') 
-		AND (@DistrictId = 0 AND SP.[DistrictID] = @DistrictId)
-		AND (@CHCID  = 0 AND SP.[CHCID] = @CHCID) 
-		AND (@PHCID  = 0 AND SP.[PHCID] = @PHCID) 
-		AND (@ANMID  = 0 AND SP.[AssignANM_ID] = @ANMID)
+		AND (@DistrictId = 0 OR SP.[DistrictID] = @DistrictId)
+		AND (@CHCID  = 0 OR SP.[CHCID] = @CHCID) 
+		AND (@PHCID  = 0 OR SP.[PHCID] = @PHCID) 
+		AND (@ANMID  = 0 OR SP.[AssignANM_ID] = @ANMID)
 		AND (CONVERT(DATE,MR.[UpdatedOn],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
 		
 	END
@@ -241,7 +241,7 @@ BEGIN
 			,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN
 				CONVERT(VARCHAR,SPR.[LMP_Date],103) ELSE '' END AS LMPDate
 			,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN
-			 CONVERT(DECIMAL(10,1),(SELECT [dbo].[FN_CalculateGestationalAge](SP.[ID]))) ELSE '' END AS GestationalAge
+			(SELECT [dbo].[FN_CalculateGestationalAge](SP.[ID])) ELSE '' END AS GestationalAge
 			,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN
 			 ('G'+CONVERT(VARCHAR,SPR.[G])+'-P'+CONVERT(VARCHAR,SPR.[P])+'-L'+CONVERT(VARCHAR,SPR.[L])+'-A'+
 			 CONVERT(VARCHAR,SPR.[A])) ELSE '' END AS ObstetricScore
@@ -266,10 +266,10 @@ BEGIN
 		LEFT JOIN [dbo].[Tbl_MolecularResultMaster] MRM WITH (NOLOCK) ON MR.Result  = MRM.ID
 		WHERE  S.[ReceivingMolecularLabId] = @MolecularLabId 
 		AND MR.[IsDamaged] = 1 AND MR.[IsProcessed] = 1
-		AND (@DistrictId = 0 AND SP.[DistrictID] = @DistrictId)
-		AND (@CHCID  = 0 AND SP.[CHCID] = @CHCID) 
-		AND (@PHCID  = 0 AND SP.[PHCID] = @PHCID) 
-		AND (@ANMID  = 0 AND SP.[AssignANM_ID] = @ANMID)
+		AND (@DistrictId = 0 OR SP.[DistrictID] = @DistrictId)
+		AND (@CHCID  = 0 OR SP.[CHCID] = @CHCID) 
+		AND (@PHCID  = 0 OR SP.[PHCID] = @PHCID) 
+		AND (@ANMID  = 0 OR SP.[AssignANM_ID] = @ANMID)
 		AND (CONVERT(DATE,MR.[UpdatedOn],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
 		
 	END
@@ -288,7 +288,7 @@ BEGIN
 			,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN
 				CONVERT(VARCHAR,SPR.[LMP_Date],103) ELSE '' END AS LMPDate
 			,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN
-			 CONVERT(DECIMAL(10,1),(SELECT [dbo].[FN_CalculateGestationalAge](SP.[ID]))) ELSE '' END AS GestationalAge
+			(SELECT [dbo].[FN_CalculateGestationalAge](SP.[ID])) ELSE '' END AS GestationalAge
 			,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN
 			 ('G'+CONVERT(VARCHAR,SPR.[G])+'-P'+CONVERT(VARCHAR,SPR.[P])+'-L'+CONVERT(VARCHAR,SPR.[L])+'-A'+
 			 CONVERT(VARCHAR,SPR.[A])) ELSE '' END AS ObstetricScore
@@ -313,10 +313,10 @@ BEGIN
 		LEFT JOIN [dbo].[Tbl_MolecularResultMaster] MRM WITH (NOLOCK) ON MR.Result  = MRM.ID
 		WHERE  S.[ReceivingMolecularLabId] = @MolecularLabId 
 		AND MR.[IsDamaged] = 1 AND MR.[IsProcessed] = 0
-		AND (@DistrictId = 0 AND SP.[DistrictID] = @DistrictId)
-		AND (@CHCID  = 0 AND SP.[CHCID] = @CHCID) 
-		AND (@PHCID  = 0 AND SP.[PHCID] = @PHCID) 
-		AND (@ANMID  = 0 AND SP.[AssignANM_ID] = @ANMID)
+		AND (@DistrictId = 0 OR SP.[DistrictID] = @DistrictId)
+		AND (@CHCID  = 0 OR SP.[CHCID] = @CHCID) 
+		AND (@PHCID  = 0 OR SP.[PHCID] = @PHCID) 
+		AND (@ANMID  = 0 OR SP.[AssignANM_ID] = @ANMID)
 		AND (CONVERT(DATE,MR.[UpdatedOn],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
 		
 	END

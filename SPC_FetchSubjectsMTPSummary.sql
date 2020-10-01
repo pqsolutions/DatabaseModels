@@ -61,12 +61,12 @@ BEGIN
 		,PPS.[ID] AS PostPNDTSchedulingId
 		,PPS.[CounsellorId] 
 		,(UM.[FirstName] +' '+UM.[LastName] ) AS PostPNDTCounsellorName
-		,(CONVERT(VARCHAR,PPSS.[CounsellingDateTime],103) + ' ' + CONVERT(VARCHAR(5),PPSS.[CounsellingDateTime],108)) AS PostPNDTCounsellingDateTime
+		,(CONVERT(VARCHAR,PPS.[CounsellingDateTime],103) + ' ' + CONVERT(VARCHAR(5),PPS.[CounsellingDateTime],108)) AS PostPNDTCounsellingDateTime
 		,PPCC.[ID]  AS PostPNDTCounsellingId
 		,PPCC.[AssignedObstetricianId]	
 		,(UM3.[FirstName] +' '+UM3.[LastName] ) AS PostPNDTObsetricianName
-		,CONVERT(VARCHAR,PPCC.[ScheduleMTPDate],103) AS ScheduleMTPDate
-		,CONVERT(VARCHAR(5),PPCC.[ScheduleMTPTime]) AS ScheduleMTPTime
+		,CONVERT(VARCHAR,MTP.[MTPDateTime],103) AS ScheduleMTPDate
+		,CONVERT(VARCHAR(5),MTP.[MTPDateTime],108) AS ScheduleMTPTime
 		,PPCC.[CounsellingRemarks] AS PostPNDTCounsellingRemarks
 		,'The couple has agreed for MTP Service' AS PostPNDTCounsellingStatus 
 		,MTP.[ID] AS MTPID

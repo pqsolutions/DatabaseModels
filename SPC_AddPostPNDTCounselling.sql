@@ -26,8 +26,8 @@ CREATE PROCEDURE [dbo].[SPC_AddPostPNDTCounselling]
 	,@IsMTPAgreePending BIT
 	,@ScheduleMTPDate VARCHAR(250)
 	,@ScheduleMTPTime VARCHAR(100)
-	--,@FileName VARCHAR(MAX)
-	--,@FileData VARBINARY(MAX
+	,@FileName VARCHAR(MAX)
+	,@FileLocation VARCHAR(MAX)
 	,@IsFoetalDisease BIT
 	,@CreatedBy INT
 )
@@ -38,7 +38,9 @@ DECLARE
 	,@ScheduleTime TIME(2)
 	,@Active BIT
 	,@ReasonForClose VARCHAR(MAX)
-	
+	,@CheckAgreed BIT
+	,@FName VARCHAR(MAX)
+	,@FLocation VARCHAR(MAX)
 	
 BEGIN
 	BEGIN TRY
@@ -86,8 +88,8 @@ BEGIN
 				,CounsellingRemarks
 				,ScheduleMTPDate
 				,ScheduleMTPTime
-				--,FileName
-				--,FileData
+				,FileName
+				,FileLocation
 				,IsMTPTestdAgreedYes
 				,IsMTPTestdAgreedNo
 				,IsMTPTestdAgreedPending
@@ -108,8 +110,8 @@ BEGIN
 				,@CounsellingRemarks
 				,@ScheduleDate
 				,@ScheduleTime
-				--,@FileName
-				--,@FileData
+				,@FileName
+				,@FileLocation
 				,@IsMTPAgreeYes
 				,@IsMTPAgreeNo
 				,@IsMTPAgreePending 
@@ -154,14 +156,33 @@ BEGIN
 		ELSE
 		BEGIN
 		
+			SELECT @CheckAgreed = IsMTPTestdAgreedYes,@FName = FileName , @FLocation = FileLocation FROM Tbl_PostPNDTCounselling 
+			WHERE PostPNDTSchedulingId = @PostPNDTSchedulingId 
+			IF @CheckAgreed = 1 AND @IsMTPAgreeYes = 1
+			BEGIN
+				SET @FName = @FileName --@FName
+				SET @FLocation = @FileLocation --@FLocation
+			END
+			ELSE IF @CheckAgreed = 1 AND @IsMTPAgreeYes = 0
+			BEGIN
+				SET @FName = NULL
+				SET @FLocation = NULL
+			END
+			
+			ELSE IF @CheckAgreed = 0 AND @IsMTPAgreeYes = 1
+			BEGIN
+				SET @FName = @FileName 
+				SET @FLocation = @FileLocation
+			END
+		
 			UPDATE  Tbl_PostPNDTCounselling SET
 				AssignedObstetricianId = @AssignedObstetricianId
 				,CounsellorId = @CounsellorId
 				,CounsellingRemarks = @CounsellingRemarks
 				,ScheduleMTPDate = @ScheduleDate
 				,ScheduleMTPTime = @ScheduleTime
-				--,FileName = @FileName
-				--,FileData = @FileData
+				,FileName = @FName
+				,FileLocation = @FLocation
 				,IsMTPTestdAgreedYes = @IsMTPAgreeYes
 				,IsMTPTestdAgreedNo = @IsMTPAgreeNo
 				,IsMTPTestdAgreedPending =@IsMTPAgreePending

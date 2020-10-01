@@ -24,6 +24,7 @@ BEGIN
 			,RM.[RIsite] AS RIPoint
 			,SPRD.[Age] 
 			,HD.[BarcodeNo] 
+			,SPRD.[Gender]
 			,(SPRD.[SubjectTitle] +' '+SPRD.[FirstName] + ' ' + SPRD.[MiddleName] + ' ' + SPRD.[LastName]) AS SubjectName
 			,SPRD.[MobileNo] AS ContactNo
 			,(SPRD.[Spouse_FirstName]+ ' ' + SPRD.[Spouse_MiddleName] + ' ' + SPRD.[Spouse_LastName])AS SpouseName
@@ -35,7 +36,7 @@ BEGIN
 			('G'+CONVERT(VARCHAR,SPD.[G])+'-P'+CONVERT(VARCHAR,SPD.[P])+'-L'+CONVERT(VARCHAR,SPD.[L])+'-A'+
 			CONVERT(VARCHAR,SPD.[A]))END AS ObstetricsScore
 			,CONVERT(DECIMAL(10,1),(SELECT [dbo].[FN_CalculateGestationalAge](SPRD.[ID]))) AS [GestationalAge]
-			,CASE WHEN (SELECT TOP 1 [IsPositive] FROM [dbo] .[Tbl_SSTestResult] WHERE [UniqueSubjectID] = HR.[UniqueSubjectID] ORDER BY ID DESC) = 1 THEN 'Positive' ELSE 'Negative' END  SSTResult
+			,CASE WHEN (SELECT TOP 1 [IsPositive] FROM [dbo].[Tbl_SSTestResult] WHERE [UniqueSubjectID] = HR.[UniqueSubjectID] ORDER BY ID DESC) = 1 THEN 'Positive' ELSE 'Negative' END  SSTResult
 			,(SELECT TOP 1 [CBCResult] FROM [dbo].[Tbl_CBCTestResult] WHERE [UniqueSubjectID] = HR.[UniqueSubjectID] ORDER BY ID DESC) [CBCResult]
 			,(SELECT TOP 1 [MCV]  FROM [dbo].[Tbl_CBCTestResult] WHERE [UniqueSubjectID] = HR.[UniqueSubjectID] ORDER BY ID DESC) [MCV]
 			,(SELECT TOP 1 [RDW]  FROM [dbo].[Tbl_CBCTestResult] WHERE [UniqueSubjectID] = HR.[UniqueSubjectID] ORDER BY ID DESC) [RDW]

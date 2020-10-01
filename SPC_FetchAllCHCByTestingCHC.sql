@@ -11,13 +11,13 @@ BEGIN
 	DROP PROCEDURE SPC_FetchAllCHCByTestingCHC 
 END
 GO
-CREATE PROCEDURE [dbo].[SPC_FetchAllCHCByTestingCHC] (@TestingCHCId INT)
+CREATE PROCEDURE [dbo].[SPC_FetchAllCHCByTestingCHC] (@Id INT)
 
 AS
 BEGIN
 	SELECT [ID] 
 		,[CHCName]
 	FROM [dbo].[Tbl_CHCMaster]  
-	WHERE IsActive = 1 AND  TestingCHCID = @TestingCHCId 
+	WHERE IsActive = 1 AND  TestingCHCID = @Id 
 	
 END

@@ -47,7 +47,7 @@ BEGIN
 		,(SELECT DiagnosisName FROM Tbl_ClinicalDiagnosisMaster WHERE ID =(SELECT TOP 1 ClinicalDiagnosisId FROM Tbl_HPLCDiagnosisResult
 			WHERE UniqueSubjectID = SPD.[SpouseSubjectID])) AS SPouseHPLCDiagnosis
 		,(UM1.[FirstName] +' '+UM1.[LastName] ) AS PrePNDTCounsellorName
-		,(CONVERT(VARCHAR,PPSS.[CounsellingDateTime],103) + ' ' + CONVERT(VARCHAR(5),PPSS.[CounsellingDateTime],108)) AS PostPNDTCounsellingDateTime
+		,(CONVERT(VARCHAR,PPSS.[CounsellingDateTime],103) + ' ' + CONVERT(VARCHAR(5),PPSS.[CounsellingDateTime],108)) AS PrePNDTCounsellingDateTime
 		  ,'The couple has agreed for Pre-natal Diagnosis' AS PrePNDTCounsellingStatus
 		  	,CONVERT(VARCHAR,PPC.[SchedulePNDTDate],103) AS SchedulePNDTDate
 		,CONVERT(VARCHAR(5),PPC.[SchedulePNDTTime]) AS SchedulePNDTTime
@@ -71,8 +71,8 @@ BEGIN
 		,PPCC.[ID]  AS PostPNDTCounsellingId
 		,PPCC.[AssignedObstetricianId]	
 		,(UM3.[FirstName] +' '+UM3.[LastName] ) AS PostPNDTObsetricianName
-		,CONVERT(VARCHAR,PPCC.[ScheduleMTPDate],103) AS ScheduleMTPDate
-		,CONVERT(VARCHAR(5),PPCC.[ScheduleMTPTime]) AS ScheduleMTPTime
+		,CONVERT(VARCHAR,MTP.[MTPDateTime],103) AS ScheduleMTPDate
+		,CONVERT(VARCHAR(5),MTP.[MTPDateTime],108) AS ScheduleMTPTime
 		,PPCC.[CounsellingRemarks] AS PostPNDTCounsellingRemarks
 		,'The couple has agreed for MTP Service' AS PostPNDTCounsellingStatus 
 			,MTP.[ID] AS MTPID

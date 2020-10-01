@@ -1317,7 +1317,6 @@ BEGIN
 
 CREATE TABLE [dbo].[Tbl_MolecularLabMaster](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
-	[DistrictID] [int] NOT NULL,
 	[MLabCode] [varchar](100) NOT NULL,
 	[MLabName] [varchar](100) NOT NULL,
 	[Pincode] [varchar](150) NULL,
@@ -1831,7 +1830,6 @@ END
 
 --------------------------------------------------------------------------------------------------------------------------
 
-
 USE [Eduquaydb]
 GO
 
@@ -1863,7 +1861,8 @@ CREATE TABLE [dbo].[Tbl_PrePNDTCounselling](
 	[NotifiedOn] [datetime] NULL,
 	[NotifiedBy] [int] NULL,
 	[FileName] [varchar](max) NULL,
-	[FileData] [varbinary](max) NULL,
+	[FileLocation] [varchar](max) NULL,
+	[FileData] [varbinary] (max) NULL,
 	[IsActive] [bit] NULL,
 	[ReasonForClose] [varchar] (max) NULL,
 	[UpdatedToANM] [bit] NULL,
@@ -2033,6 +2032,7 @@ CREATE TABLE [dbo].[Tbl_PostPNDTCounselling](
 	[NotifiedOn] [datetime] NULL,
 	[NotifiedBy] [int] NULL,
 	[FileName] [varchar](max) NULL,
+	[FileLocation] [varchar](max) NULL,
 	[FileData] [varbinary] (max) NULL,
 	[IsFoetalDisease] [bit] NULL,
 	[IsActive] [bit] NULL,
@@ -2506,3 +2506,69 @@ PRIMARY KEY CLUSTERED
 END
 
 ---------------------------------------------------------------------------------------------------------------------------------
+
+
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_PathologistSampleStatusMaster' AND [type] = 'U')
+BEGIN
+
+CREATE TABLE [dbo].[Tbl_PathologistSampleStatusMaster](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[StatusName] [varchar](250) NULL,
+	[Createdon] [datetime] NULL,
+	[Createdby] [int] NULL,
+	[Updatedon] [datetime] NULL,
+	[Updatedby] [int] NULL,
+	[Comments] [varchar](max) NULL,
+	[Isactive] [bit] NULL,
+	
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END
+
+---------------------------------------------------------------------------------------------------------------------------------
+
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_CBCTestedDetail' AND [type] = 'U')
+BEGIN
+
+CREATE TABLE [dbo].[Tbl_CBCTestedDetail](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[Barcode] [varchar](200) NOT NULL,
+	[FileName] [varchar](max) NOT NULL,
+	[MCV] [decimal](10,1) NOT NULL,
+	[RDW] [decimal](10,1) NOT NULL,
+	[TestedDateTime][datetime] NOT NULL,
+	[ProcessStatus] [bit] NULL,
+	[ConfirmationStatus] [int] NULL,
+	[CreatedOn] [datetime] NULL,
+	[CreatedBy] [int] NULL
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END
+
+-------------------------------------------------------------------------------

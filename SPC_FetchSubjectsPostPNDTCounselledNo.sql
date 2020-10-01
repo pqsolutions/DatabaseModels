@@ -68,7 +68,7 @@ BEGIN
 		,CONVERT(VARCHAR(5),PPCC.[ScheduleMTPTime]) AS ScheduleMTPTime
 		,PPCC.[CounsellingRemarks] AS PostPNDTCounsellingRemarks
 		,PPCC.[FileName]
-		,PPCC.[FileData]
+		,PPCC.[FileLocation]
 		,PPCC.[IsMTPTestdAgreedYes] AS IsMTPAgreeYes
 		,PPCC.[IsMTPTestdAgreedNo] AS IsMTPAgreeNo
 		,PPCC.[IsMTPTestdAgreedPending] AS IsMTPAgreePending

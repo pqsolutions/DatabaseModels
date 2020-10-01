@@ -19,7 +19,7 @@ CREATE PROCEDURE [dbo].[SPC_AddMolecularTestResult]
 	,@Barcode VARCHAR(250)
 	,@DiagnosisId INT
 	,@ResultId INT
-	,@UserId INT
+	,@UpdatedBy INT
 	,@IsProcessed BIT
 	,@Remarks VARCHAR(MAX)
 )
@@ -67,7 +67,7 @@ BEGIN
 				,@Barcode 
 				,@DiagnosisId 
 				,@ResultId  
-				,@UserId 
+				,@UpdatedBy 
 				,GETDATE()
 				,@CheckDamaged
 				,@IsProcessed 
@@ -84,7 +84,7 @@ BEGIN
 			UPDATE Tbl_MolecularTestResult SET 
 			   [ClinicalDiagnosisId] = @DId 
 			   ,[Result] = @RId 
-			   ,[UpdatedBy] = @UserId 
+			   ,[UpdatedBy] = @UpdatedBy 
 			   ,[UpdatedOn] = GETDATE()
 			   ,[IsProcessed]  = @IsProcessed 
 			   ,[ReasonForClose] = @Remarks

@@ -55,7 +55,7 @@ BEGIN
 		,CONVERT(VARCHAR(5),PPC.[SchedulePNDTTime]) AS SchedulePNDTTime
 		,PPC.[CounsellingRemarks] 
 		,PPC.[FileName]
-		,PPC.[FileData]
+		,PPC.[FileLocation]
 		,PPC.[IsPNDTAgreeYes]
 		,PPC.[IsPNDTAgreeNo]
 		,PPC.[IsPNDTAgreePending]

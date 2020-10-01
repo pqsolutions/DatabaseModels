@@ -26,7 +26,7 @@ BEGIN
 		,PPC.[CounsellingRemarks]  AS CounsellingNotes
 		,CASE WHEN PPC.[IsMTPTestdAgreedYes] = 1 THEN  'The couple has agreed for MTP service' 
 		 WHEN PPC.[IsMTPTestdAgreedNo] = 1 THEN 'The couple hasn''t agreed for MTP service' 
-		 WHEN  PPC.[IsMTPTestdAgreedPending]  = 1 THEN 'The couple has been taken decision pending for MTP service' 
+		 WHEN  PPC.[IsMTPTestdAgreedPending]  = 1 THEN 'Couple''s decision awaited for MTP Service' 
 		 END AS CounsellingStatus
 		,CASE WHEN ISNULL(PPC.[IsMTPTestdAgreedYes],0) = 1 THEN 'YES' ELSE 'NO' END AS AgreeForMTP
 	FROM  Tbl_PostPNDTCounselling PPC

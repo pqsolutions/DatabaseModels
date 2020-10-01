@@ -11,13 +11,13 @@ BEGIN
 	DROP PROCEDURE SPC_FetchAllCHCByCentralLab 
 END
 GO
-CREATE PROCEDURE [dbo].[SPC_FetchAllCHCByCentralLab] (@CentralLabIdId INT)
+CREATE PROCEDURE [dbo].[SPC_FetchAllCHCByCentralLab] (@Id INT)
 
 AS
 BEGIN
 	SELECT [ID] 
 		,[CHCName]
 	FROM [dbo].[Tbl_CHCMaster]  
-	WHERE IsActive = 1 AND  CentralLabId  = @CentralLabIdId 
+	WHERE IsActive = 1 AND  CentralLabId  = @Id 
 	
 END

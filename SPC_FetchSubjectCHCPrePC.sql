@@ -29,7 +29,7 @@ BEGIN
 		,PPC.[CounsellingRemarks]  AS CounsellingNotes
 		,CASE WHEN PPC.[IsPNDTAgreeYes] = 1 THEN  'The couple has agreed for Pre-natal Diagnosis Test' 
 		 WHEN PPC.[IsPNDTAgreeNo] = 1 THEN 'The couple hasn''t agreed for Pre-natal Diagnosis Test' 
-		 WHEN  PPC.[IsPNDTAgreePending]  = 1 THEN 'The couple has been taken decision pending for Pre-natal Diagnosis Test' 
+		 WHEN  PPC.[IsPNDTAgreePending]  = 1 THEN 'Couple''s decision awaited for Prenatal Diagnosis Test' 
 		 END AS CounsellingStatus
 		,CASE WHEN ISNULL(PPC.[IsPNDTAgreeYes],0) = 1 THEN 'YES' ELSE 'NO' END  AS AgreeForPNDT
 	FROM  Tbl_PrePNDTCounselling PPC
