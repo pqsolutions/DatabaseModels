@@ -1335,6 +1335,10 @@ PRIMARY KEY CLUSTERED
 END
 ---------------------------------------------------------------------------------------------------------------
 
+
+
+
+
 USE [Eduquaydb]
 GO
 
@@ -1494,12 +1498,12 @@ CREATE TABLE [dbo].[Tbl_HPLCTestResult](
 	[UniqueSubjectID] [varchar](200) NOT NULL,
 	[BarcodeNo] [varchar] (200) NOT NULL,
 	[CentralLabId] [int] NOT NULL,
-	[HbF] [decimal] (10,3) NULL,
-	[HbA0] [decimal] (10,3) NULL,
-	[HbA2] [decimal] (10,3) NULL,
-	[HbS] [decimal] (10,3) NULL,
-	[HbC] [decimal] (10,3) NULL,
-	[HbD] [decimal] (10,3) NULL,
+	[HbF] [decimal] (10,2) NULL,
+	[HbA0] [decimal] (10,2) NULL,
+	[HbA2] [decimal] (10,2) NULL,
+	[HbS] [decimal] (10,2) NULL,
+	[HbC] [decimal] (10,2) NULL,
+	[HbD] [decimal] (10,2) NULL,
 	[IsNormal] [bit] NULL,
 	[HPLCTestComplete] [bit] NULL,
 	[HPLCTestCompletedOn] [datetime] NULL,
@@ -1513,7 +1517,7 @@ CREATE TABLE [dbo].[Tbl_HPLCTestResult](
 	[UpdatedOn] [datetime] NULL,
 	[UpdatedToANM] [bit] NULL,
 	[FileName] [varchar] (max) NULL,
-	
+	[InjectionNo] [varchar](max)  NULL,
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
@@ -2540,6 +2544,7 @@ END
 
 ---------------------------------------------------------------------------------------------------------------------------------
 
+
 USE [Eduquaydb]
 GO
 
@@ -2557,12 +2562,58 @@ CREATE TABLE [dbo].[Tbl_CBCTestedDetail](
 	[Barcode] [varchar](200) NOT NULL,
 	[FileName] [varchar](max) NOT NULL,
 	[MCV] [decimal](10,1) NOT NULL,
-	[RDW] [decimal](10,1) NOT NULL,
+	[RDW-SD] [decimal](10,1) NOT NULL,
 	[TestedDateTime][datetime] NOT NULL,
 	[ProcessStatus] [bit] NULL,
 	[ConfirmationStatus] [int] NULL,
 	[CreatedOn] [datetime] NULL,
-	[CreatedBy] [int] NULL
+	[CreatedBy] [varchar](200) NULL,
+	[UpdatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END
+
+-------------------------------------------------------------------------------
+
+
+
+
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_HPLCTestedDetail' AND [type] = 'U')
+BEGIN
+
+CREATE TABLE [dbo].[Tbl_HPLCTestedDetail](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[Barcode] [varchar](200) NOT NULL,
+	[FileName] [varchar](max) NOT NULL,
+	[PdfFileName] [varchar](max) NULL,
+	[InjectionNo] [varchar](max) NOT NULL,
+	[RunNo] [int] NULL,
+	[HbF] [decimal] (10,3) NOT NULL,
+	[HbA0] [decimal] (10,3) NOT NULL,
+	[HbA2] [decimal] (10,3) NOT NULL,
+	[HbS] [decimal] (10,3) NOT NULL,
+	[HbD] [decimal] (10,3) NOT NULL,
+	[TestedDateTime][datetime] NOT NULL,
+	[ProcessStatus] [bit] NULL,
+	[IsValid] [bit] NULL,
+	[CreatedOn] [datetime] NULL,
+	[CreatedBy] [varchar](200) NULL,
+	[UpdatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
