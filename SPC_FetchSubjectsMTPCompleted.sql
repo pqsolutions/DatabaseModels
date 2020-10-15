@@ -42,10 +42,10 @@ BEGIN
 			AND HPLCStatus ='P' AND IsActive = 1 ORDER BY ID DESC) = 'P' THEN 'Positive' ELSE 'Negative' END AS SpouseSSTResult
 		,(SELECT TOP 1 [HPLCTestResult] FROM Tbl_PositiveResultSubjectsDetail WHERE UniqueSubjectID = SPD.[SpouseSubjectID] 
 			AND HPLCStatus ='P' AND IsActive = 1 ORDER BY ID DESC) AS SpouseHPLCResult
-		, (SELECT DiagnosisName FROM Tbl_ClinicalDiagnosisMaster WHERE ID =(SELECT TOP 1 ClinicalDiagnosisId FROM Tbl_HPLCDiagnosisResult
-			WHERE UniqueSubjectID = SPD.[UniqueSubjectID])) AS ANWHPLCDiagnosis
-		,(SELECT DiagnosisName FROM Tbl_ClinicalDiagnosisMaster WHERE ID =(SELECT TOP 1 ClinicalDiagnosisId FROM Tbl_HPLCDiagnosisResult
-			WHERE UniqueSubjectID = SPD.[SpouseSubjectID])) AS SPouseHPLCDiagnosis
+		,(SELECT TOP 1 [LabDiagnosis] FROM Tbl_HPLCTestResult WHERE UniqueSubjectID = SPD.[UniqueSubjectID]
+			 ORDER BY ID DESC) AS ANWHPLCDiagnosis
+		,(SELECT TOP 1 [LabDiagnosis] FROM Tbl_HPLCTestResult WHERE UniqueSubjectID = SPD.[SpouseSubjectID]
+			 ORDER BY ID DESC) AS SPouseHPLCDiagnosis
 		,(UM1.[FirstName] +' '+UM1.[LastName] ) AS PrePNDTCounsellorName
 		,(CONVERT(VARCHAR,PPSS.[CounsellingDateTime],103) + ' ' + CONVERT(VARCHAR(5),PPSS.[CounsellingDateTime],108)) AS PrePNDTCounsellingDateTime
 		  ,'The couple has agreed for Pre-natal Diagnosis' AS PrePNDTCounsellingStatus
@@ -106,7 +106,7 @@ BEGIN
 	LEFT JOIN Tbl_UserMaster UM3 WITH (NOLOCK) ON UM3.[ID] = PPCC.[AssignedObstetricianId]
 	LEFT JOIN Tbl_UserMaster UMM WITH (NOLOCK) ON UMM.[ID] = MTP.[CounsellorId]
 	LEFT JOIN Tbl_UserMaster UMMM WITH (NOLOCK) ON UMMM.[ID] = MTP.[ObstetricianId]  
-	WHERE (SPD.[SubjectTypeID] = 1 OR SPD.ChildSubjectTypeID =1)
+	WHERE (SPD.[SubjectTypeID] = 1 OR SPD.ChildSubjectTypeID =1) AND PRSD.[HPLCStatus] = 'P'
 	AND PPS.[IsCounselled] = 1 
 	AND PPCC.[IsMTPTestdAgreedYes] = 1 AND PPCC.[IsActive] = 0
 	AND (SPD.[DistrictID] = @DistrictId OR @DistrictId = 0)

@@ -584,7 +584,10 @@ CREATE TABLE [dbo].[Tbl_UserMaster](
 	[Comments] [varchar](max) NULL,
 	[IsActive] [bit] NULL,
 	[DigitalSignature] [image] NULL,
-	[MolecularLabId] [int] NULL
+	[MolecularLabId] [int] NULL,
+	[OTP] [varchar](max) NULL,
+	[OTPCreatedOn] [datetime] NULL,
+	[OTPExpiredOn] [datetime] NULL
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
@@ -1518,6 +1521,7 @@ CREATE TABLE [dbo].[Tbl_HPLCTestResult](
 	[UpdatedToANM] [bit] NULL,
 	[FileName] [varchar] (max) NULL,
 	[InjectionNo] [varchar](max)  NULL,
+	[LabDiagnosis] [varchar](max) NULL,
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
@@ -1595,7 +1599,7 @@ CREATE TABLE [dbo].[Tbl_HPLCDiagnosisResult](
 	[UniqueSubjectID] [varchar](200) NOT NULL,
 	[BarcodeNo] [varchar] (200) NOT NULL,
 	[HPLCTestResultId] [int] NULL,
-	[ClinicalDiagnosisId] [int] NULL,
+	[ClinicalDiagnosisId] [varchar](max) NULL,
 	[HPLCResultMasterId] [varchar] (200) NULL, -- multicheck more than one value
 	[OthersResult] [varchar](max)NULL, 
 	[IsConsultSeniorPathologist] [bit] NULL,
@@ -2570,6 +2574,7 @@ CREATE TABLE [dbo].[Tbl_CBCTestedDetail](
 	[CreatedBy] [varchar](200) NULL,
 	[UpdatedOn] [datetime] NULL,
 	[UpdatedBy] [int] NULL,
+	[Reason][varchar](max) NULL
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
@@ -2609,7 +2614,8 @@ CREATE TABLE [dbo].[Tbl_HPLCTestedDetail](
 	[HbD] [decimal] (10,3) NOT NULL,
 	[TestedDateTime][datetime] NOT NULL,
 	[ProcessStatus] [bit] NULL,
-	[IsValid] [bit] NULL,
+	[SampleStatus] [int] NULL,
+	[ReasonOfStatus] [varchar](max) NULL,
 	[CreatedOn] [datetime] NULL,
 	[CreatedBy] [varchar](200) NULL,
 	[UpdatedOn] [datetime] NULL,

@@ -83,18 +83,20 @@ BEGIN
 
 			   UPDATE Tbl_HPLCTestedDetail SET
 				ProcessStatus = 1
-				,IsValid = 1
+				,SampleStatus = 1
+				,ReasonOfStatus = 'Sample Confirmed and Processed'
 				,UpdatedBy = @CreatedBy
 				,UpdatedOn = GETDATE()
 			   WHERE ID = @HPLCTestId
 
 			 UPDATE Tbl_HPLCTestedDetail SET
 				ProcessStatus = 1
-				,IsValid = 0
+				,SampleStatus = 2
+				,ReasonOfStatus = 'Super Seeded Samples and Processed'
 				,UpdatedBy = @CreatedBy
 				,UpdatedOn = GETDATE()
 			   WHERE ID != @HPLCTestId AND ISNULL(ProcessStatus,0) = 0
-			   AND IsValid IS NULL AND Barcode = @BarcodeNo
+			   AND SampleStatus IS NULL AND Barcode = @BarcodeNo
 
 			SELECT   ('Barcode ' + @BarcodeNo + ' - Sample HPLC test result updated successfully') AS MSG
 		END

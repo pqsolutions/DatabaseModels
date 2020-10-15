@@ -52,7 +52,7 @@ BEGIN
 		,CO.[Communityname] 
 		,PRSD.[CBCResult] AS CBCResult
 		,CASE WHEN PRSD.[SSTStatus] = 'P' THEN 'Positive' ELSE 'Negative' END AS SSTResult
-		,PRSD.[HPLCTestResult] AS HPLCResult
+		,CASE WHEN HDR.[IsNormal] = 1 THEN 'Normal' ELSE 'Abnormal' END  AS HPLCResult
 		,ISNULL(PRSD.[FollowUpStatus],0) AS FollowUPStatus
 	FROM [dbo].[Tbl_SampleCollection] SC     
 	LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP WITH (NOLOCK) ON SP.[ID] = SC.[SubjectID] 
@@ -69,6 +69,7 @@ BEGIN
 	LEFT JOIN [dbo].[Tbl_CasteMaster] CA WITH (NOLOCK) ON CA.[ID]  = SAD.[Caste_Id]  
 	LEFT JOIN [dbo].[Tbl_CommunityMaster] CO WITH (NOLOCK) ON CO.[ID]  = SAD.[Community_Id]
 	LEFT JOIN [dbo].[Tbl_PositiveResultSubjectsDetail] PRSD WITH (NOLOCK) ON PRSD.[BarcodeNo]  = SC .[BarcodeNo]   
+	LEFT JOIN [dbo].[Tbl_HPLCDiagnosisResult] HDR WITH (NOLOCK) ON HDR.[BarcodeNo] = PRSD.[BarcodeNo]
 	WHERE SP.[DistrictID]  = @DistrictId  AND PRSD.[HPLCStatus] = 'P' 
 	AND (PRSD.[HPLCNotifiedStatus] = 0 OR  PRSD.[HPLCNotifiedStatus] IS NULL)
 	ORDER BY GestationalAge DESC	 		

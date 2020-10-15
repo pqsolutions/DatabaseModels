@@ -48,10 +48,10 @@ BEGIN
 			AND HPLCStatus ='P' AND IsActive = 1 ORDER BY ID DESC) = 'P' THEN 'Positive' ELSE 'Negative' END AS SpouseSSTResult
 		,(SELECT TOP 1 [HPLCTestResult] FROM Tbl_PositiveResultSubjectsDetail WHERE UniqueSubjectID = SPD.[SpouseSubjectID] 
 			AND HPLCStatus ='P' AND IsActive = 1 ORDER BY ID DESC) AS SpouseHPLCResult
-		, (SELECT DiagnosisName FROM Tbl_ClinicalDiagnosisMaster WHERE ID =(SELECT TOP 1 ClinicalDiagnosisId FROM Tbl_HPLCDiagnosisResult
-			WHERE UniqueSubjectID = SPD.[UniqueSubjectID])) AS ANWHPLCDiagnosis
-		,(SELECT DiagnosisName FROM Tbl_ClinicalDiagnosisMaster WHERE ID =(SELECT TOP 1 ClinicalDiagnosisId FROM Tbl_HPLCDiagnosisResult
-			WHERE UniqueSubjectID = SPD.[SpouseSubjectID])) AS SPouseHPLCDiagnosis
+		,(SELECT TOP 1 [LabDiagnosis] FROM Tbl_HPLCTestResult WHERE UniqueSubjectID = SPD.[UniqueSubjectID]
+			 ORDER BY ID DESC) AS ANWHPLCDiagnosis
+		,(SELECT TOP 1 [LabDiagnosis] FROM Tbl_HPLCTestResult WHERE UniqueSubjectID = SPD.[SpouseSubjectID]
+			 ORDER BY ID DESC) AS SPouseHPLCDiagnosis
 		,PT.[ObstetricianId]	AS AssignedObstetricianId
 		,(UM1.[FirstName] +' '+UM1.[LastName] ) AS ObsetricianName
 		,CONVERT(VARCHAR,PT.[PNDTDateTime],103) AS SchedulePNDTDate

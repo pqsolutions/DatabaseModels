@@ -36,10 +36,10 @@ BEGIN
 			('G'+CONVERT(VARCHAR,SPD.[G])+'-P'+CONVERT(VARCHAR,SPD.[P])+'-L'+CONVERT(VARCHAR,SPD.[L])+'-A'+
 			CONVERT(VARCHAR,SPD.[A]))END AS ObstetricsScore
 			,CONVERT(DECIMAL(10,1),(SELECT [dbo].[FN_CalculateGestationalAge](SPRD.[ID]))) AS [GestationalAge]
-			,CASE WHEN (SELECT TOP 1 [IsPositive] FROM [dbo] .[Tbl_SSTestResult] WHERE [UniqueSubjectID] = HR.[UniqueSubjectID] ORDER BY ID DESC) = 1 THEN 'Positive' ELSE 'Negative' END  SSTResult
-			,(SELECT TOP 1 [CBCResult] FROM [dbo].[Tbl_CBCTestResult] WHERE [UniqueSubjectID] = HR.[UniqueSubjectID] ORDER BY ID DESC) [CBCResult]
-			,(SELECT TOP 1 [MCV]  FROM [dbo].[Tbl_CBCTestResult] WHERE [UniqueSubjectID] = HR.[UniqueSubjectID] ORDER BY ID DESC) [MCV]
-			,(SELECT TOP 1 [RDW]  FROM [dbo].[Tbl_CBCTestResult] WHERE [UniqueSubjectID] = HR.[UniqueSubjectID] ORDER BY ID DESC) [RDW]
+			,CASE WHEN SST.[IsPositive] = 1 THEN 'Positive' ELSE 'Negative' END  SSTResult
+			,CBC.[CBCResult] AS [CBCResult]
+			,CBC.[MCV]  AS [MCV]
+			,CBC. [RDW] AS [RDW]
 			,HR.[HbA0]
 			,HR.[HbA2]
 			,HR.[HbC]
@@ -54,6 +54,8 @@ BEGIN
 	LEFT JOIN [dbo].[Tbl_SubjectAddressDetail] SAD WITH (NOLOCK) ON SAD.[UniqueSubjectID] = SPRD.[UniqueSubjectID] 
 	LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail] SPD WITH (NOLOCK) ON SPD.[UniqueSubjectID] = SPRD.[UniqueSubjectID]
 	LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.[BarcodeNo]  = HR.[BarcodeNo]
+	LEFT JOIN [dbo].[Tbl_SSTestResult] SST WITH (NOLOCK) ON SST.[BarcodeNo] = HR.[BarcodeNo]
+	LEFT JOIN [dbo].[Tbl_CBCTestResult] CBC WITH (NOLOCK) ON CBC.[BarcodeNo] = HR.[BarcodeNo]
 	LEFT JOIN [dbo].[Tbl_DistrictMaster] DM WITH (NOLOCK) ON DM.[ID] = SPRD.[DistrictID] 
 	LEFT JOIN [dbo].[Tbl_CHCMaster] CM WITH (NOLOCK) ON CM.[ID] = SPRD.[CHCID] 
 	LEFT JOIN [dbo].[Tbl_CHCMaster] C WITH (NOLOCK) ON C.[ID]  = CM.[TestingCHCID] 

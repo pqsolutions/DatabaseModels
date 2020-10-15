@@ -18,7 +18,7 @@ CREATE PROCEDURE [dbo].[SPC_AddHPLCDiagnosisResult]
 	,@CentralLabId INT
 	,@BarcodeNo VARCHAR(200)
 	,@HPLCTestResultId INT
-	,@ClinicalDiagnosisId INT
+	,@ClinicalDiagnosisId VARCHAR(200)
 	,@HPLCResultMasterId VARCHAR(200)
 	,@IsNormal BIT
 	,@DiagnosisSummary VARCHAR(MAX)
@@ -35,12 +35,19 @@ DECLARE
 	,@IsPositive BIT
 	,@ResultName VARCHAR(MAX)
 	,@GetId INT
-	,@GetHPLCResultMasterId VARCHAr(200)
+	,@GetHPLCResultMasterId VARCHAR(200)
+	,@GetHPLCDiagnosisId VARCHAR(200)
 	,@CurrentIndex NVARCHAR(200)
 	,@Indexvar INT
 	,@TotalCount INT
-	,@Results VARCHAR(500) = ''
-	,@HPLCResults VARCHAR(500)
+	,@Results VARCHAR(MAX) = ''
+	,@CurrentIndex1 NVARCHAR(200)
+	,@Indexvar1 INT
+	,@TotalCount1 INT
+	,@Results1 VARCHAR(MAX) = ''
+	,@ResultName1 VARCHAR(MAX)
+	,@HPLCResults VARCHAR(MAX)
+	,@LabDiagnosis VARCHAR(MAX)
 	,@HPLCStatus CHAR(1)
 	,@DiagnosisCompletedThrough VARCHAR(MAX) = NULL
 	
@@ -93,9 +100,15 @@ BEGIN
 				
 			IF @IsDiagnosisComplete = 1
 			BEGIN
-			
+				
+				SET @IsPositive = 0
+				IF @IsNormal = 0
+				BEGIN
+					SET @IsPositive = 1
+				END
+
 				SELECT @GetHPLCResultMasterId = HPLCResultMasterId FROM Tbl_HPLCDiagnosisResult WHERE ID = @GetId
-				SET @IsPositive = 0 
+				 
 				SET @IndexVar = 0  
 				SELECT @TotalCount = COUNT(value) FROM [dbo].[FN_Split](@GetHPLCResultMasterId,',')  
 				WHILE @Indexvar < @TotalCount  
@@ -103,10 +116,6 @@ BEGIN
 					SELECT @IndexVar = @IndexVar + 1
 					SELECT @CurrentIndex = Value FROM  [dbo].[FN_Split](@GetHPLCResultMasterId,',') WHERE id = @Indexvar
 					SELECT @ResultName = HPLCResultName FROM Tbl_HPLCResultMaster WHERE ID = CAST(@CurrentIndex AS INT)
-					IF @ResultName = 'Beta Thalassemia' OR @ResultName = 'Sickle Cell Disease'
-					BEGIN
-						SET @IsPositive = 1
-					END
 					IF @ResultName = 'Others'
 					BEGIN
 						SET @Results = @ResultName + ' ('+ @OthersResult + '))'
@@ -117,10 +126,25 @@ BEGIN
 					END
 				END	
 				SET @HPLCResults = (SELECT LEFT(@Results,LEN(@Results)-1))
+
+				
+				SELECT @GetHPLCDiagnosisId = ClinicalDiagnosisId FROM Tbl_HPLCDiagnosisResult WHERE ID = @GetId
+				SET @IndexVar1 = 0  
+				SELECT @TotalCount1 = COUNT(value) FROM [dbo].[FN_Split](@GetHPLCDiagnosisId,',')  
+				WHILE @Indexvar1 < @TotalCount1  
+				BEGIN
+					SELECT @IndexVar1 = @IndexVar1 + 1
+					SELECT @CurrentIndex1 = Value FROM  [dbo].[FN_Split](@GetHPLCDiagnosisId,',') WHERE id = @Indexvar1
+					SELECT @ResultName1 = DiagnosisName FROM Tbl_ClinicalDiagnosisMaster WHERE ID = CAST(@CurrentIndex1 AS INT) AND Isactive = 1
+					SET @Results1 = @Results1 + @ResultName1 + ', '
+				END	
+				SET @LabDiagnosis = (SELECT LEFT(@Results1,LEN(@Results1)-1))
+
 				
 				UPDATE Tbl_HPLCTestResult SET 
 					IsPositive = @IsPositive
 					,HPLCResult = @HPLCResults
+					,LabDiagnosis = @LabDiagnosis
 					,UpdatedBy = @CreatedBy 
 					,UpdatedOn = GETDATE()
 					,UpdatedToANM = NULL
@@ -166,9 +190,14 @@ BEGIN
 				
 			IF @IsDiagnosisComplete = 1
 			BEGIN
-			
+				
+				SET @IsPositive = 0
+				IF @IsNormal = 0
+				BEGIN
+					SET @IsPositive = 1
+				END
+
 				SELECT @GetHPLCResultMasterId = HPLCResultMasterId FROM Tbl_HPLCDiagnosisResult WHERE ID = @GetId
-				SET @IsPositive = 0 
 				SET @IndexVar = 0  
 				SELECT @TotalCount = COUNT(value) FROM [dbo].[FN_Split](@GetHPLCResultMasterId,',')  
 				WHILE @Indexvar < @TotalCount  
@@ -176,10 +205,6 @@ BEGIN
 					SELECT @IndexVar = @IndexVar + 1
 					SELECT @CurrentIndex = Value FROM  [dbo].[FN_Split](@GetHPLCResultMasterId,',') WHERE id = @Indexvar
 					SELECT @ResultName = HPLCResultName FROM Tbl_HPLCResultMaster WHERE ID = CAST(@CurrentIndex AS INT)
-					IF @ResultName = 'Beta Thalassemia' OR @ResultName = 'Sickle Cell Disease'
-					BEGIN
-						SET @IsPositive = 1
-					END
 					IF @ResultName = 'Others'
 					BEGIN
 						SET @Results = @ResultName + ' ('+ @OthersResult + '))'
@@ -190,10 +215,25 @@ BEGIN
 					END
 				END	
 				SET @HPLCResults = (SELECT LEFT(@Results,LEN(@Results)-1))
+
+				SELECT @GetHPLCDiagnosisId = ClinicalDiagnosisId FROM Tbl_HPLCDiagnosisResult WHERE ID = @GetId
+				SET @IndexVar1 = 0  
+				SELECT @TotalCount1 = COUNT(value) FROM [dbo].[FN_Split](@GetHPLCDiagnosisId,',')  
+				WHILE @Indexvar1 < @TotalCount1  
+				BEGIN
+					SELECT @IndexVar1 = @IndexVar1 + 1
+					SELECT @CurrentIndex1 = Value FROM  [dbo].[FN_Split](@GetHPLCDiagnosisId,',') WHERE id = @Indexvar1
+					SELECT @ResultName1 = DiagnosisName FROM Tbl_ClinicalDiagnosisMaster WHERE ID = CAST(@CurrentIndex1 AS INT) AND Isactive = 1
+					SET @Results1 = @Results1 + @ResultName1 + ', '
+				END	
+				SET @LabDiagnosis = (SELECT LEFT(@Results1,LEN(@Results1)-1))
+
+
 				
 				UPDATE Tbl_HPLCTestResult SET 
 					IsPositive = @IsPositive
 					,HPLCResult = @HPLCResults
+					,LabDiagnosis = @LabDiagnosis
 					,UpdatedBy = @CreatedBy 
 					,UpdatedOn = GETDATE()
 					,UpdatedToANM = NULL

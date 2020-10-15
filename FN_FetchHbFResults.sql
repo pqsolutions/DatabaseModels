@@ -31,7 +31,7 @@ BEGIN
 	BEGIN
 
 		SELECT  TOP 1 @Result = CAST(ROUND( H.HbF,2) AS  DECIMAL(10,2))
-		FROM Tbl_HPLCTestedDetail H WHERE H.Barcode = @Barcode AND ISNULL(H.ProcessStatus,0) = 0  AND H.IsValid  IS NULL 
+		FROM Tbl_HPLCTestedDetail H WHERE H.Barcode = @Barcode AND ISNULL(H.ProcessStatus,0) = 0  AND H.SampleStatus   IS NULL 
 		AND H.RunNo = (SELECT TOP 1 MAX(HD.RunNo) FROM Tbl_HPLCTestedDetail HD WHERE HD.Barcode = @Barcode) ORDER BY LEN(H.InjectionNo) DESC
 	END
   

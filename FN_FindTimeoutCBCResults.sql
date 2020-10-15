@@ -39,7 +39,7 @@ BEGIN
 		SELECT Top 1 @TestedDateTime = TestedDateTime, @ProcessStatus = ProcessStatus,@ConfirmStatus=ConfirmationStatus 
 		,@CheckDate = DATEADD(DAY,1,@SampleDateTime)
 		FROM Tbl_CBCTestedDetail CD 
-		WHERE Barcode = @Barcode AND  ConfirmationStatus != 4 ORDER BY ID DESC
+		WHERE Barcode = @Barcode AND  (ConfirmationStatus IS NULL OR ConfirmationStatus = 2) ORDER BY ID DESC
 
 		IF ISNULL(@ProcessStatus,0) = 0 AND ISNULL(@ConfirmStatus,0) = 0
 		BEGIN

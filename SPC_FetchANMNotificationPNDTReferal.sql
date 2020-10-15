@@ -103,7 +103,7 @@ BEGIN
 	LEFT JOIN [dbo].[Tbl_CommunityMaster] CO1 WITH (NOLOCK) ON CO1.[ID]  = SAD1.[Community_Id]
 	LEFT JOIN [dbo].[Tbl_PositiveResultSubjectsDetail] PRSD WITH (NOLOCK) ON PRSD.[UniqueSubjectID]  = PPR.[ANWSubjectId]    
 	LEFT JOIN [dbo].[Tbl_PositiveResultSubjectsDetail] PRSDS WITH (NOLOCK) ON PRSDS.[UniqueSubjectID]  = SP.[SpouseSubjectID] AND SP.[SpouseSubjectID] = PPR.[SpouseSubjectId] 
-	WHERE SP.[AssignANM_ID]  = @UserId   AND PPR.[IsNotified]  = 0 AND PPR.[IsPNDTCompleted] = 0 
+	WHERE SP.[AssignANM_ID]  = @UserId   AND PPR.[IsNotified]  = 0 AND PPR.[IsPNDTCompleted] = 0 AND PRSD.[HPLCStatus] = 'P' AND PRSDS.[HPLCStatus] = 'P'
 	ORDER BY GestationalAge DESC	 		
 	
 END

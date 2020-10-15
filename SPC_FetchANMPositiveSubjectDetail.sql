@@ -50,12 +50,13 @@ BEGIN
 			,1 AS RegisterSpouse
 			,ISNULL(PRSD.[HPLCNotifiedStatus],0) AS NotifiedStatus
 			,PRSD.[BarcodeNo] 
-			,PRSD.[HPLCTestResult] 
+			,CASE WHEN  HDR.[IsNormal] = 1 THEN 'Normal' ELSE 'Abnormal' END AS [HPLCTestResult] 
 	FROM [dbo].[Tbl_SubjectPrimaryDetail] AS SPRD
 	LEFT JOIN [dbo].[Tbl_SubjectAddressDetail] SAD WITH (NOLOCK) ON SAD.[UniqueSubjectID] = SPRD.[UniqueSubjectID] 
 	LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail] SPD WITH (NOLOCK) ON SPD.[UniqueSubjectID] = SPRD.[UniqueSubjectID]
 	LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.[SubjectID] = SPRD.[ID]
-	LEFT JOIN [dbo].[Tbl_PositiveResultSubjectsDetail] PRSD WITH (NOLOCK) ON PRSD.[BarcodeNo]  = SC .[BarcodeNo] 
+	LEFT JOIN [dbo].[Tbl_PositiveResultSubjectsDetail] PRSD WITH (NOLOCK) ON PRSD.[BarcodeNo]  = SC .[BarcodeNo]
+	LEFT JOIN [dbo].[Tbl_HPLCDiagnosisResult] HDR WITH(NOLOCK) ON HDR.[BarcodeNo] = PRSD.[BarcodeNo]
 	WHERE  SPRD.[AssignANM_ID] = @ANMID AND ISNULL(SPRD.[SpouseSubjectID],'') = '' 
 	AND SPRD.[UniqueSubjectID] NOT IN (SELECT SpouseSubjectID  FROM [dbo].[Tbl_SubjectPrimaryDetail]
 	WHERE (SPRD.[SubjectTypeID] = 2 OR SPRD.[ChildSubjectTypeID] = 2)) AND
@@ -97,12 +98,14 @@ BEGIN
 			,0 AS RegisterSpouse
 			,ISNULL(PRSD.[HPLCNotifiedStatus],0) AS NotifiedStatus
 			,PRSD.[BarcodeNo]
-			,PRSD.[HPLCTestResult] 
+			,CASE WHEN  HDR.[IsNormal] = 1 THEN 'Normal' ELSE 'Abnormal' END AS [HPLCTestResult] 
 	FROM [dbo].[Tbl_SubjectPrimaryDetail] AS SPRD
 	LEFT JOIN [dbo].[Tbl_SubjectAddressDetail] SAD WITH (NOLOCK) ON SAD.[UniqueSubjectID] = SPRD.[UniqueSubjectID] 
 	LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail] SPD WITH (NOLOCK) ON SPD.[UniqueSubjectID] = SPRD.[UniqueSubjectID]
 	LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.[SubjectID] = SPRD.[ID]
-	LEFT JOIN [dbo].[Tbl_PositiveResultSubjectsDetail] PRSD WITH (NOLOCK) ON PRSD.[BarcodeNo]  = SC .[BarcodeNo] 
+	LEFT JOIN [dbo].[Tbl_PositiveResultSubjectsDetail] PRSD WITH (NOLOCK) ON PRSD.[BarcodeNo]  = SC .[BarcodeNo]
+	LEFT JOIN [dbo].[Tbl_HPLCDiagnosisResult] HDR WITH(NOLOCK) ON HDR.[BarcodeNo] = PRSD.[BarcodeNo]
+	
 	WHERE  SPRD.[AssignANM_ID] = @ANMID AND (PRSD.[HPLCNotifiedStatus] = 0 OR  PRSD.[HPLCNotifiedStatus] IS NULL) AND PRSD.[HPLCStatus] = 'P'
 	AND (SPRD.[SubjectTypeID] = 2 OR SPRD.[ChildSubjectTypeID] = 2 OR  SPRD.[ChildSubjectTypeID] = 4) AND SPRD.[IsActive] = 1
 	

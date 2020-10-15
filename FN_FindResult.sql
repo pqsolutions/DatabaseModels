@@ -61,23 +61,42 @@ BEGIN
 	END
 	ELSE IF @ResultType = 'HPLC'
 	BEGIN
-		SELECT @Count = Count(UniqueSubjectID) FROM Tbl_HPLCTestResult WHERE UniqueSubjectID = @SubjectID
+		--SELECT @Count = Count(UniqueSubjectID) FROM Tbl_HPLCTestResult WHERE UniqueSubjectID = @SubjectID
+		--IF @Count > 0
+		--BEGIN
+		--	SELECT TOP 1  @Check = IsPositive, @HPLCResult = ISNULL(HPLCResult,'') FROM Tbl_HPLCTestResult WHERE UniqueSubjectID = @SubjectID ORDER BY ID DESC
+		--	IF @Check = 1 
+		--	BEGIN
+		--		SET @Result = @HPLCResult
+		--	END
+		--	ELSE
+		--	BEGIN
+		--		SET @Result = @HPLCResult
+		--	END
+		--END
+		--ELSE
+		--BEGIN
+		--	SET @Result = ''
+		--END
+
+		SELECT @Count = Count(UniqueSubjectID) FROM Tbl_HPLCDiagnosisResult WHERE UniqueSubjectID = @SubjectID
 		IF @Count > 0
 		BEGIN
-			SELECT TOP 1  @Check = IsPositive, @HPLCResult = ISNULL(HPLCResult,'') FROM Tbl_HPLCTestResult WHERE UniqueSubjectID = @SubjectID ORDER BY ID DESC
+			SELECT TOP 1  @Check = IsNormal  FROM Tbl_HPLCDiagnosisResult WHERE UniqueSubjectID = @SubjectID ORDER BY ID DESC
 			IF @Check = 1 
 			BEGIN
-				SET @Result = @HPLCResult
+				SET @Result = 'Normal'
 			END
 			ELSE
 			BEGIN
-				SET @Result = @HPLCResult
+				SET @Result = 'Abnormal'
 			END
 		END
 		ELSE
 		BEGIN
 			SET @Result = ''
 		END
+
 	END
   
  RETURN  @Result  
