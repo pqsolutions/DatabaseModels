@@ -38,7 +38,9 @@ BEGIN
 				,CreatedOn
 				,IsPNDTCompleted
 				,IsPNDTAccept
-				,FollowUpStatus)
+				,FollowUpStatus
+				,UpdatedBy
+				,UpdatedOn)
 			VALUES(
 				@ANWSubjectId 
 				,@SpouseSubjectId 
@@ -48,7 +50,9 @@ BEGIN
 				,GETDATE()
 				,0
 				,0
-				,0) 
+				,0
+				,@CreatedBy 
+				,GETDATE()) 
 			
 			INSERT INTO Tbl_PrePNDTScheduling (
 				ANWSubjectId 
@@ -58,12 +62,16 @@ BEGIN
 				,IsCounselled 
 				,CreatedBy 
 				,CreatedOn
+				,UpdatedBy
+				,UpdatedOn
 			)VALUES(
 				@ANWSubjectId 
 				,@SpouseSubjectId 
 				,@CounsellorId 
 				,(CONVERT(DATETIME,@CounsellingDateTime,103))
 				,0 
+				,@CreatedBy 
+				,GETDATE()
 				,@CreatedBy 
 				,GETDATE())
 			

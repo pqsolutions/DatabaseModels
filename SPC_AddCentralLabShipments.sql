@@ -73,7 +73,9 @@ BEGIN
 					,DateofShipment
 					,TimeofShipment
 					,CreatedBy
-					,CreatedOn)
+					,CreatedOn
+					,UpdatedBy
+					,UpdatedOn)
 				VALUES
 					(@LabTechnicianName  
 					,@GeneratedShipmentID
@@ -86,6 +88,8 @@ BEGIN
 					,@ExecutiveContactNo
 					,CONVERT(DATE,@DateofShipment,103)
 					,CONVERT(TIME(0),@TimeofShipment) 
+					,@CentralLabUserId 
+					,GETDATE()
 					,@CentralLabUserId 
 					,GETDATE())
 					

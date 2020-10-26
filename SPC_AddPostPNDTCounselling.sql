@@ -77,6 +77,8 @@ BEGIN
 						
 			UPDATE Tbl_PostPNDTScheduling SET 
 				IsCounselled = 1
+				,UpdatedBy = @CreatedBy
+				,UpdatedOn = GETDATE()
 			WHERE ID = @PostPNDTSchedulingId
 		
 			INSERT INTO Tbl_PostPNDTCounselling (

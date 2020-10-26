@@ -25,6 +25,8 @@ BEGIN
 		,CASE WHEN SP.ChildSubjectTypeID = 1 THEN SPR.[RCHID] ELSE '' END AS RCHID
 		,(SELECT [dbo].[FN_FetchMCVResults] (SD.BarcodeNo)) AS MCV
 		,(SELECT [dbo].[FN_FetchRDWResults] (SD.BarcodeNo)) AS RDW
+		,(SELECT [dbo].[FN_FetchRBCResults] (SD.BarcodeNo)) AS RBC
+		,(SELECT [dbo].[FN_FetchCBCTestedIdResults] (SD.BarcodeNo)) AS TestedId
 		,(CONVERT(VARCHAR,SC.[SampleCollectionDate],103) + ' ' + CONVERT(VARCHAR(5),SC.[SampleCollectionTime])) AS SampleDateTime
 		,(SELECT [dbo].[FN_FetchCBCTesedDateResults] (SD.BarcodeNo)) AS TestedDateTime
 		,(SELECT [dbo].[FN_FindTimeoutCBCResults] (SD.BarcodeNo,

@@ -1339,9 +1339,6 @@ END
 ---------------------------------------------------------------------------------------------------------------
 
 
-
-
-
 USE [Eduquaydb]
 GO
 
@@ -1369,6 +1366,8 @@ CREATE TABLE [dbo].[Tbl_CBCTestResult](
 	[UpdatedToANM] [bit] NULL,
 	[FileName] [varchar] (max) NULL,
 	[TestCompleteOn] [datetime] NULL,
+	[RBC] [decimal](10,1) NULL,
+	[CBCTestedDetailId] [int] NULL,
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
@@ -1696,6 +1695,8 @@ END
 
 ---------------------------------------------------------------------------------------------------------------------
 
+
+
 USE [Eduquaydb]
 GO
 
@@ -1717,7 +1718,8 @@ CREATE TABLE [dbo].[Tbl_MolecularTestResult](
 	[IsProcessed] [bit] NULL,
 	[ReasonForClose] [varchar] (max) NULL,
 	[UpdatedBy] [int] NULL,
-	[UpdatedOn] [datetime] NULL
+	[UpdatedOn] [datetime] NULL,
+	[Remarks] [varchar](max) NULL,
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
@@ -2574,7 +2576,9 @@ CREATE TABLE [dbo].[Tbl_CBCTestedDetail](
 	[CreatedBy] [varchar](200) NULL,
 	[UpdatedOn] [datetime] NULL,
 	[UpdatedBy] [int] NULL,
-	[Reason][varchar](max) NULL
+	[Reason][varchar](max) NULL,
+	[RDW] [decimal](10,1)  NULL,
+	[RBC] [decimal](10,1)  NULL,
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
@@ -2629,3 +2633,36 @@ PRIMARY KEY CLUSTERED
 END
 
 -------------------------------------------------------------------------------
+
+
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_AuditTrail' AND [type] = 'U')
+BEGIN
+
+CREATE TABLE [dbo].[Tbl_AuditTrail](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[Type] [char](1) NULL,
+	[TableName] [varchar](max) NULL,
+	[PK] [varchar](max) NULL,
+	[PKFieldName] [varchar](max) NULL,
+	[PKValue] [varchar](max) NULL,
+	[FieldName] [varchar](max) NULL,
+	[OldValue] [varchar](max) NULL,
+	[NewValue] [varchar](max) NULL,
+	[UpdatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END

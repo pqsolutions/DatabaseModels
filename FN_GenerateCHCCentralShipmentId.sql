@@ -39,7 +39,7 @@ BEGIN
 		SET @Month = (SELECT '0' + CAST(MONTH(GETDATE()) AS VARCHAR))
 	END
 	
-	SET @MonthYear = @Month + @Year
+	SET @MonthYear = @Year + @Month 
 			
 		SELECT @SenderCode = CHC_gov_code FROM Tbl_CHCMaster WHERE ID = @TestingCHCId
 		SET @LastShipmentId =(SELECT TOP 1 GenratedShipmentID 

@@ -22,9 +22,9 @@ BEGIN
 			 ,(SELECT CommonName FROM Tbl_ConstantValues WHERE ID = SPRD.[RegisteredFrom]) AS RegisterBy
 			,SPRD.[ID] 
 			,SPRD.[SubjectTypeID]
-			,STM.[SubjectType]
+			,STM.[SubjectType] AS ChildSubjectType
 			,SPRD.[ChildSubjectTypeID]
-			,STM1.[SubjectType] AS ChildSubjectType
+			,STM1.[SubjectType] 
 			,SPRD.[UniqueSubjectID]
 			,SPRD.[DistrictID]
 			,DM.[Districtname] 

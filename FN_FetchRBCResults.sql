@@ -8,12 +8,12 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-IF EXISTS (SELECT 1 FROM sys.objects WHERE name='FN_FetchRDWResults' AND [type] = 'FN')
+IF EXISTS (SELECT 1 FROM sys.objects WHERE name='FN_FetchRBCResults' AND [type] = 'FN')
 BEGIN
-	DROP FUNCTION [dbo].[FN_FetchRDWResults]
+	DROP FUNCTION [dbo].[FN_FetchRBCResults]
 END
 GO
-CREATE FUNCTION [dbo].[FN_FetchRDWResults]     
+CREATE FUNCTION [dbo].[FN_FetchRBCResults]     
 (  
  @Barcode VARCHAR(250)
 )   
@@ -22,24 +22,24 @@ AS
 BEGIN  
 	DECLARE  
 		@Result VARCHAR(MAX)
-		,@RDW DECIMAL(10,1)
+		,@RBC DECIMAL(10,1)
 		,@ProcessStatus BIT
 		,@ConfirmStatus INT
 
 
-	IF NOT EXISTS (SELECT RDW FROM Tbl_CBCTestedDetail WHERE Barcode = @Barcode)
+	IF NOT EXISTS (SELECT RBC FROM Tbl_CBCTestedDetail WHERE Barcode = @Barcode)
 	BEGIN
 		SET @Result = '--'
 	END
 	ELSE
 	BEGIN
 
-		SELECT Top 1 @RDW =ISNULL(RDW,0.0), @ProcessStatus = ProcessStatus,@ConfirmStatus=ConfirmationStatus 
+		SELECT Top 1 @RBC =RBC, @ProcessStatus = ProcessStatus,@ConfirmStatus=ConfirmationStatus 
 		FROM Tbl_CBCTestedDetail WHERE Barcode = @Barcode AND  (ConfirmationStatus IS NULL OR ConfirmationStatus = 2)  ORDER BY TestedDateTime DESC
 
 		IF ISNULL(@ProcessStatus,0) = 0 AND ISNULL(@ConfirmStatus,0) = 0
 		BEGIN
-			SET @Result = CONVERT(VARCHAR(10),@RDW)
+			SET @Result = ISNULL(CONVERT(VARCHAR(10),@RBC),'0.0')
 		END
 		ELSE
 		BEGIN

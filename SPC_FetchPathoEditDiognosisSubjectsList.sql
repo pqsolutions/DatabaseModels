@@ -40,6 +40,7 @@ BEGIN
 			,CBC.[CBCResult] AS [CBCResult]
 			,CBC.[MCV]  AS [MCV]
 			,CBC. [RDW] AS [RDW]
+			,CBC. [RBC] AS [RBC]
 			,HR.[HbA0]
 			,HR.[HbA2]
 			,HR.[HbC]

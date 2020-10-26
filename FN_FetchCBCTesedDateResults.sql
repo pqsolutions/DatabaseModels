@@ -35,7 +35,7 @@ BEGIN
 	BEGIN
 
 		SELECT Top 1 @TestedDateTime = TestedDateTime, @ProcessStatus = ProcessStatus, @ConfirmStatus=ConfirmationStatus 
-		FROM Tbl_CBCTestedDetail WHERE Barcode = @Barcode  AND (ConfirmationStatus is NULL OR ConfirmationStatus=2)  ORDER BY ID DESC
+		FROM Tbl_CBCTestedDetail WHERE Barcode = @Barcode  AND (ConfirmationStatus is NULL OR ConfirmationStatus=2)  ORDER BY TestedDateTime DESC
 
 		IF ISNULL(@ProcessStatus,0) = 0 AND ISNULL(@ConfirmStatus,0) = 0
 		BEGIN

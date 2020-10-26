@@ -62,7 +62,9 @@ BEGIN
 			   ,[HPLCTestCompletedOn]
 			   ,[CreatedOn]
 			   ,[CreatedBy]
-			   ,[InjectionNo])
+			   ,[InjectionNo]
+			   ,[UpdatedOn]
+			   ,[UpdatedBy])
 			VALUES(
 				@SubjectID
 			   ,@UniqueSubjectID
@@ -79,7 +81,9 @@ BEGIN
 			   ,@TestCompleteOn
 			   ,GETDATE()
 			   ,@CreatedBy
-			   ,@InjectionNo)
+			   ,@InjectionNo
+			   ,GETDATE()
+			   ,@CreatedBy)
 
 			   UPDATE Tbl_HPLCTestedDetail SET
 				ProcessStatus = 1
@@ -92,7 +96,7 @@ BEGIN
 			 UPDATE Tbl_HPLCTestedDetail SET
 				ProcessStatus = 1
 				,SampleStatus = 2
-				,ReasonOfStatus = 'Super Seeded Samples and Processed'
+				,ReasonOfStatus = 'Sample superseded or duplicate' 
 				,UpdatedBy = @CreatedBy
 				,UpdatedOn = GETDATE()
 			   WHERE ID != @HPLCTestId AND ISNULL(ProcessStatus,0) = 0

@@ -78,6 +78,8 @@ BEGIN
 				,OthersResult
 				,DiagnosisCompletedThrough
 				,DiagnosisSummary
+				,UpdatedBy
+				,UpdatedOn
 				)VALUES(
 				@SubjectID 
 				,@UniqueSubjectID
@@ -95,7 +97,9 @@ BEGIN
 				,@IsDiagnosisComplete
 				,@OthersResult
 				,@DiagnosisCompletedThrough
-				,@DiagnosisSummary)
+				,@DiagnosisSummary
+				,@CreatedBy 
+				,GETDATE())
 			SELECT @GetId = SCOPE_IDENTITY()
 				
 			IF @IsDiagnosisComplete = 1

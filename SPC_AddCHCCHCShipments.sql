@@ -72,7 +72,9 @@ BEGIN
 					,DateofShipment
 					,TimeofShipment
 					,CreatedBy
-					,CreatedOn)
+					,CreatedOn
+					,UpdatedBy
+					,UpdatedOn)
 				VALUES
 					(@ShipmentFrom 
 					,@GeneratedShipmentID
@@ -84,6 +86,8 @@ BEGIN
 					,@TestingCHCID
 					,CONVERT(DATE,@DateofShipment,103)
 					,CONVERT(TIME(0),@TimeofShipment) 
+					,@CreatedBy 
+					,GETDATE()
 					,@CreatedBy 
 					,GETDATE())
 					

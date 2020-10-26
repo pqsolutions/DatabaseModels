@@ -42,7 +42,7 @@ BEGIN
 	END
 	SET  @StatusName = (SELECT StatusName FROM Tbl_CHCSampleStatusMaster WHERE ID = @SampleStatus)
 	
-	IF @StatusName =  'Samples Shipped' OR @SampleStatus=0
+	IF @StatusName =  'Samples Shipped' 
 	BEGIN
 		SELECT SP.[ID] AS SubjectId
 			,(SP.[FirstName] + ' ' + SP.[MiddleName] + ' '+ SP.[LastName] ) AS SubjectName
@@ -69,17 +69,15 @@ BEGIN
 			,PM.[PHCname] 
 			,SCM.[SCname] 
 			,RI.[RIsite] AS RIPoint
-			,CASE WHEN SD.[SampleDamaged] = 1 THEN 'Sample Damaged'
-			WHEN SD.[SampleTimeoutExpiry] = 1 THEN 'Sample Timeout Expiry'
-			WHEN CB.[BarcodeNo]  IS NULL AND SS.[BarcodeNo]  IS NULL THEN 'Pending'
-			ELSE 'Tested' END AS SampleStatus
+			,'Sample Shipped' SampleStatus
 			,CB.[MCV]
 			,CB.[RDW] 
+			,CB.[RBC]
 			,CASE WHEN SS.[IsPositive] = 1 THEN 'SST Positive , ' + CB.[CBCResult] WHEN SS.[IsPositive] = 0 THEN 'SST Negative , ' + CB.[CBCResult] ELSE  CB.[CBCResult] END CBCResult 
 			--,CB.[CBCResult] 
 			,CASE WHEN SS.[IsPositive] = 1 THEN 'SST Positive , ' + CB.[CBCResult] WHEN SS.[IsPositive] = 0 THEN 'SST Negative , ' + CB.[CBCResult] ELSE  CB.[CBCResult] END SSTResult 
-		FROM [dbo].[Tbl_ANMCHCShipments] S 
-		LEFT JOIN [dbo].[Tbl_ANMCHCShipmentsDetail]  SD WITH (NOLOCK) ON SD.ShipmentID = S.ID
+		FROM [dbo].[Tbl_CHCShipments] S 
+		LEFT JOIN [dbo].[Tbl_CHCShipmentsDetail]  SD WITH (NOLOCK) ON SD.ShipmentID = S.ID
 		LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP   WITH (NOLOCK) ON SP.UniqueSubjectID = SD.UniqueSubjectID
 		LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail] SPR   WITH (NOLOCK) ON SPR.UniqueSubjectID = SD.UniqueSubjectID
 		LEFT JOIN [dbo].[Tbl_SubjectTypeMaster] ST WITH (NOLOCK) ON ST.ID = SP.ChildSubjectTypeID 
@@ -98,7 +96,7 @@ BEGIN
 		AND (@ANMID  = 0 OR SP.[AssignANM_ID] = @ANMID) 
 		AND (CONVERT(DATE,S.[DateofShipment],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
 	END
-	IF @StatusName =  'Samples Received'
+	IF @StatusName =  'Samples Received' OR @SampleStatus=0
 	BEGIN
 		SELECT SP.[ID] AS SubjectId
 			,(SP.[FirstName] + ' ' + SP.[MiddleName] + ' '+ SP.[LastName] ) AS SubjectName
@@ -130,7 +128,8 @@ BEGIN
 			WHEN CB.[BarcodeNo]  IS NULL AND SS.[BarcodeNo]  IS NULL THEN 'Pending'
 			ELSE 'Tested' END AS SampleStatus
 			,CB.[MCV]
-			,CB.[RDW] 
+			,CB.[RDW]
+			,CB.[RBC]
 			,CASE WHEN SS.[IsPositive] = 1 THEN 'SST Positive , ' + CB.[CBCResult] WHEN SS.[IsPositive] = 0 THEN 'SST Negative , ' + CB.[CBCResult] ELSE  CB.[CBCResult] END CBCResult 
 			--,CB.[CBCResult] 
 			,CASE WHEN SS.[IsPositive] = 1 THEN 'SST Positive , ' + CB.[CBCResult] WHEN SS.[IsPositive] = 0 THEN 'SST Negative , ' + CB.[CBCResult] ELSE  CB.[CBCResult] END SSTResult  
@@ -186,7 +185,8 @@ BEGIN
 			WHEN SD.[SampleTimeoutExpiry] = 1 THEN 'Sample Timeout Expiry'
 			 END AS SampleStatus
 			,CB.[MCV]
-			,CB.[RDW] 
+			,CB.[RDW]
+			,CB.[RBC]
 			,CB.[CBCResult]
 			,CASE WHEN SS.[IsPositive] = 1 THEN 'SST Positive' WHEN SS.[IsPositive] = 0 THEN 'SST Negative' ELSE NULL END SSTResult 
 		FROM [dbo].[Tbl_ANMCHCShipments] S 
@@ -242,6 +242,7 @@ BEGIN
 			,'Tested'  AS SampleStatus
 			,CB.[MCV]
 			,CB.[RDW] 
+			,CB.[RBC]
 			,CB.[CBCResult]
 			,CASE WHEN SS.[IsPositive] = 1 THEN 'SST Positive' WHEN SS.[IsPositive] = 0 THEN 'SST Negative' ELSE NULL END SSTResult 
 		FROM [dbo].[Tbl_CBCTestResult] CB
@@ -296,7 +297,8 @@ BEGIN
 			,CASE WHEN CB.[IsPositive] = 1 THEN 'Positive'
 			ELSE 'Negative' END AS SampleStatus
 			,CB.[MCV]
-			,CB.[RDW] 
+			,CB.[RDW]
+			,CB.[RBC]
 			,CB.[CBCResult]
 			,CASE WHEN SS.[IsPositive] = 1 THEN 'SST Positive' WHEN SS.[IsPositive] = 0 THEN 'SST Negative' ELSE NULL END SSTResult 
 		FROM [dbo].[Tbl_CBCTestResult] CB 
@@ -350,6 +352,7 @@ BEGIN
 			,'Tested'  AS SampleStatus
 			,CB.[MCV]
 			,CB.[RDW] 
+			,CB.[RBC]
 			,CB.[CBCResult] AS SSTResult
 			,CASE WHEN SS.[IsPositive] = 1 THEN 'SST Positive' WHEN SS.[IsPositive] = 0 THEN 'SST Negative' ELSE NULL END CBCResult 
 		FROM [dbo].[Tbl_SSTestResult] SS
@@ -405,6 +408,7 @@ BEGIN
 			ELSE 'Negative' END AS SampleStatus
 			,CB.[MCV]
 			,CB.[RDW] 
+			,CB.[RBC]
 			,CB.[CBCResult] AS SSTResult
 			,CASE WHEN SS.[IsPositive] = 1 THEN 'SST Positive' WHEN SS.[IsPositive] = 0 THEN 'SST Negative' ELSE NULL END CBCResult 
 		FROM [dbo].[Tbl_SSTestResult] SS 

@@ -76,7 +76,9 @@ BEGIN
 					,DateofShipment
 					,TimeofShipment
 					,CreatedBy
-					,CreatedOn)
+					,CreatedOn
+					,UpdatedBy
+					,UpdatedOn)
 				VALUES
 					(@ShipmentFrom 
 					,@GeneratedShipmentID
@@ -91,6 +93,8 @@ BEGIN
 					,CONVERT(DATE,@DateofShipment,103)
 					,CONVERT(TIME(0),@TimeofShipment) 
 					,@CreatedBy 
+					,GETDATE()
+					,@CreatedBy
 					,GETDATE())
 					
 				SET @ShipmentID = (SELECT SCOPE_IDENTITY())

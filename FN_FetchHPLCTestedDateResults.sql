@@ -32,7 +32,7 @@ BEGIN
 
 		SELECT  TOP 1 @Result = CONVERT(VARCHAR,H.TestedDateTime,103)
 		FROM Tbl_HPLCTestedDetail H WHERE H.Barcode = @Barcode AND ISNULL(H.ProcessStatus,0) = 0  AND H.SampleStatus   IS NULL 
-		AND H.RunNo = (SELECT TOP 1 MAX(HD.RunNo) FROM Tbl_HPLCTestedDetail HD WHERE HD.Barcode = @Barcode) ORDER BY LEN(H.InjectionNo) DESC
+		AND H.RunNo = (SELECT TOP 1 MAX(HD.RunNo) FROM Tbl_HPLCTestedDetail HD WHERE HD.Barcode = @Barcode) ORDER BY LEN(H.InjectionNo),H.ID DESC
 	END
   
  RETURN  @Result  

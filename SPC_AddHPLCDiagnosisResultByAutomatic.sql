@@ -109,7 +109,7 @@ BEGIN
 				
 			UPDATE Tbl_HPLCDiagnosisResult  SET 
 				IsDiagnosisComplete = 1 
-				,UpdatedBy = CreatedBy   
+				,UpdatedBy = UpdatedBy   
 				,UpdatedOn = GETDATE()
 				,DiagnosisCompletedThrough = 'Automatically updated Diagnosis Result, because HPLC Test completed more than 7 days'
 			WHERE ID = @CurrentHPLCDiagnosisId

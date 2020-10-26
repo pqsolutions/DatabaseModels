@@ -36,15 +36,19 @@ BEGIN
            ,[IsPositive]
            ,[SSTComplete]
            ,[CreatedOn]
-           ,[CreatedBy])
+           ,[CreatedBy]
+		   ,[UpdatedBy]
+		   ,[UpdatedOn])
 		VALUES(
 			@UniqueSubjectId 
 			,@Barcode 
 			,@TestingCHCId
 			,@IsPositive 
 			,1
-			,GETDATE(),
-			@CreatedBy)
+			,GETDATE()
+			,@CreatedBy
+			,@CreatedBy
+			,GETDATE())
 			
 		IF @IsPositive = 1
 		BEGIN

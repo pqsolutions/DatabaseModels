@@ -16,13 +16,9 @@ GO
 CREATE PROCEDURE [dbo].[SPC_AddCBCTestResults] 
 (
 	@UniqueSubjectId VARCHAR(250)
-	,@Barcode VARCHAR(250)
-	,@TestingCHCId INT
-	,@MCV DECIMAL(18,2)
-	,@RDW DECIMAL(18,2)
-	,@TestCompleteOn VARCHAR(250)
-	,@SampleDateTime VARCHAR(250)
 	,@ConfirmStatus INT
+	,@TestedId INT
+	,@TestingCHCId INT
 	,@CreatedBy INT
 )
 AS
@@ -31,13 +27,18 @@ DECLARE
 	,@CBCResult VARCHAR(MAX)
 	,@SubjectId INT
 	,@CBCStatus CHAR(1)
-	,@HoursDiff INT  -- New logic added for expire
 	,@IsActive BIT
+	,@Barcode VARCHAR(250)
+	,@MCV DECIMAL(18,2)
+	,@RDW DECIMAL(18,2)
+	,@RBC DECIMAL(18,2)
+	,@TestCompleteOn DATETIME
+
 BEGIN
 	BEGIN TRY
-		
+		SELECT @Barcode =  Barcode, @MCV = MCV, @RDW = RDW ,@RBC = RBC , @TestCompleteOn= TestedDateTime  FROM Tbl_CBCTestedDetail WHERE ID = @TestedId
 		SELECT @SubjectId = ID FROM Tbl_SubjectPrimaryDetail WHERE UniqueSubjectID = @UniqueSubjectId 
-		IF(@MCV < 80 AND @RDW < 16)
+		IF(@MCV <= 80 AND @RDW < 16)
 		BEGIN
 			SET @IsPositive = 1
 			SET @CBCResult = 'Screening Test Positive'
@@ -59,7 +60,7 @@ BEGIN
 				,ConfirmationStatus = 3
 				,UpdatedBy = @CreatedBy
 				,UpdatedOn = GETDATE()
-			WHERE  Barcode = @Barcode 
+			WHERE  Barcode = @Barcode AND TestedDateTime <= @TestCompleteOn
 			AND ProcessStatus=0 AND ConfirmationStatus IS NULL
 
 			UPDATE Tbl_SampleCollection SET 
@@ -87,13 +88,14 @@ BEGIN
 		END
 		ELSE IF @ConfirmStatus = 2
 		BEGIN
+
 			Update Tbl_CBCTestedDetail SET
 				ProcessStatus = 1
 				,ConfirmationStatus = 2
 				,UpdatedBy = @CreatedBy
 				,UpdatedOn = GETDATE()
-			WHERE  Barcode = @Barcode  
-			AND ProcessStatus=0 AND ConfirmationStatus IS NULL
+			WHERE TesteddateTime <= @TestCompleteOn AND ProcessStatus=0 AND
+			ConfirmationStatus IS NULL AND  Barcode = @Barcode 
 
 			SELECT  ('Barcode ' + @Barcode + ' - Re-run Sample Again') AS MSG
 
@@ -107,8 +109,15 @@ BEGIN
 				,ConfirmationStatus = 1
 				,UpdatedBy = @CreatedBy
 				,UpdatedOn = GETDATE()
-			WHERE  Barcode = @Barcode AND TestedDateTime = CONVERT(DATETIME,@TestCompleteOn,103) 
-			AND ProcessStatus=0 AND ConfirmationStatus IS NULL
+			WHERE  ID = @TestedId
+
+			Update Tbl_CBCTestedDetail SET
+				ProcessStatus = 1
+				,ConfirmationStatus = 2
+				,UpdatedBy = @CreatedBy
+				,UpdatedOn = GETDATE()
+			WHERE ID != @TestedId AND ProcessStatus=0 AND
+			ConfirmationStatus IS NULL AND  Barcode = @Barcode 
 
 			IF NOT EXISTS (SELECT 1 FROM Tbl_CBCTestResult WHERE BarcodeNo = @Barcode )
 			BEGIN
@@ -118,32 +127,39 @@ BEGIN
 				   ,[TestingCHCId]
 				   ,[MCV]
 				   ,[RDW]
+				   ,[RBC]
 				   ,[IsPositive]
 				   ,[CBCResult]
 				   ,[CBCTestComplete]
 				   ,[CreatedOn]
 				   ,[CreatedBy]
-				   ,[TestCompleteOn])
+				   ,[TestCompleteOn]
+				   ,[CBCTestedDetailId]
+				   ,[UpdatedBy]
+				   ,[UpdatedOn])
 					VALUES(
 					@UniqueSubjectId 
 					,@Barcode 
 					,@TestingCHCId
 					,@MCV
 					,@RDW
+					,@RBC
 					,@IsPositive 
 					,@CBCResult 
 					,1
 					,GETDATE()
 					,@CreatedBy
-					,CONVERT(DATETIME,@TestCompleteOn,103)
-					)
+					,@TestCompleteOn
+					,@TestedId
+					,@CreatedBy
+					,GETDATE())
 			END
 			IF EXISTS(SELECT 1 FROM Tbl_PositiveResultSubjectsDetail WHERE BarcodeNo = @Barcode )
 			BEGIN
 				UPDATE Tbl_PositiveResultSubjectsDetail SET 
 					CBCStatus = @CBCStatus 
 					,CBCResult = @CBCResult 
-					,CBCUpdatedOn = CONVERT(DATETIME,@TestCompleteOn,103)
+					,CBCUpdatedOn = @TestCompleteOn
 					,IsActive = @IsActive 
 					,UpdatedToANM = 0
 				WHERE BarcodeNo = @Barcode 
@@ -166,7 +182,7 @@ BEGIN
 					,@Barcode
 					,@CBCResult
 					,@CBCStatus 
-					,CONVERT(DATETIME,@TestCompleteOn,103)
+					,@TestCompleteOn
 					,@IsActive
 					,0)				
 			END

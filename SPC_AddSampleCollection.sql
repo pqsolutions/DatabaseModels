@@ -85,6 +85,8 @@ BEGIN
 					  ,IsRecollected 
 					  ,NotifiedStatus
 					  ,FollowUpStatus
+					  ,UpdatedBy
+					  ,UpdatedOn
 					  )
 					  VALUES
 					  (@SubjectID
@@ -102,7 +104,9 @@ BEGIN
 					  ,0
 					  ,'N'
 					  ,0
-					  ,0)
+					  ,0
+					  ,@CollectedBy
+					  ,GETDATE())
 				SET @tempId = IDENT_CURRENT('Tbl_SampleCollection')
 				SET @Scope_output = 1
 			END

@@ -72,6 +72,7 @@ BEGIN
 			,CBC.[CBCResult]
 			,CBC.[MCV]
 			,CBC.[RDW]
+			,CBC.[RBC]
 			,CASE WHEN SST.[IsPositive] =  1 THEN 'Positive' ELSE 'Negative' END SSTResult
 			,CASE WHEN HT.[IsNormal] = 1 THEN 'Normal' ELSE 'Abnormal' END HPLCResult
 			,HT.[HbF]
@@ -130,6 +131,7 @@ BEGIN
 			,CBC.[CBCResult]
 			,CBC.[MCV]
 			,CBC.[RDW]
+			,CBC.[RBC]
 			,CASE WHEN SST.[IsPositive] =  1 THEN 'Positive' ELSE 'Negative' END SSTResult
 			,CASE WHEN HT.[IsNormal] = 1 THEN 'Normal' ELSE 'Abnormal' END HPLCResult
 			,HT.[HbF]
@@ -190,6 +192,7 @@ BEGIN
 			,CBC.[CBCResult]
 			,CBC.[MCV]
 			,CBC.[RDW]
+			,CBC.[RBC]
 			,CASE WHEN SST.[IsPositive] =  1 THEN 'Positive' ELSE 'Negative' END SSTResult
 			,CASE WHEN HT.[IsNormal] = 1 THEN 'Normal' ELSE 'Abnormal' END HPLCResult
 			,HT.[HbF]
@@ -249,6 +252,7 @@ BEGIN
 			,CBC.[CBCResult]
 			,CBC.[MCV]
 			,CBC.[RDW]
+			,CBC.[RBC]
 			,CASE WHEN SST.[IsPositive] =  1 THEN 'Positive' ELSE 'Negative' END SSTResult
 			,CASE WHEN HT.[IsNormal] = 1 THEN 'Normal' ELSE 'Abnormal' END HPLCResult
 			,HT.[HbF]
@@ -308,6 +312,7 @@ BEGIN
 			,CBC.[CBCResult]
 			,CBC.[MCV]
 			,CBC.[RDW]
+			,CBC.[RBC]
 			,CASE WHEN SST.[IsPositive] =  1 THEN 'Positive' ELSE 'Negative' END SSTResult
 			,CASE WHEN HT.[IsNormal] = 1 THEN 'Normal' ELSE 'Abnormal' END HPLCResult
 			,HT.[HbF]
@@ -315,7 +320,8 @@ BEGIN
 			,HT.[HbA2]
 			,HT.[HbS]
 			,HT.[HbD]
-			,HT.[LabDiagnosis] AS LabDiagnosis
+			,HT.[LabDiagnosis] AS 
+			LabDiagnosis
 			,HTD.[PdfFileName]
 		FROM [dbo].[Tbl_HPLCTestResult] HT 
 		LEFT JOIN [dbo].[Tbl_HPLCDiagnosisResult] HD WITH (NOLOCK) ON HD.BarcodeNo = HT.BarcodeNo 

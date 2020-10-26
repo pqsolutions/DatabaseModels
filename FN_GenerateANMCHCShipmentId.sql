@@ -44,7 +44,7 @@ BEGIN
 		SET @Month = (SELECT '0' + CAST(MONTH(GETDATE()) AS VARCHAR))
 	END
 	
-	SET @MonthYear = @Month + @Year
+	SET @MonthYear = @Year + @Month 
 	
 	IF @Shipment = 'ANM - CHC'
 	BEGIN		
@@ -66,6 +66,7 @@ BEGIN
 	END
 	ELSE IF @Shipment = 'CHC - CHC'
 	BEGIN
+		
 		SELECT @SenderCode = CHC_gov_code FROM Tbl_CHCMaster WHERE ID = @SenderId
 		SET @LastShipmentId =(SELECT TOP 1 GenratedShipmentID 
 							FROM Tbl_ANMCHCShipments WITH(NOLOCK) WHERE CollectionCHCID = @SenderId  AND GenratedShipmentID LIKE '%'+@Source   

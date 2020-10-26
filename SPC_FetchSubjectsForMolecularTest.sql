@@ -29,7 +29,7 @@ BEGIN
 		,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN
 			CONVERT(VARCHAR,SPR.[LMP_Date],103) ELSE '' END AS LMPDate
 		,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN
-		 CONVERT(DECIMAL(10,1),(SELECT [dbo].[FN_CalculateGestationalAge](SP.[ID]))) ELSE '' END AS GestationalAge
+		(SELECT [dbo].[FN_CalculateGestationalAge](SP.[ID])) ELSE '' END AS GestationalAge
 		,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN
 		 ('G'+CONVERT(VARCHAR,SPR.[G])+'-P'+CONVERT(VARCHAR,SPR.[P])+'-L'+CONVERT(VARCHAR,SPR.[L])+'-A'+
 		 CONVERT(VARCHAR,SPR.[A])) ELSE '' END AS ObstetricScore
@@ -37,7 +37,8 @@ BEGIN
 		,SD.[BarcodeNo]
 		,DM.[Districtname]
 		,CR.[MCV] 
-		,CR.[RDW] 
+		,CR.[RDW]
+		,CR.[RBC]
 		,PRSD.[CBCResult] 
 		,CASE WHEN PRSD.[SSTStatus] = 'P' THEN 'Positive' ELSE 'Negative' END AS SSTResult
 		,PRSD.[HPLCTestResult]
@@ -47,7 +48,8 @@ BEGIN
 		,HR.[HbD]
 		,HR.[HbF]
 		,HR.[HbS] 
-		,CDM.[DiagnosisName] AS HPLCDiagnosis
+		,HR.[LabDiagnosis] AS HPLCDiagnosis
+		,ISNULL(SD.[SampleDamaged],0) AS SampleDamaged
 	FROM [dbo].[Tbl_CentralLabShipments] S 
 	LEFT JOIN [dbo].[Tbl_CentralLabShipmentsDetail]  SD WITH (NOLOCK) ON SD.ShipmentID = S.ID
 	LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP   WITH (NOLOCK) ON SP.UniqueSubjectID = SD.UniqueSubjectID

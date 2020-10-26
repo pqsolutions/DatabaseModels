@@ -60,6 +60,7 @@ BEGIN
 			   ,[UpdatedOn]
 			   ,[IsDamaged]
 			   ,[IsProcessed] 
+			   ,[Remarks]
 			   ,[ReasonForClose] 
 				)VALUES(
 				@SubjectId 
@@ -71,6 +72,7 @@ BEGIN
 				,GETDATE()
 				,@CheckDamaged
 				,@IsProcessed 
+				,@Remarks
 				,@Remarks)
 			
 			UPDATE 	Tbl_PositiveResultSubjectsDetail SET 

@@ -65,6 +65,8 @@ BEGIN
 		
 			UPDATE Tbl_PrePNDTScheduling SET 
 				IsCounselled = 1
+				,UpdatedBy = @CreatedBy
+				,UpdatedOn = GETDATE()
 			WHERE ID = @PrePNDTSchedulingId
 		
 			INSERT INTO Tbl_PrePNDTCounselling (
