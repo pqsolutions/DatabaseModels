@@ -24,6 +24,7 @@ BEGIN
 		,SPR.[RCHID]
 		,ISNULL(C.[MCV],0) AS MCV
 		,ISNULL(C.[RDW],0) AS RDW
+		,ISNULL(C.[RBC],0) AS RBC
 		,(CONVERT(VARCHAR,SC.[SampleCollectionDate],103) + ' ' + CONVERT(VARCHAR(5),SC.[SampleCollectionTime])) AS SampleDateTime
 	FROM [dbo].[Tbl_ANMCHCShipmentsDetail]  SD 
 	LEFT JOIN  [dbo].[Tbl_ANMCHCShipments] S WITH (NOLOCK) ON SD.ShipmentID = S.ID

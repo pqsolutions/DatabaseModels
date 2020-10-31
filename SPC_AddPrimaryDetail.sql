@@ -104,7 +104,8 @@ BEGIN
 				   ,CreatedOn
 				   ,UpdatedBy
 				   ,UpdatedOn
-				   ,IsActive)
+				   ,IsActive
+				   ,SpouseWillingness)
 				VALUES
 				   (@SubjectTypeID
 				   ,@ChildSubjectTypeID 
@@ -140,7 +141,8 @@ BEGIN
 				   ,GETDATE()
 				   ,@UpdatedBy
 				   ,GETDATE()
-				   ,@IsActive)
+				   ,@IsActive
+				   ,1)
 		
 			IF @SubjectTypeID = 2 OR @ChildSubjectTypeID = 2
 			BEGIN

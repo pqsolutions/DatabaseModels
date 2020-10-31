@@ -103,7 +103,8 @@ BEGIN
 						   ,CreatedOn
 						   ,UpdatedBy
 						   ,UpdatedOn
-						   ,IsActive)
+						   ,IsActive
+						   ,SpouseWillingness)
 					 VALUES
 						   (@SubjectTypeID
 						   ,@ChildSubjectTypeID 
@@ -139,6 +140,7 @@ BEGIN
 						   ,GETDATE()
 						   ,@CreatedBy
 						   ,GETDATE()
+						   ,1
 						   ,1)
 					SELECT  @NewUniqueSubjectID  as UniqueSubjectID, SCOPE_IDENTITY() AS ID
 					IF @SubjectTypeID = 2 OR @ChildSubjectTypeID = 2 

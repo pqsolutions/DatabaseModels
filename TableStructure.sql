@@ -855,6 +855,7 @@ CREATE TABLE [dbo].[Tbl_SubjectPrimaryDetail](
 	[UpdatedOn] [datetime] NULL,
 	[IsActive] [bit] NULL,
 	[UpdatedToANM] [bit] NULL,
+	[SpouseWillingness] [bit] NULL,
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
@@ -2666,3 +2667,5 @@ PRIMARY KEY CLUSTERED
 ) ON [PRIMARY]
 
 END
+
+--------------------------------------------------------------------------------------------------------------------
