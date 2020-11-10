@@ -42,11 +42,11 @@ BEGIN
 		  CONVERT(VARCHAR(5),CONVERT(TIME(2),CounsellingDateTime,103))) AS CounsellingDateTime
 		,PRSD.[CBCResult] AS ANWCBCResult
 		,CASE WHEN PRSD.[SSTStatus] = 'P' THEN 'Positive' ELSE 'Negative' END AS ANWSSTResult
-		,PRSD.[HPLCTestResult] AS ANWHPLCResult
+		,HTR.[HPLCResult] AS ANWHPLCResult
 
 		,PRSDS.[CBCResult] AS SpouseCBCResult
 		,CASE WHEN PRSDS.[SSTStatus] = 'P' THEN 'Positive' ELSE 'Negative' END AS SpouseSSTResult
-		,PRSDS.[HPLCTestResult] AS SpouseHPLCResult
+		,SHTR.[HPLCResult] AS SpouseHPLCResult
 
 		,CTR.[MCV] AS ANW_MCV
 		,CTR.[RDW] AS ANW_RDW
@@ -58,6 +58,7 @@ BEGIN
 		,HTR.[HbS] AS ANW_HbS
 		,HTR.[HbD] AS ANW_HbD
 		,HTR.[LabDiagnosis] AS ANWHPLCDiagnosis
+		,HDRA.[SeniorPathologistRemarks] AS ANWPathoRemarks
 		
 		,SCTR.[MCV] AS Spouse_MCV
 		,SCTR.[RDW] AS Spouse_RDW
@@ -69,7 +70,8 @@ BEGIN
 		,SHTR.[HbA0] AS Spouse_HbA0
 		,SHTR.[HbA2] AS Spouse_HbA2
 		,SHTR.[LabDiagnosis] AS SPouseHPLCDiagnosis
-		
+		,SHDRA.[SeniorPathologistRemarks] AS SpousePathoRemarks
+
 		,PPC.[AssignedObstetricianId]	
 		,(UM1.[FirstName] +' '+UM1.[LastName] ) AS ObsetricianName
 		,CONVERT(VARCHAR,PPC.[SchedulePNDTDate],103) AS SchedulePNDTDate

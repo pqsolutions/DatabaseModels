@@ -75,6 +75,7 @@ BEGIN
 			,GIM .[GovIDType]
 			,SPRD.[GovIdDetail]
 			,SPRD.[AssignANM_ID]
+			 ,SPRD.[SpouseWillingness]
 			,(UM.[User_gov_code]+ ' - ' + UM.[FirstName] + ' ' + UM.[MiddleName]  + ' ' + UM.[LastName]) AS ANMName
 			,SAD.[SubjectID] SADSubjectID
 			,SAD.[Religion_Id]
@@ -118,6 +119,6 @@ BEGIN
 	AND SPRD.[UniqueSubjectID] NOT IN (SELECT SpouseSubjectID  FROM [dbo].[Tbl_SubjectPrimaryDetail] WHERE (SPRD.[SubjectTypeID] = 2 OR SPRD.[ChildSubjectTypeID] = 2))
 	AND SPRD.[ID] IN( SELECT SubjectID FROM[dbo].[Tbl_PositiveResultSubjectsDetail] WHERE UPPER(HPLCStatus) = 'P' )
 	AND (CONVERT(DATE,SPRD.[DateofRegister],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103))
-	 AND (SPRD.[SubjectTypeID] = 1 OR SPRD.[ChildSubjectTypeID] = 1) --AND SPRD.[IsActive] = 1
+	 AND (SPRD.[SubjectTypeID] = 1 OR SPRD.[ChildSubjectTypeID] = 1) AND SPRD.[SpouseWillingness] = 1
 	ORDER BY [GestationalAge] DESC
 END

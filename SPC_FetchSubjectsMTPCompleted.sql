@@ -64,6 +64,9 @@ BEGIN
 		,SHTR.[HbA2] AS Spouse_HbA2
 		,SHTR.[LabDiagnosis] AS SPouseHPLCDiagnosis
 
+		,HDRA.[SeniorPathologistRemarks] AS ANWPathoRemarks
+		,SHDRA.[SeniorPathologistRemarks] AS SpousePathoRemarks
+
 		,(UM1.[FirstName] +' '+UM1.[LastName] ) AS PrePNDTCounsellorName
 		,(CONVERT(VARCHAR,PPSS.[CounsellingDateTime],103) + ' ' + CONVERT(VARCHAR(5),PPSS.[CounsellingDateTime],108)) AS PrePNDTCounsellingDateTime
 		  ,'The couple has agreed for Pre-natal Diagnosis' AS PrePNDTCounsellingStatus
@@ -116,7 +119,8 @@ BEGIN
 	LEFT JOIN Tbl_PositiveResultSubjectsDetail PRSD WITH (NOLOCK) ON PT.[ANWSubjectId] = PRSD.[UniqueSubjectID]
 	LEFT JOIN Tbl_PositiveResultSubjectsDetail PRSDS WITH (NOLOCK) ON PRSDS.[UniqueSubjectID] = PT.[SpouseSubjectId]
 	LEFT JOIN Tbl_SubjectPrimaryDetail SPDS WITH (NOLOCK) ON SPDS.[UniqueSubjectID] = PRSDS.[UniqueSubjectID]
-
+	LEFT JOIN Tbl_HPLCDiagnosisResult HDRA WITH (NOLOCK) ON PRSD.[BarcodeNo] = HDRA.[BarcodeNo]
+	LEFT JOIN Tbl_HPLCDiagnosisResult SHDRA WITH (NOLOCK) ON PRSDS.[BarcodeNo] = SHDRA.[BarcodeNo]
 	LEFT JOIN Tbl_CBCTestResult CTR WITH (NOLOCK) ON CTR.[BarcodeNo] = PRSD.[BarcodeNo]
 	LEFT JOIN Tbl_CBCTestResult SCTR WITH (NOLOCK) ON SCTR.[BarcodeNo] = PRSDS.[BarcodeNo]
 	LEFT JOIN Tbl_HPLCTestResult HTR WITH (NOLOCK) ON HTR.[BarcodeNo] = PRSD.[BarcodeNo]

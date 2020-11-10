@@ -62,6 +62,7 @@ BEGIN
 			,SPRD.[AssignANM_ID]
 			,(UM.[User_gov_code]+ ' - ' + UM.[FirstName] + ' ' + UM.[MiddleName]  + ' ' + UM.[LastName]) AS ANMName
 			,SPRD.[IsActive]
+			,SPRD.[SpouseWillingness]
 			,SAD.[SubjectID] SADSubjectID
 			,SAD.[Religion_Id]
 			,RM.[Religionname]

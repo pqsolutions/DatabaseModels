@@ -106,11 +106,10 @@ BEGIN
 				BEGIN 
 					 SELECT @Indexvar  = @Indexvar + 1 
 					 SELECT @CurrentIndexBarcode = TempCol FROM #TempTable WHERE ArrayIndex = @Indexvar
-					 SELECT @UniqueSubjectId = UniqueSubjectID FROM Tbl_SampleCollection WHERE BarcodeNo = @CurrentIndexBarcode 
-					 BEGIN  
+					 SET  @UniqueSubjectId = (SELECT UniqueSubjectID FROM Tbl_SampleCollection WHERE BarcodeNo = @CurrentIndexBarcode )
 						INSERT INTO Tbl_ANMCHCShipmentsDetail (ShipmentId,UniqueSubjectId,BarcodeNo)  
 						VALUES(@ShipmentID,@UniqueSubjectId,@CurrentIndexBarcode)
-					END 
+					SET @UniqueSubjectId=''
 				END
 				DROP TABLE #TempTable
 			END

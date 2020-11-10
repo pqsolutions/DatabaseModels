@@ -2580,6 +2580,22 @@ CREATE TABLE [dbo].[Tbl_CBCTestedDetail](
 	[Reason][varchar](max) NULL,
 	[RDW] [decimal](10,1)  NULL,
 	[RBC] [decimal](10,1)  NULL,
+	[MachineId] [varchar](max) NULL,
+	[MPV] [decimal](10,1)  NULL,
+	[PDW] [decimal](10,1)  NULL,
+	[PLT] [decimal](10,1)  NULL,
+	[THT] [decimal](10,3)  NULL,
+	[HCT] [decimal](10,1)  NULL,
+	[HGB] [decimal](10,1)  NULL,
+	[MCH] [decimal](10,1)  NULL,
+	[MCHC] [decimal](10,1)  NULL,
+	[GRA#] [decimal](10,2)  NULL,
+	[GRA%] [decimal](10,1)  NULL,
+	[LYM#] [decimal](10,2)  NULL,
+	[LYM%] [decimal](10,1)  NULL,
+	[MON#] [decimal](10,2)  NULL,
+	[MON%] [decimal](10,1)  NULL,
+	[WBC] [decimal](10,1)  NULL,
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
@@ -2625,6 +2641,23 @@ CREATE TABLE [dbo].[Tbl_HPLCTestedDetail](
 	[CreatedBy] [varchar](200) NULL,
 	[UpdatedOn] [datetime] NULL,
 	[UpdatedBy] [int] NULL,
+	[MachineId] [varchar](max)  NULL,
+	[HbF_CArea] [decimal] (10,3)  NULL,
+	[HbA0_CArea] [decimal] (10,3)  NULL,
+	[HbA2_CArea] [decimal] (10,3)  NULL,
+	[HbS_CArea] [decimal] (10,3)  NULL,
+	[HbD_CArea] [decimal] (10,3)  NULL,
+	[HbF_Area] [decimal] (10,3)  NULL,
+	[HbA0_Area] [decimal] (10,3)  NULL,
+	[HbA2_Area] [decimal] (10,3)  NULL,
+	[HbS_Area] [decimal] (10,3)  NULL,
+	[HbD_Area] [decimal] (10,3)  NULL,
+	[HbF_PArea] [decimal] (10,3)  NULL,
+	[HbA0_PArea] [decimal] (10,3)  NULL,
+	[HbA2_PArea] [decimal] (10,3)  NULL,
+	[HbS_PArea] [decimal] (10,3)  NULL,
+	[HbD_PArea] [decimal] (10,3)  NULL,
+	[OperatorId] [varchar](max)  NULL
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC

@@ -61,7 +61,7 @@ BEGIN
 	WHERE  SPRD.[CHCID] = @CHCId AND SPRD.[RegisteredFrom] = @RegisteredFrom  AND ISNULL(SPRD.[SpouseSubjectID],'') = '' 
 	AND SPRD.[UniqueSubjectID] NOT IN (SELECT SpouseSubjectID  FROM [dbo].[Tbl_SubjectPrimaryDetail]
 	WHERE (SPRD.[SubjectTypeID] = 2 OR SPRD.[ChildSubjectTypeID] = 2))
-	AND PRSD.[HPLCStatus] = 'P' AND (SPRD.[SubjectTypeID] = 1 OR SPRD.[ChildSubjectTypeID] = 1) --AND SPRD.[IsActive] = 1
+	AND PRSD.[HPLCStatus] = 'P' AND (SPRD.[SubjectTypeID] = 1 OR SPRD.[ChildSubjectTypeID] = 1) AND SPRD.[SpouseWillingness] = 1
 	
 	UNION 
 	SELECT SPRD.[ID] 

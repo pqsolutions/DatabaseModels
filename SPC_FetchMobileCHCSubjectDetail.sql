@@ -67,6 +67,7 @@ BEGIN
 		,SPD.[UniqueSubjectID] AS APD_UniqueSubjectId
 		,SPD.[RCHID]
 		,SPD.[ECNumber]
+		,SP.[SpouseWillingness]
 		,CASE WHEN ISNULL(SPD.[LMP_Date],'') = '' THEN '' 
 			  ELSE CONVERT(VARCHAR,SPD.[LMP_Date],103)
 		 END  AS  LMPDate

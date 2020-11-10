@@ -38,7 +38,7 @@ BEGIN
 	WHERE  SP.[AssignANM_ID] = @ANMID AND ISNULL(SP.[SpouseSubjectID],'') = '' 
 	AND SP.[UniqueSubjectID] NOT IN (SELECT SpouseSubjectID  FROM [dbo].[Tbl_SubjectPrimaryDetail]
 	WHERE (SP.[SubjectTypeID] = 2 OR SP.[ChildSubjectTypeID] = 2))
-	AND PRSD.[HPLCStatus] = 'P' AND (SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1) 
+	AND PRSD.[HPLCStatus] = 'P' AND (SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1) AND SP.[SpouseWillingness] = 1
 	
 	UNION 
 	SELECT  SC.[ID] AS SampleCollectionId

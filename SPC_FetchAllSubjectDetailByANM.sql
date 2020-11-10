@@ -80,6 +80,7 @@ BEGIN
 			,GIM .[GovIDType]
 			,SPRD.[GovIdDetail]
 			,SPRD.[AssignANM_ID]
+			,SPRD.[SpouseWillingness]
 			,(UM.[User_gov_code]+ ' - ' + UM.[FirstName] + ' ' + UM.[MiddleName]  + ' ' + UM.[LastName]) AS ANMName
 			,SPRD.[IsActive]
 			,SAD.[SubjectID] SADSubjectID

@@ -26,7 +26,7 @@ AS
 BEGIN
 	IF @FromDate = NULL OR @FromDate = ''
 	BEGIN
-		SET @StartDate = (SELECT CONVERT(VARCHAR,DATEADD(YEAR ,-1,GETDATE()),103))
+		SET @StartDate = (SELECT CONVERT(VARCHAR,DATEADD(MONTH ,-3,GETDATE()),103))
 	END
 	ELSE
 	BEGIN
@@ -42,7 +42,7 @@ BEGIN
 	END
 	SET  @StatusName = (SELECT StatusName FROM Tbl_CentralLabSampleStatusMaster WHERE ID = @SampleStatus)
 	
-	IF @StatusName =  'Samples Shipped'
+	IF @StatusName =  'Samples Shipped To Molecular Lab'
 	BEGIN
 		SELECT SP.[ID] AS SubjectId
 			,(SP.[FirstName] + ' ' + SP.[MiddleName] + ' '+ SP.[LastName] ) AS SubjectName
@@ -78,6 +78,11 @@ BEGIN
 			,HT.[HbF]
 			,HT.[HbS] 
 			,HT.[LabDiagnosis] AS [DiagnosisName]
+			,CASE WHEN SS.[IsPositive] = 1 THEN 'SST Positive' WHEN SS.[IsPositive] = 0 THEN 'SST Negative' END AS SSTResult
+			,CB.[MCV]
+			,CB.[RDW] 
+			,CB.[RBC]
+			,CB.[CBCResult]
 		FROM [dbo].[Tbl_CentralLabShipments] S 
 		LEFT JOIN [dbo].[Tbl_CentralLabShipmentsDetail]  SD WITH (NOLOCK) ON SD.ShipmentID = S.ID
 		LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP   WITH (NOLOCK) ON SP.UniqueSubjectID = SD.UniqueSubjectID
@@ -89,6 +94,8 @@ BEGIN
 		LEFT JOIN [dbo].[Tbl_PHCMaster] PM WITH (NOLOCK)ON PM.ID = SP.PHCID
 		LEFT JOIN [dbo].[Tbl_SCMaster] SCM WITH (NOLOCK)ON SCM.ID = SP.SCID
 		LEFT JOIN [dbo].[Tbl_RIMaster] RI WITH (NOLOCK)ON RI.ID = SP.RIID
+		LEFT JOIN [dbo].[Tbl_CBCTestResult]  CB  WITH (NOLOCK) ON CB.BarcodeNo  = SC.BarcodeNo 
+		LEFT JOIN [dbo].[Tbl_SSTestResult]  SS  WITH (NOLOCK) ON SS.BarcodeNo  = SC.BarcodeNo 
 		LEFT JOIN [dbo].[Tbl_UserMaster] UM  WITH (NOLOCK) ON UM.ID = SP.AssignANM_ID 
 		LEFT JOIN [dbo].[Tbl_HPLCTestResult] HT WITH (NOLOCK) ON HT.BarcodeNo = SD.BarcodeNo
 		LEFT JOIN [dbo].[Tbl_HPLCDiagnosisResult]   HD WITH (NOLOCK) ON HD.BarcodeNo = HT.BarcodeNo
@@ -96,7 +103,8 @@ BEGIN
 		AND (@CHCID  = 0 OR SP.[CHCID] = @CHCID) 
 		AND (@PHCID  = 0 OR SP.[PHCID] = @PHCID) 
 		AND (@ANMID  = 0 OR SP.[AssignANM_ID] = @ANMID) 
-		AND (CONVERT(DATE,S.[DateofShipment],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
+		AND (CONVERT(DATE,SP.[DateofRegister],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
+		--AND (CONVERT(DATE,S.[DateofShipment],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
 	END
 	IF @StatusName =  'Samples Received'  OR @SampleStatus = 0
 	BEGIN
@@ -137,6 +145,11 @@ BEGIN
 			,HT.[HbF]
 			,HT.[HbS] 
 			,HT.[LabDiagnosis] AS [DiagnosisName]
+			,CASE WHEN SS.[IsPositive] = 1 THEN 'SST Positive' WHEN SS.[IsPositive] = 0 THEN 'SST Negative' END AS SSTResult
+			,CB.[MCV]
+			,CB.[RDW] 
+			,CB.[RBC]
+			,CB.[CBCResult]
 		FROM [dbo].[Tbl_CHCShipments] S 
 		LEFT JOIN [dbo].[Tbl_CHCShipmentsDetail]  SD WITH (NOLOCK) ON SD.ShipmentID = S.ID
 		LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP   WITH (NOLOCK) ON SP.UniqueSubjectID = SD.UniqueSubjectID
@@ -149,13 +162,16 @@ BEGIN
 		LEFT JOIN [dbo].[Tbl_SCMaster] SCM WITH (NOLOCK)ON SCM.ID = SP.SCID
 		LEFT JOIN [dbo].[Tbl_RIMaster] RI WITH (NOLOCK)ON RI.ID = SP.RIID
 		LEFT JOIN [dbo].[Tbl_UserMaster] UM  WITH (NOLOCK) ON UM.ID = SP.AssignANM_ID 
+		LEFT JOIN [dbo].[Tbl_CBCTestResult]  CB  WITH (NOLOCK) ON CB.BarcodeNo  = SC.BarcodeNo 
+		LEFT JOIN [dbo].[Tbl_SSTestResult]  SS  WITH (NOLOCK) ON SS.BarcodeNo  = SC.BarcodeNo 
 		LEFT JOIN [dbo].[Tbl_HPLCTestResult] HT WITH (NOLOCK) ON HT.BarcodeNo = SD.BarcodeNo
 		LEFT JOIN [dbo].[Tbl_HPLCDiagnosisResult]   HD WITH (NOLOCK) ON HD.BarcodeNo = HT.BarcodeNo
 		WHERE  S.[ReceivedDate] IS NOT NULL AND S.[ReceivingCentralLabId] = @CentralLabId 
 		AND (@CHCID  = 0 OR SP.[CHCID] = @CHCID) 
 		AND (@PHCID  = 0 OR SP.[PHCID] = @PHCID) 
-		AND (@ANMID  = 0 OR SP.[AssignANM_ID] = @ANMID)  
-		AND (CONVERT(DATE,S.[DateofShipment],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
+		AND (@ANMID  = 0 OR SP.[AssignANM_ID] = @ANMID)
+		AND (CONVERT(DATE,SP.[DateofRegister],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
+		--AND (CONVERT(DATE,S.[DateofShipment],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
 	END
 	IF @StatusName =  'Samples Tested'
 	BEGIN
@@ -195,6 +211,11 @@ BEGIN
 			,HT.[HbF]
 			,HT.[HbS] 
 			,HT.[LabDiagnosis] AS [DiagnosisName]
+			,CASE WHEN SS.[IsPositive] = 1 THEN 'SST Positive' WHEN SS.[IsPositive] = 0 THEN 'SST Negative' END AS SSTResult
+			,CB.[MCV]
+			,CB.[RDW] 
+			,CB.[RBC]
+			,CB.[CBCResult]
 		FROM [dbo].[Tbl_HPLCTestResult] HT
 		LEFT JOIN [dbo].[Tbl_HPLCDiagnosisResult]   HD WITH (NOLOCK) ON HD.BarcodeNo = HT.BarcodeNo
 		LEFT JOIN [dbo].[Tbl_CHCShipmentsDetail]  SD WITH (NOLOCK) ON SD.BarcodeNo = HT.BarcodeNo
@@ -209,11 +230,14 @@ BEGIN
 		LEFT JOIN [dbo].[Tbl_SCMaster] SCM WITH (NOLOCK)ON SCM.ID = SP.SCID
 		LEFT JOIN [dbo].[Tbl_RIMaster] RI WITH (NOLOCK)ON RI.ID = SP.RIID
 		LEFT JOIN [dbo].[Tbl_UserMaster] UM  WITH (NOLOCK) ON UM.ID = SP.AssignANM_ID 
+		LEFT JOIN [dbo].[Tbl_CBCTestResult]  CB  WITH (NOLOCK) ON CB.BarcodeNo  = SC.BarcodeNo 
+		LEFT JOIN [dbo].[Tbl_SSTestResult]  SS  WITH (NOLOCK) ON SS.BarcodeNo  = SC.BarcodeNo 
 		WHERE HT.[CentralLabId] = @CentralLabId 
 		AND (@CHCID  = 0 OR SP.[CHCID] = @CHCID) 
 		AND (@PHCID  = 0 OR SP.[PHCID] = @PHCID) 
 		AND (@ANMID  = 0 OR SP.[AssignANM_ID] = @ANMID) 
-		AND (CONVERT(DATE,HT.[HPLCTestCompletedOn],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
+		AND (CONVERT(DATE,SP.[DateofRegister],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
+		--AND (CONVERT(DATE,HT.[HPLCTestCompletedOn],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
 	END
 	
 	IF @StatusName =  'Samples Discarded'
@@ -254,6 +278,11 @@ BEGIN
 			,HT.[HbF]
 			,HT.[HbS] 
 			,HT.[LabDiagnosis] AS [DiagnosisName]
+			,CASE WHEN SS.[IsPositive] = 1 THEN 'SST Positive' WHEN SS.[IsPositive] = 0 THEN 'SST Negative' END AS SSTResult
+			,CB.[MCV]
+			,CB.[RDW] 
+			,CB.[RBC]
+			,CB.[CBCResult]
 		FROM [dbo].[Tbl_CHCShipments] S 
 		LEFT JOIN [dbo].[Tbl_CHCShipmentsDetail]  SD WITH (NOLOCK) ON SD.ShipmentID = S.ID
 		LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP   WITH (NOLOCK) ON SP.UniqueSubjectID = SD.UniqueSubjectID
@@ -268,12 +297,15 @@ BEGIN
 		LEFT JOIN [dbo].[Tbl_UserMaster] UM  WITH (NOLOCK) ON UM.ID = SP.AssignANM_ID 
 		LEFT JOIN [dbo].[Tbl_HPLCTestResult] HT WITH (NOLOCK) ON HT.BarcodeNo = SD.BarcodeNo
 		LEFT JOIN [dbo].[Tbl_HPLCDiagnosisResult]   HD WITH (NOLOCK) ON HD.BarcodeNo = HT.BarcodeNo
+		LEFT JOIN [dbo].[Tbl_CBCTestResult]  CB  WITH (NOLOCK) ON CB.BarcodeNo  = SC.BarcodeNo 
+		LEFT JOIN [dbo].[Tbl_SSTestResult]  SS  WITH (NOLOCK) ON SS.BarcodeNo  = SC.BarcodeNo 
 		WHERE  HT.[CentralLabId] = @CentralLabId 
 		AND (@CHCID  = 0 OR SP.[CHCID] = @CHCID) 
 		AND (@PHCID  = 0 OR SP.[PHCID] = @PHCID) 
 		AND (@ANMID  = 0 OR SP.[AssignANM_ID] = @ANMID) AND SD.[BarcodeNo] NOT IN (SELECT BarcodeNo FROM Tbl_HPLCTestResult)
 		AND (SD.[SampleDamaged] = 1 OR SD.[SampleTimeoutExpiry] = 1)
-		AND (CONVERT(DATE,S.[DateofShipment],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103))  
+		AND (CONVERT(DATE,SP.[DateofRegister],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
+		--AND (CONVERT(DATE,S.[DateofShipment],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103))  
 	END
 	IF @StatusName =  'HPLC Positive Subjects'
 	BEGIN
@@ -312,6 +344,11 @@ BEGIN
 			,HT.[HbF]
 			,HT.[HbS] 
 			,HT.[LabDiagnosis] AS [DiagnosisName]
+			,CASE WHEN SS.[IsPositive] = 1 THEN 'SST Positive' WHEN SS.[IsPositive] = 0 THEN 'SST Negative' END AS SSTResult
+			,CB.[MCV]
+			,CB.[RDW] 
+			,CB.[RBC]
+			,CB.[CBCResult]
 		FROM [dbo].[Tbl_HPLCTestResult] HT
 		LEFT JOIN [dbo].[Tbl_HPLCDiagnosisResult]   HD WITH (NOLOCK) ON HD.BarcodeNo = HT.BarcodeNo
 		LEFT JOIN [dbo].[Tbl_CHCShipmentsDetail]  SD WITH (NOLOCK) ON SD.BarcodeNo = HT.BarcodeNo
@@ -326,11 +363,14 @@ BEGIN
 		LEFT JOIN [dbo].[Tbl_SCMaster] SCM WITH (NOLOCK)ON SCM.ID = SP.SCID
 		LEFT JOIN [dbo].[Tbl_RIMaster] RI WITH (NOLOCK)ON RI.ID = SP.RIID
 		LEFT JOIN [dbo].[Tbl_UserMaster] UM  WITH (NOLOCK) ON UM.ID = SP.AssignANM_ID 
+		LEFT JOIN [dbo].[Tbl_CBCTestResult]  CB  WITH (NOLOCK) ON CB.BarcodeNo  = SC.BarcodeNo 
+		LEFT JOIN [dbo].[Tbl_SSTestResult]  SS  WITH (NOLOCK) ON SS.BarcodeNo  = SC.BarcodeNo 
 		WHERE HT.[CentralLabId] = @CentralLabId AND HT.[IsPositive] = 1
 		AND (@CHCID  = 0 OR SP.[CHCID] = @CHCID) 
 		AND (@PHCID  = 0 OR SP.[PHCID] = @PHCID) 
 		AND (@ANMID  = 0 OR SP.[AssignANM_ID] = @ANMID) 
-		AND (CONVERT(DATE,HT.[HPLCResultUpdatedOn],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
+		AND (CONVERT(DATE,SP.[DateofRegister],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
+		--AND (CONVERT(DATE,HT.[HPLCResultUpdatedOn],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
 	END
 	IF @StatusName =  'HPLC Negative Subjects'
 	BEGIN
@@ -369,6 +409,11 @@ BEGIN
 			,HT.[HbF]
 			,HT.[HbS] 
 			,HT.[LabDiagnosis] AS [DiagnosisName]
+			,CASE WHEN SS.[IsPositive] = 1 THEN 'SST Positive' WHEN SS.[IsPositive] = 0 THEN 'SST Negative' END AS SSTResult
+			,CB.[MCV]
+			,CB.[RDW] 
+			,CB.[RBC]
+			,CB.[CBCResult]
 		FROM [dbo].[Tbl_HPLCTestResult] HT
 		LEFT JOIN [dbo].[Tbl_HPLCDiagnosisResult]   HD WITH (NOLOCK) ON HD.BarcodeNo = HT.BarcodeNo
 		LEFT JOIN [dbo].[Tbl_CHCShipmentsDetail]  SD WITH (NOLOCK) ON SD.BarcodeNo = HT.BarcodeNo
@@ -383,10 +428,13 @@ BEGIN
 		LEFT JOIN [dbo].[Tbl_SCMaster] SCM WITH (NOLOCK)ON SCM.ID = SP.SCID
 		LEFT JOIN [dbo].[Tbl_RIMaster] RI WITH (NOLOCK)ON RI.ID = SP.RIID
 		LEFT JOIN [dbo].[Tbl_UserMaster] UM  WITH (NOLOCK) ON UM.ID = SP.AssignANM_ID 
+		LEFT JOIN [dbo].[Tbl_CBCTestResult]  CB  WITH (NOLOCK) ON CB.BarcodeNo  = SC.BarcodeNo 
+		LEFT JOIN [dbo].[Tbl_SSTestResult]  SS  WITH (NOLOCK) ON SS.BarcodeNo  = SC.BarcodeNo 
 		WHERE HT.[CentralLabId] = @CentralLabId AND HT.[IsPositive] = 0
 		AND (@CHCID  = 0 OR SP.[CHCID] = @CHCID) 
 		AND (@PHCID  = 0 OR SP.[PHCID] = @PHCID) 
 		AND (@ANMID  = 0 OR SP.[AssignANM_ID] = @ANMID) 
-		AND (CONVERT(DATE,HT.[HPLCResultUpdatedOn],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
+		AND (CONVERT(DATE,SP.[DateofRegister],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
+		--AND (CONVERT(DATE,HT.[HPLCResultUpdatedOn],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
 	END
 END

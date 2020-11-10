@@ -46,7 +46,7 @@ CREATE PROCEDURE [dbo].[SPC_AddPrimaryDetail]
       ,@IsActive BIT
 	  ,@UniqueSubjectId VARCHAR(200)
 	  ,@Source CHAR(1) -- N/F/M (N-Online, F-Offline, M-Manual)
-	  
+	  ,@SpouseWillingness BIT
 )AS
 DECLARE 
 	@ID INT
@@ -67,6 +67,11 @@ BEGIN
 		BEGIN
 			SET @DateofReg = (SELECT GETDATE())
 		END
+		IF @SpouseWillingness IS NULL
+		BEGIN
+			SET @SpouseWillingness = 1
+		END
+		
 		IF (@Count <= 0)
 		BEGIN
 			INSERT INTO [dbo].[Tbl_SubjectPrimaryDetail]
@@ -201,6 +206,7 @@ BEGIN
 					  ,UpdatedBy = @UpdatedBy
 					  ,UpdatedOn = GETDATE()
 					  ,IsActive = @IsActive
+					  ,SpouseWillingness = @SpouseWillingness
 					WHERE ID = @ID
 			IF @SubjectTypeID = 2 OR @ChildSubjectTypeID = 2 OR @SubjectTypeID = 1 OR @ChildSubjectTypeID = 1
 			BEGIN

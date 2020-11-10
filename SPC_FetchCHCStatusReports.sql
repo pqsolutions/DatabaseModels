@@ -26,7 +26,7 @@ AS
 BEGIN
 	IF @FromDate = NULL OR @FromDate = ''
 	BEGIN
-		SET @StartDate = (SELECT CONVERT(VARCHAR,DATEADD(YEAR ,-1,GETDATE()),103))
+		SET @StartDate = (SELECT CONVERT(VARCHAR,DATEADD(MONTH ,-3,GETDATE()),103))
 	END
 	ELSE
 	BEGIN
@@ -42,11 +42,11 @@ BEGIN
 	END
 	SET  @StatusName = (SELECT StatusName FROM Tbl_CHCSampleStatusMaster WHERE ID = @SampleStatus)
 	
-	IF @StatusName =  'Samples Shipped' 
+	IF @StatusName =  'Samples Shipped to Central Lab' 
 	BEGIN
 		SELECT SP.[ID] AS SubjectId
 			,(SP.[FirstName] + ' ' + SP.[MiddleName] + ' '+ SP.[LastName] ) AS SubjectName
-			,SD.[UniqueSubjectID]
+			,SP.[UniqueSubjectID]
 			,ST.[SubjectType] 
 			,ISNULL(SPR.[RCHID] ,'') AS RCHID
 			,SP.[Age] 
@@ -94,13 +94,14 @@ BEGIN
 		AND (@CHCID  = 0 OR SP.[CHCID] = @CHCID) 
 		AND (@PHCID  = 0 OR SP.[PHCID] = @PHCID) 
 		AND (@ANMID  = 0 OR SP.[AssignANM_ID] = @ANMID) 
-		AND (CONVERT(DATE,S.[DateofShipment],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
+		AND (CONVERT(DATE,SP.[DateofRegister],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
+		--AND (CONVERT(DATE,S.[DateofShipment],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
 	END
 	IF @StatusName =  'Samples Received' OR @SampleStatus=0
 	BEGIN
 		SELECT SP.[ID] AS SubjectId
 			,(SP.[FirstName] + ' ' + SP.[MiddleName] + ' '+ SP.[LastName] ) AS SubjectName
-			,SD.[UniqueSubjectID]
+			,SP.[UniqueSubjectID]
 			,ST.[SubjectType] 
 			,ISNULL(SPR.[RCHID] ,'') AS RCHID
 			,SP.[Age] 
@@ -135,10 +136,10 @@ BEGIN
 			,CASE WHEN SS.[IsPositive] = 1 THEN 'SST Positive , ' + CB.[CBCResult] WHEN SS.[IsPositive] = 0 THEN 'SST Negative , ' + CB.[CBCResult] ELSE  CB.[CBCResult] END SSTResult  
 		FROM [dbo].[Tbl_ANMCHCShipments] S 
 		LEFT JOIN [dbo].[Tbl_ANMCHCShipmentsDetail]  SD WITH (NOLOCK) ON SD.ShipmentID = S.ID
-		LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP   WITH (NOLOCK) ON SP.UniqueSubjectID = SD.UniqueSubjectID
-		LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail] SPR   WITH (NOLOCK) ON SPR.UniqueSubjectID = SD.UniqueSubjectID
-		LEFT JOIN [dbo].[Tbl_SubjectTypeMaster] ST WITH (NOLOCK) ON ST.ID = SP.ChildSubjectTypeID 
 		LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.BarcodeNo = SD.BarcodeNo 
+		LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP   WITH (NOLOCK) ON SP.UniqueSubjectID = SC.UniqueSubjectID
+		LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail] SPR   WITH (NOLOCK) ON SPR.UniqueSubjectID = SC.UniqueSubjectID
+		LEFT JOIN [dbo].[Tbl_SubjectTypeMaster] ST WITH (NOLOCK) ON ST.ID = SP.ChildSubjectTypeID 
 		LEFT JOIN [dbo].[Tbl_DistrictMaster] DM WITH (NOLOCK)ON  DM.ID = SP.DistrictID
 		LEFT JOIN [dbo].[Tbl_CHCMaster] CM WITH (NOLOCK)ON CM.ID = SP.CHCID
 		LEFT JOIN [dbo].[Tbl_PHCMaster] PM WITH (NOLOCK)ON PM.ID = SP.PHCID
@@ -151,14 +152,15 @@ BEGIN
 		AND (@CHCID  = 0 OR SP.[CHCID] = @CHCID) 
 		AND (@PHCID  = 0 OR SP.[PHCID] = @PHCID) 
 		AND (@ANMID  = 0 OR SP.[AssignANM_ID] = @ANMID) 
-		AND (CONVERT(DATE,S.[DateofShipment],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
+		AND (CONVERT(DATE,SP.[DateofRegister],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
+		--AND (CONVERT(DATE,S.[DateofShipment],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
 	END
 	
 	IF @StatusName =  'Samples Discarded'
 	BEGIN
 		SELECT SP.[ID] AS SubjectId
 			,(SP.[FirstName] + ' ' + SP.[MiddleName] + ' '+ SP.[LastName] ) AS SubjectName
-			,SD.[UniqueSubjectID]
+			,SP.[UniqueSubjectID]
 			,ST.[SubjectType] 
 			,ISNULL(SPR.[RCHID] ,'') AS RCHID
 			,SP.[Age] 
@@ -191,10 +193,10 @@ BEGIN
 			,CASE WHEN SS.[IsPositive] = 1 THEN 'SST Positive' WHEN SS.[IsPositive] = 0 THEN 'SST Negative' ELSE NULL END SSTResult 
 		FROM [dbo].[Tbl_ANMCHCShipments] S 
 		LEFT JOIN [dbo].[Tbl_ANMCHCShipmentsDetail]  SD WITH (NOLOCK) ON SD.ShipmentID = S.ID
-		LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP   WITH (NOLOCK) ON SP.UniqueSubjectID = SD.UniqueSubjectID
-		LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail] SPR   WITH (NOLOCK) ON SPR.UniqueSubjectID = SD.UniqueSubjectID
-		LEFT JOIN [dbo].[Tbl_SubjectTypeMaster] ST WITH (NOLOCK) ON ST.ID = SP.ChildSubjectTypeID 
 		LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.BarcodeNo = SD.BarcodeNo 
+		LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP   WITH (NOLOCK) ON SP.UniqueSubjectID = SC.UniqueSubjectID
+		LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail] SPR   WITH (NOLOCK) ON SPR.UniqueSubjectID = SC.UniqueSubjectID
+		LEFT JOIN [dbo].[Tbl_SubjectTypeMaster] ST WITH (NOLOCK) ON ST.ID = SP.ChildSubjectTypeID 
 		LEFT JOIN [dbo].[Tbl_DistrictMaster] DM WITH (NOLOCK)ON  DM.ID = SP.DistrictID
 		LEFT JOIN [dbo].[Tbl_CHCMaster] CM WITH (NOLOCK)ON CM.ID = SP.CHCID
 		LEFT JOIN [dbo].[Tbl_PHCMaster] PM WITH (NOLOCK)ON PM.ID = SP.PHCID
@@ -209,14 +211,15 @@ BEGIN
 		AND (@PHCID  = 0 OR SP.[PHCID] = @PHCID) 
 		AND (@ANMID  = 0 OR SP.[AssignANM_ID] = @ANMID) AND SD.[BarcodeNo] NOT IN (SELECT BarcodeNo FROM Tbl_HPLCTestResult)
 		AND (SD.[SampleDamaged] = 1 OR SD.[SampleTimeoutExpiry] = 1)
-		AND (CONVERT(DATE,S.[DateofShipment],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103))  
+		AND (CONVERT(DATE,SP.[DateofRegister],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
+		--AND (CONVERT(DATE,S.[DateofShipment],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103))  
 	END
 	
 	IF @StatusName =  'CBC Tested Samples'
 	BEGIN
 		SELECT SP.[ID] AS SubjectId
 			,(SP.[FirstName] + ' ' + SP.[MiddleName] + ' '+ SP.[LastName] ) AS SubjectName
-			,SD.[UniqueSubjectID]
+			,SP.[UniqueSubjectID]
 			,ST.[SubjectType] 
 			,ISNULL(SPR.[RCHID] ,'') AS RCHID
 			,SP.[Age] 
@@ -248,11 +251,11 @@ BEGIN
 		FROM [dbo].[Tbl_CBCTestResult] CB
 		LEFT JOIN [dbo].[Tbl_ANMCHCShipmentsDetail]  SD WITH (NOLOCK) ON SD.BarcodeNo = CB.BarcodeNo
 		LEFT JOIN [dbo].[Tbl_ANMCHCShipments] S WITH (NOLOCK) ON SD.ShipmentID = S.ID
-		LEFT JOIN [dbo].[Tbl_SSTestResult]  SS WITH (NOLOCK) ON SD.BarcodeNo = SS.BarcodeNo  
-		LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP   WITH (NOLOCK) ON SP.UniqueSubjectID = SD.UniqueSubjectID
-		LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail] SPR   WITH (NOLOCK) ON SPR.UniqueSubjectID = SD.UniqueSubjectID
-		LEFT JOIN [dbo].[Tbl_SubjectTypeMaster] ST WITH (NOLOCK) ON ST.ID = SP.ChildSubjectTypeID 
 		LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.BarcodeNo = SD.BarcodeNo 
+		LEFT JOIN [dbo].[Tbl_SSTestResult]  SS WITH (NOLOCK) ON SD.BarcodeNo = SS.BarcodeNo  
+		LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP   WITH (NOLOCK) ON SP.UniqueSubjectID = SC.UniqueSubjectID
+		LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail] SPR   WITH (NOLOCK) ON SPR.UniqueSubjectID = SC.UniqueSubjectID
+		LEFT JOIN [dbo].[Tbl_SubjectTypeMaster] ST WITH (NOLOCK) ON ST.ID = SP.ChildSubjectTypeID 
 		LEFT JOIN [dbo].[Tbl_DistrictMaster] DM WITH (NOLOCK)ON  DM.ID = SP.DistrictID
 		LEFT JOIN [dbo].[Tbl_CHCMaster] CM WITH (NOLOCK)ON CM.ID = SP.CHCID
 		LEFT JOIN [dbo].[Tbl_PHCMaster] PM WITH (NOLOCK)ON PM.ID = SP.PHCID
@@ -263,7 +266,8 @@ BEGIN
 		AND (@CHCID  = 0 OR SP.[CHCID] = @CHCID) 
 		AND (@PHCID  = 0 OR SP.[PHCID] = @PHCID) 
 		AND (@ANMID  = 0 OR SP.[AssignANM_ID] = @ANMID) 
-		AND (CONVERT(DATE,CB.[TestCompleteOn],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
+		AND (CONVERT(DATE,SP.[DateofRegister],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
+		--AND (CONVERT(DATE,CB.[TestCompleteOn],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
 
 	END
 	
@@ -271,7 +275,7 @@ BEGIN
 	BEGIN
 		SELECT SP.[ID] AS SubjectId
 			,(SP.[FirstName] + ' ' + SP.[MiddleName] + ' '+ SP.[LastName] ) AS SubjectName
-			,SD.[UniqueSubjectID]
+			,SP.[UniqueSubjectID]
 			,ST.[SubjectType] 
 			,ISNULL(SPR.[RCHID] ,'') AS RCHID
 			,SP.[Age] 
@@ -304,11 +308,11 @@ BEGIN
 		FROM [dbo].[Tbl_CBCTestResult] CB 
 		LEFT JOIN [dbo].[Tbl_ANMCHCShipmentsDetail]  SD WITH (NOLOCK) ON SD.BarcodeNo = CB.BarcodeNo
 		LEFT JOIN [dbo].[Tbl_ANMCHCShipments] S WITH (NOLOCK) ON SD.ShipmentID = S.ID
-		LEFT JOIN [dbo].[Tbl_SSTestResult]  SS WITH (NOLOCK) ON SD.BarcodeNo = SS.BarcodeNo  
-		LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP   WITH (NOLOCK) ON SP.UniqueSubjectID = SD.UniqueSubjectID
-		LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail] SPR   WITH (NOLOCK) ON SPR.UniqueSubjectID = SD.UniqueSubjectID
-		LEFT JOIN [dbo].[Tbl_SubjectTypeMaster] ST WITH (NOLOCK) ON ST.ID = SP.ChildSubjectTypeID 
 		LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.BarcodeNo = SD.BarcodeNo 
+		LEFT JOIN [dbo].[Tbl_SSTestResult]  SS WITH (NOLOCK) ON SD.BarcodeNo = SS.BarcodeNo  
+		LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP   WITH (NOLOCK) ON SP.UniqueSubjectID = SC.UniqueSubjectID
+		LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail] SPR   WITH (NOLOCK) ON SPR.UniqueSubjectID = SC.UniqueSubjectID
+		LEFT JOIN [dbo].[Tbl_SubjectTypeMaster] ST WITH (NOLOCK) ON ST.ID = SP.ChildSubjectTypeID 
 		LEFT JOIN [dbo].[Tbl_DistrictMaster] DM WITH (NOLOCK)ON  DM.ID = SP.DistrictID
 		LEFT JOIN [dbo].[Tbl_CHCMaster] CM WITH (NOLOCK)ON CM.ID = SP.CHCID
 		LEFT JOIN [dbo].[Tbl_PHCMaster] PM WITH (NOLOCK)ON PM.ID = SP.PHCID
@@ -319,14 +323,15 @@ BEGIN
 		AND (@CHCID  = 0 OR SP.[CHCID] = @CHCID) 
 		AND (@PHCID  = 0 OR SP.[PHCID] = @PHCID) 
 		AND (@ANMID  = 0 OR SP.[AssignANM_ID] = @ANMID) 
-		AND (CONVERT(DATE,CB.[TestCompleteOn],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
+		AND (CONVERT(DATE,SP.[DateofRegister],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
+		--AND (CONVERT(DATE,CB.[TestCompleteOn],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
 	END
 	
 	IF @StatusName =  'SST Tested Samples'
 	BEGIN
 		SELECT SP.[ID] AS SubjectId
 			,(SP.[FirstName] + ' ' + SP.[MiddleName] + ' '+ SP.[LastName] ) AS SubjectName
-			,SD.[UniqueSubjectID]
+			,SP.[UniqueSubjectID]
 			,ST.[SubjectType] 
 			,ISNULL(SPR.[RCHID] ,'') AS RCHID
 			,SP.[Age] 
@@ -358,11 +363,11 @@ BEGIN
 		FROM [dbo].[Tbl_SSTestResult] SS
 		LEFT JOIN [dbo].[Tbl_ANMCHCShipmentsDetail]  SD WITH (NOLOCK) ON SD.BarcodeNo = SS.BarcodeNo
 		LEFT JOIN [dbo].[Tbl_ANMCHCShipments] S WITH (NOLOCK) ON SD.ShipmentID = S.ID
-		LEFT JOIN [dbo].[Tbl_CBCTestResult]  CB WITH (NOLOCK) ON SD.BarcodeNo = CB.BarcodeNo  
-		LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP   WITH (NOLOCK) ON SP.UniqueSubjectID = SD.UniqueSubjectID
-		LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail] SPR   WITH (NOLOCK) ON SPR.UniqueSubjectID = SD.UniqueSubjectID
-		LEFT JOIN [dbo].[Tbl_SubjectTypeMaster] ST WITH (NOLOCK) ON ST.ID = SP.ChildSubjectTypeID 
 		LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.BarcodeNo = SD.BarcodeNo 
+		LEFT JOIN [dbo].[Tbl_CBCTestResult]  CB WITH (NOLOCK) ON SD.BarcodeNo = CB.BarcodeNo  
+		LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP   WITH (NOLOCK) ON SP.UniqueSubjectID = SC.UniqueSubjectID
+		LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail] SPR   WITH (NOLOCK) ON SPR.UniqueSubjectID = SC.UniqueSubjectID
+		LEFT JOIN [dbo].[Tbl_SubjectTypeMaster] ST WITH (NOLOCK) ON ST.ID = SP.ChildSubjectTypeID 
 		LEFT JOIN [dbo].[Tbl_DistrictMaster] DM WITH (NOLOCK)ON  DM.ID = SP.DistrictID
 		LEFT JOIN [dbo].[Tbl_CHCMaster] CM WITH (NOLOCK)ON CM.ID = SP.CHCID
 		LEFT JOIN [dbo].[Tbl_PHCMaster] PM WITH (NOLOCK)ON PM.ID = SP.PHCID
@@ -373,7 +378,8 @@ BEGIN
 		AND (@CHCID  = 0 OR SP.[CHCID] = @CHCID) 
 		AND (@PHCID  = 0 OR SP.[PHCID] = @PHCID) 
 		AND (@ANMID  = 0 OR SP.[AssignANM_ID] = @ANMID) 
-		AND (CONVERT(DATE,SS.[CreatedOn],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
+		AND (CONVERT(DATE,SP.[DateofRegister],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
+		--AND (CONVERT(DATE,SS.[CreatedOn],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
 
 	END
 	
@@ -381,7 +387,7 @@ BEGIN
 	BEGIN
 		SELECT SP.[ID] AS SubjectId
 			,(SP.[FirstName] + ' ' + SP.[MiddleName] + ' '+ SP.[LastName] ) AS SubjectName
-			,SD.[UniqueSubjectID]
+			,SP.[UniqueSubjectID]
 			,ST.[SubjectType] 
 			,ISNULL(SPR.[RCHID] ,'') AS RCHID
 			,SP.[Age] 
@@ -414,11 +420,11 @@ BEGIN
 		FROM [dbo].[Tbl_SSTestResult] SS 
 		LEFT JOIN [dbo].[Tbl_ANMCHCShipmentsDetail]  SD WITH (NOLOCK) ON SD.BarcodeNo = SS.BarcodeNo
 		LEFT JOIN [dbo].[Tbl_ANMCHCShipments] S WITH (NOLOCK) ON SD.ShipmentID = S.ID
-		LEFT JOIN [dbo].[Tbl_CBCTestResult]  CB WITH (NOLOCK) ON SD.BarcodeNo = CB.BarcodeNo  
-		LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP   WITH (NOLOCK) ON SP.UniqueSubjectID = SD.UniqueSubjectID
-		LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail] SPR   WITH (NOLOCK) ON SPR.UniqueSubjectID = SD.UniqueSubjectID
-		LEFT JOIN [dbo].[Tbl_SubjectTypeMaster] ST WITH (NOLOCK) ON ST.ID = SP.ChildSubjectTypeID 
 		LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.BarcodeNo = SD.BarcodeNo 
+		LEFT JOIN [dbo].[Tbl_CBCTestResult]  CB WITH (NOLOCK) ON SD.BarcodeNo = CB.BarcodeNo  
+		LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP   WITH (NOLOCK) ON SP.UniqueSubjectID = SC.UniqueSubjectID
+		LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail] SPR   WITH (NOLOCK) ON SPR.UniqueSubjectID = SC.UniqueSubjectID
+		LEFT JOIN [dbo].[Tbl_SubjectTypeMaster] ST WITH (NOLOCK) ON ST.ID = SP.ChildSubjectTypeID 
 		LEFT JOIN [dbo].[Tbl_DistrictMaster] DM WITH (NOLOCK)ON  DM.ID = SP.DistrictID
 		LEFT JOIN [dbo].[Tbl_CHCMaster] CM WITH (NOLOCK)ON CM.ID = SP.CHCID
 		LEFT JOIN [dbo].[Tbl_PHCMaster] PM WITH (NOLOCK)ON PM.ID = SP.PHCID
@@ -429,6 +435,7 @@ BEGIN
 		AND (@CHCID  = 0 OR SP.[CHCID] = @CHCID) 
 		AND (@PHCID  = 0 OR SP.[PHCID] = @PHCID) 
 		AND (@ANMID  = 0 OR SP.[AssignANM_ID] = @ANMID) 
-		AND (CONVERT(DATE,SS.[CreatedOn],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
+		AND (CONVERT(DATE,SP.[DateofRegister],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
+		--AND (CONVERT(DATE,SS.[CreatedOn],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
 	END
 END

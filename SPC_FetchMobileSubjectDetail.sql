@@ -1,4 +1,4 @@
-USE [Eduquaydb]
+--USE [Eduquaydb]
 GO
 
 SET ANSI_NULLS ON
@@ -53,6 +53,7 @@ BEGIN
 		,SP.[CreatedBy]
 		,SP.[UpdatedBy] 
 		,SP.[IsActive]
+		,SP.[SpouseWillingness]
 		,RIGHT(SP.[UniqueSubjectID],1) AS RegSource
 		,SAD.[UniqueSubjectID] AS SAD_UniqueSubjectId
 		,SAD.[Religion_Id]
@@ -157,6 +158,7 @@ BEGIN
 		,SP.[CreatedBy]
 		,SP.[UpdatedBy] 
 		,SP.[IsActive]
+		,SP.[SpouseWillingness]
 		,RIGHT(SP.[UniqueSubjectID],1) AS RegSource
 		,SAD.[UniqueSubjectID] AS SAD_UniqueSubjectId
 		,SAD.[Religion_Id]
