@@ -8,7 +8,7 @@ GO
 
 IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_FetchLastIds' AND [type] = 'p')
 BEGIN
-	DROP PROCEDURE SPC_FetchLastIds
+	DROP PROCEDURE SPC_FetchLastIds 
 END
 GO
 CREATE PROCEDURE [dbo].[SPC_FetchLastIds]

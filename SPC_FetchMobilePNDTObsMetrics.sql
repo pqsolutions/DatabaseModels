@@ -1,0 +1,34 @@
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_FetchMobilePNDTObsMetrics' AND [type] = 'p')
+BEGIN
+	DROP PROCEDURE SPC_FetchMobilePNDTObsMetrics
+END
+GO
+CREATE PROCEDURE [dbo].[SPC_FetchMobilePNDTObsMetrics]
+(
+	@UserId INT
+)AS
+BEGIN
+
+	CREATE  TABLE #TempPNDTTable(ID INT IDENTITY(1,1),DateOfRegister DATE, ANWSubjectId VARCHAR(500),IsPNDTAgreeYes BIT,IsCompletePNDT BIT)
+
+	INSERT INTO #TempPNDTTable(DateOfRegister,ANWSubjectId,IsPNDTAgreeYes,IsCompletePNDT)
+	(SELECT SP.[DateofRegister],PT.[ANWSubjectId],PPC.[IsPNDTAgreeYes], ISNULL(PT.[IsCompletePNDT],0)
+	FROM Tbl_PrePNDTCounselling PPC 
+	LEFT JOIN Tbl_PNDTest PT WITH (NOLOCK) ON  PPC.[ANWSubjectId] = PT.[ANWSubjectId]
+	LEFT JOIN Tbl_SubjectPrimaryDetail SP WITH (NOLOCK) ON SP.[UniqueSubjectID] = PT.[ANWSubjectId]
+	WHERE SP.[AssignANM_ID] = @UserId  AND PPC.[IsPNDTAgreeYes] = 1)
+
+	--SELECT * FROM #TempPNDTTable
+	SELECT (SELECT COUNT(1) FROM #TempPNDTTable WHERE DateOfRegister BETWEEN DATEADD(MONTH,-6,GETDATE()) AND GETDATE()) AS PNDTAgreed 
+		,(SELECT COUNT(1) FROM #TempPNDTTable WHERE DateOfRegister BETWEEN DATEADD(MONTH,-6,GETDATE()) AND GETDATE() AND IsCompletePNDT = 1) AS PNDTCompleted
+		,(SELECT COUNT(1) FROM #TempPNDTTable WHERE DateOfRegister BETWEEN DATEADD(MONTH,-6,GETDATE()) AND GETDATE() AND IsCompletePNDT = 0) AS PNDTPending
+
+	DROP TABLE  #TempPNDTTable
+END

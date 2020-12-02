@@ -66,7 +66,7 @@ BEGIN
 			(CONVERT(VARCHAR,HR.[HPLCTestCompletedOn],103) + ' ' +CONVERT(VARCHAR(5),HR.[HPLCTestCompletedOn],108)) END AS HPLCTestedDate
 
 			,CASE WHEN HD.[ID] IS NULL THEN 0 ELSE 1 END HPLCPathoTestProcessed
-			,CASE WHEN HD.[ID] IS NULL THEN ''   WHEN HD.[IsNormal] = 1 THEN 'Normal' WHEN HD.[IsNormal]=0 THEN 'Abnormal' ELSE '' END AS HPLCResult
+			,CASE WHEN HD.[ID] IS NULL THEN ''   WHEN HD.[IsNormal] = 1 THEN 'Negative' WHEN HD.[IsNormal]=0 THEN 'Positive' ELSE '' END AS HPLCResult
 			,CASE WHEN HD.[ID] IS NULL THEN '' WHEN HD.[IsDiagnosisComplete] = 0 THEN 'Disagnosis Not Completed'  ELSE 
 			(CONVERT(VARCHAR,HD.[UpdatedOn],103) + ' ' +CONVERT(VARCHAR(5),HD.[UpdatedOn],108)) END AS HPLCDiagnosisCompletedDate
 

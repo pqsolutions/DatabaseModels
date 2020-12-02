@@ -8,7 +8,7 @@ GO
 
 IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_FetchTrackingSubjectReportMobile' AND [type] = 'p')
 BEGIN
-	DROP PROCEDURE SPC_FetchTrackingSubjectReportMobile
+	DROP PROCEDURE SPC_FetchTrackingSubjectReportMobile 
 END
 GO
 CREATE PROCEDURE [dbo].[SPC_FetchTrackingSubjectReportMobile]
@@ -16,7 +16,9 @@ CREATE PROCEDURE [dbo].[SPC_FetchTrackingSubjectReportMobile]
 	@ANMId INT
 )
 AS
+	DECLARE @DecisionPreCounselling VARCHAR(100)
 BEGIN
+	
 	SELECT * FROM (
 			SELECT	
 			 CASE WHEN ISNULL(SPRD.[DateofRegister],'') = '' THEN '' 
@@ -50,7 +52,7 @@ BEGIN
 			,CASE WHEN SR.[ID] IS NULL THEN 0 ELSE 1 END SSTestProcessed
 			,CASE WHEN SR.[ID] IS NULL THEN '' WHEN SR.[IsPositive] = 1 THEN 'Positive' WHEN SR.[IsPositive]=0 THEN 'Negative' ELSE '' END AS SSTResult
 			,CASE WHEN SR.[ID] IS NULL THEN '' ELSE 
-			(CONVERT(VARCHAR,SR.[UpdatedOn],103) + ' ' +CONVERT(VARCHAR(5),SR.[UpdatedOn],108)) END AS SSTTestedDate
+			(CONVERT(VARCHAR,SR.[Createdon],103) + ' ' +CONVERT(VARCHAR(5),SR.[Createdon],108)) END AS SSTTestedDate
 
 			,CASE WHEN CCS.[GenratedShipmentID] IS NULL THEN 0 ELSE 1 END ShipmentToCentralLab
 			,CASE WHEN CCS.[GenratedShipmentID] IS NULL THEN '' ELSE CCS.[GenratedShipmentID] END AS CHCShipmentID
@@ -67,12 +69,15 @@ BEGIN
 
 			,CASE WHEN HD.[ID] IS NULL THEN 0 ELSE 1 END HPLCPathoTestProcessed
 			,CASE WHEN HD.[ID] IS NULL THEN ''   WHEN HD.[IsNormal] = 1 THEN 'Normal' WHEN HD.[IsNormal]=0 THEN 'Abnormal' ELSE '' END AS HPLCResult
-			,CASE WHEN HD.[ID] IS NULL THEN '' WHEN HD.[IsDiagnosisComplete] = 0 THEN 'Disagnosis Not Completed'  ELSE 
-			(CONVERT(VARCHAR,HD.[UpdatedOn],103) + ' ' +CONVERT(VARCHAR(5),HD.[UpdatedOn],108)) END AS HPLCDiagnosisCompletedDate
+			,CASE WHEN HD.[ID] IS NULL THEN '' WHEN HD.[IsDiagnosisComplete] = 0 THEN 'Disagnosis Not Completed' 
+			WHEN HD.[UpdatedOn] IS NOT NULL THEN (CONVERT(VARCHAR,HD.[UpdatedOn],103) + ' ' +CONVERT(VARCHAR(5),HD.[UpdatedOn],108)) 
+			WHEN HD.[UpdatedOn] IS  NULL THEN (CONVERT(VARCHAR,HD.[CreatedOn],103) + ' ' +CONVERT(VARCHAR(5),HD.[CreatedOn],108)) 
+			END AS HPLCDiagnosisCompletedDate
 
 			,CASE WHEN PS.[ID] IS NULL THEN 0 WHEN PS.[IsCounselled] = 0 THEN 0 ELSE 1 END PrePNDTCounsellingStatus
-			,CASE WHEN PS.[ID] IS NULL THEN '' ELSE
-			(CONVERT(VARCHAR,PS.[CounsellingDateTime],103) + ' ' +CONVERT(VARCHAR(5),PS.[CounsellingDateTime],108)) END AS PrePNDTCounsellingDateTime
+			,CASE WHEN PS.[ID] IS NULL THEN '' WHEN PS.[IsCounselled] = 0 THEN '' WHEN PS.[IsCounselled] = 1 THEN 
+			(SELECT [dbo].[FN_PrePNDTCounsellingStatusMobileTracking] (PS.ANWSubjectId))
+			END AS PrePNDTCounsellingDateTime
 			
 
 			,CASE WHEN PT.[ID] IS NULL THEN 0 ELSE 1 END PNDTestStatus
@@ -82,8 +87,9 @@ BEGIN
 			(CONVERT(VARCHAR,PT.[PNDTDateTime],103) + ' ' +CONVERT(VARCHAR(5),PT.[PNDTDateTime],108)) END AS PNDTDateTime
 
 			,CASE WHEN POS.[ID] IS NULL THEN 0 WHEN POS.[IsCounselled] = 0 THEN 0 ELSE 1 END PostPNDTCounsellingStatus
-			,CASE WHEN POS.[ID] IS NULL THEN '' ELSE
-			(CONVERT(VARCHAR,POS.[CounsellingDateTime],103) + ' ' +CONVERT(VARCHAR(5),POS.[CounsellingDateTime],108)) END AS PostPNDTCounsellingDateTime
+			,CASE WHEN POS.[ID] IS NULL THEN ''  WHEN POS.[IsCounselled] = 0 THEN '' WHEN POS.[IsCounselled] = 1 THEN
+			(SELECT [dbo].[FN_PostPNDTCounsellingStatusMobileTracking] (POS.ANWSubjectId))
+			END AS PostPNDTCounsellingDateTime
 
 			,CASE WHEN MT.[ID] IS NULL THEN 0 ELSE 1 END MTPStatus
 			,CASE WHEN POC.[ID] IS NULL THEN ''  WHEN MT.[ID] IS NULL THEN 

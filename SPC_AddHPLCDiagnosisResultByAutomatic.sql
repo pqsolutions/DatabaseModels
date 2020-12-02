@@ -46,7 +46,7 @@ DECLARE
 BEGIN
 	BEGIN TRY
 	
-		CREATE  TABLE #TempTable(code int identity(1,1), id int,hplctestresultid int)
+		CREATE  TABLE #TempTable(code INT IDENTITY(1,1), id INT,hplctestresultid INT)
 				
 		INSERT INTO #TempTable(id,hplctestresultid) (SELECT id,hplctestresultid FROM Tbl_HPLCDiagnosisResult
 		WHERE (IsDiagnosisComplete IS NULL OR IsDiagnosisComplete = 0) AND CentralLabId = @CentralLabId 

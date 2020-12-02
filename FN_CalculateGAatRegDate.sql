@@ -5,14 +5,15 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-IF EXISTS (SELECT 1 FROM sys.objects WHERE name='FN_CalculateGestationalAge' AND [type] = 'FN')
+IF EXISTS (SELECT 1 FROM sys.objects WHERE name='FN_CalculateGAatRegDate' AND [type] = 'FN')
 BEGIN
-	DROP FUNCTION FN_CalculateGestationalAge
+	DROP FUNCTION FN_CalculateGAatRegDate
 END
 GO
-CREATE FUNCTION [dbo].[FN_CalculateGestationalAge]   
+CREATE FUNCTION [dbo].[FN_CalculateGAatRegDate]   
 (
-	@ID INT	
+	@ID INT
+	,@ReDate DATE
 ) 
 RETURNS VARCHAR(20)        
 AS    
@@ -25,8 +26,8 @@ BEGIN
 		SET @LMPDate = (SELECT TOP 1 LMP_Date FROM Tbl_SubjectPregnancyDetail WHERE SubjectId = @ID)
 		IF @LMPDATE IS NOT NULL OR @LMPDATE != ''
 		BEGIN
-			SET @Week = (SELECT DATEDIFF(DAY, @LMPDate, GETDATE())/7) 
-			SET @Day = (SELECT DATEDIFF(DAY, @LMPDate, GETDATE())%7)
+			SET @Week = (SELECT DATEDIFF(DAY, @LMPDate, @ReDate)/7) 
+			SET @Day = (SELECT DATEDIFF(DAY, @LMPDate, @ReDate)%7)
 			SET @GestationalAge = (CAST(@Week AS VARCHAR(5)) + '.' + CAST(@Day AS VARCHAR(5)))
 		END
 		ELSE

@@ -46,7 +46,7 @@ CREATE PROCEDURE [dbo].[SPC_AddPrimaryDetail]
       ,@IsActive BIT
 	  ,@UniqueSubjectId VARCHAR(200)
 	  ,@Source CHAR(1) -- N/F/M (N-Online, F-Offline, M-Manual)
-	  ,@SpouseWillingness BIT
+	  ,@SpouseWillingness BIT = 1
 )AS
 DECLARE 
 	@ID INT

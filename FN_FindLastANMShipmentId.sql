@@ -36,7 +36,7 @@ BEGIN
 		SET @Month = (SELECT '0' + CAST(MONTH(GETDATE()) AS VARCHAR))
 	END
 	
-	SET @MonthYear = @Month + @Year
+	SET @MonthYear =  @Year+@Month
 	SET @LastGeneratedShipmentId = (SELECT TOP 1 ISNULL(GenratedShipmentID,0)
 									FROM Tbl_ANMCHCShipments
 									WHERE ANM_ID = @ANMId 

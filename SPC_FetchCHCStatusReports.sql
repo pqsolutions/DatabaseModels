@@ -1,4 +1,4 @@
-USE [Eduquaydb]
+--USE [Eduquaydb]
 GO
 
 SET ANSI_NULLS ON
@@ -63,6 +63,7 @@ BEGIN
 			,ISNULL(SPR.[ECNumber],'') AS ECNumber
 			,SD.[BarcodeNo]
 			,CONVERT(VARCHAR,S.[DateofShipment],103) AS ShipmentDate
+			,CONVERT(DATETIME,(CONVERT(VARCHAR,S.[DateofShipment],103) + ' ' + CONVERT(VARCHAR,S.[TimeofShipment])),103) AS ShipmentDateTime
 			,(UM.[FirstName] + ' ' + UM.[LastName]) AS ANMName
 			,DM.[Districtname]
 			,CM.[CHCname] 
@@ -96,6 +97,7 @@ BEGIN
 		AND (@ANMID  = 0 OR SP.[AssignANM_ID] = @ANMID) 
 		AND (CONVERT(DATE,SP.[DateofRegister],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
 		--AND (CONVERT(DATE,S.[DateofShipment],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
+		ORDER BY ShipmentDateTime DESC
 	END
 	IF @StatusName =  'Samples Received' OR @SampleStatus=0
 	BEGIN
@@ -133,7 +135,8 @@ BEGIN
 			,CB.[RBC]
 			,CASE WHEN SS.[IsPositive] = 1 THEN 'SST Positive , ' + CB.[CBCResult] WHEN SS.[IsPositive] = 0 THEN 'SST Negative , ' + CB.[CBCResult] ELSE  CB.[CBCResult] END CBCResult 
 			--,CB.[CBCResult] 
-			,CASE WHEN SS.[IsPositive] = 1 THEN 'SST Positive , ' + CB.[CBCResult] WHEN SS.[IsPositive] = 0 THEN 'SST Negative , ' + CB.[CBCResult] ELSE  CB.[CBCResult] END SSTResult  
+			,CASE WHEN SS.[IsPositive] = 1 THEN 'SST Positive , ' + CB.[CBCResult] WHEN SS.[IsPositive] = 0 THEN 'SST Negative , ' + CB.[CBCResult] ELSE  CB.[CBCResult] END SSTResult 
+			,CONVERT(DATETIME,(CONVERT(VARCHAR,S.[DateofShipment],103) + ' ' + CONVERT(VARCHAR,S.[TimeofShipment])),103) AS ShipmentDateTime
 		FROM [dbo].[Tbl_ANMCHCShipments] S 
 		LEFT JOIN [dbo].[Tbl_ANMCHCShipmentsDetail]  SD WITH (NOLOCK) ON SD.ShipmentID = S.ID
 		LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.BarcodeNo = SD.BarcodeNo 
@@ -154,6 +157,7 @@ BEGIN
 		AND (@ANMID  = 0 OR SP.[AssignANM_ID] = @ANMID) 
 		AND (CONVERT(DATE,SP.[DateofRegister],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
 		--AND (CONVERT(DATE,S.[DateofShipment],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
+		ORDER BY ShipmentDateTime DESC
 	END
 	
 	IF @StatusName =  'Samples Discarded'
@@ -191,6 +195,7 @@ BEGIN
 			,CB.[RBC]
 			,CB.[CBCResult]
 			,CASE WHEN SS.[IsPositive] = 1 THEN 'SST Positive' WHEN SS.[IsPositive] = 0 THEN 'SST Negative' ELSE NULL END SSTResult 
+			,CONVERT(DATETIME,(CONVERT(VARCHAR,S.[DateofShipment],103) + ' ' + CONVERT(VARCHAR,S.[TimeofShipment])),103) AS ShipmentDateTime
 		FROM [dbo].[Tbl_ANMCHCShipments] S 
 		LEFT JOIN [dbo].[Tbl_ANMCHCShipmentsDetail]  SD WITH (NOLOCK) ON SD.ShipmentID = S.ID
 		LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.BarcodeNo = SD.BarcodeNo 
@@ -205,14 +210,14 @@ BEGIN
 		LEFT JOIN [dbo].[Tbl_UserMaster] UM  WITH (NOLOCK) ON UM.ID = SP.AssignANM_ID 
 		LEFT JOIN [dbo].[Tbl_CBCTestResult]  CB  WITH (NOLOCK) ON CB.BarcodeNo  = SD.BarcodeNo 
 		LEFT JOIN [dbo].[Tbl_SSTestResult]  SS  WITH (NOLOCK) ON SS.BarcodeNo  = SD.BarcodeNo
-		 
 		WHERE  S.[TestingCHCID] = @TestingCHCId   
 		AND (@CHCID  = 0 OR SP.[CHCID] = @CHCID) 
 		AND (@PHCID  = 0 OR SP.[PHCID] = @PHCID) 
 		AND (@ANMID  = 0 OR SP.[AssignANM_ID] = @ANMID) AND SD.[BarcodeNo] NOT IN (SELECT BarcodeNo FROM Tbl_HPLCTestResult)
 		AND (SD.[SampleDamaged] = 1 OR SD.[SampleTimeoutExpiry] = 1)
 		AND (CONVERT(DATE,SP.[DateofRegister],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
-		--AND (CONVERT(DATE,S.[DateofShipment],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103))  
+		--AND (CONVERT(DATE,S.[DateofShipment],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
+		ORDER BY ShipmentDateTime DESC
 	END
 	
 	IF @StatusName =  'CBC Tested Samples'
@@ -248,6 +253,7 @@ BEGIN
 			,CB.[RBC]
 			,CB.[CBCResult]
 			,CASE WHEN SS.[IsPositive] = 1 THEN 'SST Positive' WHEN SS.[IsPositive] = 0 THEN 'SST Negative' ELSE NULL END SSTResult 
+			,CONVERT(DATETIME,(CONVERT(VARCHAR,S.[DateofShipment],103) + ' ' + CONVERT(VARCHAR,S.[TimeofShipment])),103) AS ShipmentDateTime
 		FROM [dbo].[Tbl_CBCTestResult] CB
 		LEFT JOIN [dbo].[Tbl_ANMCHCShipmentsDetail]  SD WITH (NOLOCK) ON SD.BarcodeNo = CB.BarcodeNo
 		LEFT JOIN [dbo].[Tbl_ANMCHCShipments] S WITH (NOLOCK) ON SD.ShipmentID = S.ID
@@ -268,7 +274,7 @@ BEGIN
 		AND (@ANMID  = 0 OR SP.[AssignANM_ID] = @ANMID) 
 		AND (CONVERT(DATE,SP.[DateofRegister],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
 		--AND (CONVERT(DATE,CB.[TestCompleteOn],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
-
+		ORDER BY ShipmentDateTime DESC
 	END
 	
 	IF @StatusName =  'CBC Positive Subjects'
@@ -305,6 +311,7 @@ BEGIN
 			,CB.[RBC]
 			,CB.[CBCResult]
 			,CASE WHEN SS.[IsPositive] = 1 THEN 'SST Positive' WHEN SS.[IsPositive] = 0 THEN 'SST Negative' ELSE NULL END SSTResult 
+			,CONVERT(DATETIME,(CONVERT(VARCHAR,S.[DateofShipment],103) + ' ' + CONVERT(VARCHAR,S.[TimeofShipment])),103) AS ShipmentDateTime
 		FROM [dbo].[Tbl_CBCTestResult] CB 
 		LEFT JOIN [dbo].[Tbl_ANMCHCShipmentsDetail]  SD WITH (NOLOCK) ON SD.BarcodeNo = CB.BarcodeNo
 		LEFT JOIN [dbo].[Tbl_ANMCHCShipments] S WITH (NOLOCK) ON SD.ShipmentID = S.ID
@@ -324,9 +331,68 @@ BEGIN
 		AND (@PHCID  = 0 OR SP.[PHCID] = @PHCID) 
 		AND (@ANMID  = 0 OR SP.[AssignANM_ID] = @ANMID) 
 		AND (CONVERT(DATE,SP.[DateofRegister],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
-		--AND (CONVERT(DATE,CB.[TestCompleteOn],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
+		--AND (CONVERT(DATE,CB.[TestCompleteOn],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103))
+		ORDER BY ShipmentDateTime DESC
 	END
 	
+	IF @StatusName =  'CBC Negative Subjects'
+	BEGIN
+		SELECT SP.[ID] AS SubjectId
+			,(SP.[FirstName] + ' ' + SP.[MiddleName] + ' '+ SP.[LastName] ) AS SubjectName
+			,SP.[UniqueSubjectID]
+			,ST.[SubjectType] 
+			,ISNULL(SPR.[RCHID] ,'') AS RCHID
+			,SP.[Age] 
+			,SP.[Gender] 
+			,CASE WHEN ISNULL(SP.[DOB],'') = '' THEN '' ELSE CONVERT(VARCHAR,SP.[DOB],103) END DOB
+			,SP.[MobileNo] AS ContactNo
+			,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN
+				CONVERT(VARCHAR,SPR.[LMP_Date],103) ELSE '' END AS LMPDate
+			,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN
+			  (SELECT [dbo].[FN_CalculateGestationalAge](SP.[ID])) ELSE '' END AS GestationalAge
+			,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN
+			 ('G'+CONVERT(VARCHAR,SPR.[G])+'-P'+CONVERT(VARCHAR,SPR.[P])+'-L'+CONVERT(VARCHAR,SPR.[L])+'-A'+
+			 CONVERT(VARCHAR,SPR.[A])) ELSE '' END AS ObstetricScore
+			,ISNULL(SPR.[ECNumber],'') AS ECNumber
+			,SD.[BarcodeNo]
+			,CONVERT(VARCHAR,S.[DateofShipment],103) AS ShipmentDate
+			,(UM.[FirstName] + ' ' + UM.[LastName]) AS ANMName
+			,DM.[Districtname]
+			,CM.[CHCname] 
+			,PM.[PHCname] 
+			,SCM.[SCname] 
+			,RI.[RIsite] AS RIPoint
+			,CASE WHEN CB.[IsPositive] = 1 THEN 'Positive'
+			ELSE 'Negative' END AS SampleStatus
+			,CB.[MCV]
+			,CB.[RDW]
+			,CB.[RBC]
+			,CB.[CBCResult]
+			,CASE WHEN SS.[IsPositive] = 1 THEN 'SST Positive' WHEN SS.[IsPositive] = 0 THEN 'SST Negative' ELSE NULL END SSTResult 
+			,CONVERT(DATETIME,(CONVERT(VARCHAR,S.[DateofShipment],103) + ' ' + CONVERT(VARCHAR,S.[TimeofShipment])),103) AS ShipmentDateTime
+		FROM [dbo].[Tbl_CBCTestResult] CB 
+		LEFT JOIN [dbo].[Tbl_ANMCHCShipmentsDetail]  SD WITH (NOLOCK) ON SD.BarcodeNo = CB.BarcodeNo
+		LEFT JOIN [dbo].[Tbl_ANMCHCShipments] S WITH (NOLOCK) ON SD.ShipmentID = S.ID
+		LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.BarcodeNo = SD.BarcodeNo 
+		LEFT JOIN [dbo].[Tbl_SSTestResult]  SS WITH (NOLOCK) ON SD.BarcodeNo = SS.BarcodeNo  
+		LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP   WITH (NOLOCK) ON SP.UniqueSubjectID = SC.UniqueSubjectID
+		LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail] SPR   WITH (NOLOCK) ON SPR.UniqueSubjectID = SC.UniqueSubjectID
+		LEFT JOIN [dbo].[Tbl_SubjectTypeMaster] ST WITH (NOLOCK) ON ST.ID = SP.ChildSubjectTypeID 
+		LEFT JOIN [dbo].[Tbl_DistrictMaster] DM WITH (NOLOCK)ON  DM.ID = SP.DistrictID
+		LEFT JOIN [dbo].[Tbl_CHCMaster] CM WITH (NOLOCK)ON CM.ID = SP.CHCID
+		LEFT JOIN [dbo].[Tbl_PHCMaster] PM WITH (NOLOCK)ON PM.ID = SP.PHCID
+		LEFT JOIN [dbo].[Tbl_SCMaster] SCM WITH (NOLOCK)ON SCM.ID = SP.SCID
+		LEFT JOIN [dbo].[Tbl_RIMaster] RI WITH (NOLOCK)ON RI.ID = SP.RIID
+		LEFT JOIN [dbo].[Tbl_UserMaster] UM  WITH (NOLOCK) ON UM.ID = SP.AssignANM_ID 
+		WHERE S.[TestingCHCID] = @TestingCHCId AND CB.[IsPositive]  = 0
+		AND (@CHCID  = 0 OR SP.[CHCID] = @CHCID) 
+		AND (@PHCID  = 0 OR SP.[PHCID] = @PHCID) 
+		AND (@ANMID  = 0 OR SP.[AssignANM_ID] = @ANMID) 
+		AND (CONVERT(DATE,SP.[DateofRegister],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
+		--AND (CONVERT(DATE,CB.[TestCompleteOn],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
+		ORDER BY ShipmentDateTime DESC
+	END
+
 	IF @StatusName =  'SST Tested Samples'
 	BEGIN
 		SELECT SP.[ID] AS SubjectId
@@ -360,6 +426,7 @@ BEGIN
 			,CB.[RBC]
 			,CB.[CBCResult] AS SSTResult
 			,CASE WHEN SS.[IsPositive] = 1 THEN 'SST Positive' WHEN SS.[IsPositive] = 0 THEN 'SST Negative' ELSE NULL END CBCResult 
+			,CONVERT(DATETIME,(CONVERT(VARCHAR,S.[DateofShipment],103) + ' ' + CONVERT(VARCHAR,S.[TimeofShipment])),103) AS ShipmentDateTime
 		FROM [dbo].[Tbl_SSTestResult] SS
 		LEFT JOIN [dbo].[Tbl_ANMCHCShipmentsDetail]  SD WITH (NOLOCK) ON SD.BarcodeNo = SS.BarcodeNo
 		LEFT JOIN [dbo].[Tbl_ANMCHCShipments] S WITH (NOLOCK) ON SD.ShipmentID = S.ID
@@ -380,7 +447,7 @@ BEGIN
 		AND (@ANMID  = 0 OR SP.[AssignANM_ID] = @ANMID) 
 		AND (CONVERT(DATE,SP.[DateofRegister],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
 		--AND (CONVERT(DATE,SS.[CreatedOn],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
-
+		ORDER BY ShipmentDateTime DESC
 	END
 	
 	IF @StatusName =  'SST Positive Subjects'
@@ -416,7 +483,8 @@ BEGIN
 			,CB.[RDW] 
 			,CB.[RBC]
 			,CB.[CBCResult] AS SSTResult
-			,CASE WHEN SS.[IsPositive] = 1 THEN 'SST Positive' WHEN SS.[IsPositive] = 0 THEN 'SST Negative' ELSE NULL END CBCResult 
+			,CASE WHEN SS.[IsPositive] = 1 THEN 'SST Positive' WHEN SS.[IsPositive] = 0 THEN 'SST Negative' ELSE NULL END CBCResult
+			,CONVERT(DATETIME,(CONVERT(VARCHAR,S.[DateofShipment],103) + ' ' + CONVERT(VARCHAR,S.[TimeofShipment])),103) AS ShipmentDateTime
 		FROM [dbo].[Tbl_SSTestResult] SS 
 		LEFT JOIN [dbo].[Tbl_ANMCHCShipmentsDetail]  SD WITH (NOLOCK) ON SD.BarcodeNo = SS.BarcodeNo
 		LEFT JOIN [dbo].[Tbl_ANMCHCShipments] S WITH (NOLOCK) ON SD.ShipmentID = S.ID
@@ -437,5 +505,64 @@ BEGIN
 		AND (@ANMID  = 0 OR SP.[AssignANM_ID] = @ANMID) 
 		AND (CONVERT(DATE,SP.[DateofRegister],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
 		--AND (CONVERT(DATE,SS.[CreatedOn],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
+		ORDER BY ShipmentDateTime DESC
+	END
+
+	IF @StatusName =  'SST Negative Subjects'
+	BEGIN
+		SELECT SP.[ID] AS SubjectId
+			,(SP.[FirstName] + ' ' + SP.[MiddleName] + ' '+ SP.[LastName] ) AS SubjectName
+			,SP.[UniqueSubjectID]
+			,ST.[SubjectType] 
+			,ISNULL(SPR.[RCHID] ,'') AS RCHID
+			,SP.[Age] 
+			,SP.[Gender] 
+			,CASE WHEN ISNULL(SP.[DOB],'') = '' THEN '' ELSE CONVERT(VARCHAR,SP.[DOB],103) END DOB
+			,SP.[MobileNo] AS ContactNo
+			,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN
+				CONVERT(VARCHAR,SPR.[LMP_Date],103) ELSE '' END AS LMPDate
+			,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN
+			 (SELECT [dbo].[FN_CalculateGestationalAge](SP.[ID])) ELSE '' END AS GestationalAge
+			,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN
+			 ('G'+CONVERT(VARCHAR,SPR.[G])+'-P'+CONVERT(VARCHAR,SPR.[P])+'-L'+CONVERT(VARCHAR,SPR.[L])+'-A'+
+			 CONVERT(VARCHAR,SPR.[A])) ELSE '' END AS ObstetricScore
+			,ISNULL(SPR.[ECNumber],'') AS ECNumber
+			,SD.[BarcodeNo]
+			,CONVERT(VARCHAR,S.[DateofShipment],103) AS ShipmentDate
+			,(UM.[FirstName] + ' ' + UM.[LastName]) AS ANMName
+			,DM.[Districtname]
+			,CM.[CHCname] 
+			,PM.[PHCname] 
+			,SCM.[SCname] 
+			,RI.[RIsite] AS RIPoint
+			,CASE WHEN SS.[IsPositive] = 1 THEN 'Positive'
+			ELSE 'Negative' END AS SampleStatus
+			,CB.[MCV]
+			,CB.[RDW] 
+			,CB.[RBC]
+			,CB.[CBCResult] AS SSTResult
+			,CASE WHEN SS.[IsPositive] = 1 THEN 'SST Positive' WHEN SS.[IsPositive] = 0 THEN 'SST Negative' ELSE NULL END CBCResult 
+			,CONVERT(DATETIME,(CONVERT(VARCHAR,S.[DateofShipment],103) + ' ' + CONVERT(VARCHAR,S.[TimeofShipment])),103) AS ShipmentDateTime
+		FROM [dbo].[Tbl_SSTestResult] SS 
+		LEFT JOIN [dbo].[Tbl_ANMCHCShipmentsDetail]  SD WITH (NOLOCK) ON SD.BarcodeNo = SS.BarcodeNo
+		LEFT JOIN [dbo].[Tbl_ANMCHCShipments] S WITH (NOLOCK) ON SD.ShipmentID = S.ID
+		LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.BarcodeNo = SD.BarcodeNo 
+		LEFT JOIN [dbo].[Tbl_CBCTestResult]  CB WITH (NOLOCK) ON SD.BarcodeNo = CB.BarcodeNo  
+		LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP   WITH (NOLOCK) ON SP.UniqueSubjectID = SC.UniqueSubjectID
+		LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail] SPR   WITH (NOLOCK) ON SPR.UniqueSubjectID = SC.UniqueSubjectID
+		LEFT JOIN [dbo].[Tbl_SubjectTypeMaster] ST WITH (NOLOCK) ON ST.ID = SP.ChildSubjectTypeID 
+		LEFT JOIN [dbo].[Tbl_DistrictMaster] DM WITH (NOLOCK)ON  DM.ID = SP.DistrictID
+		LEFT JOIN [dbo].[Tbl_CHCMaster] CM WITH (NOLOCK)ON CM.ID = SP.CHCID
+		LEFT JOIN [dbo].[Tbl_PHCMaster] PM WITH (NOLOCK)ON PM.ID = SP.PHCID
+		LEFT JOIN [dbo].[Tbl_SCMaster] SCM WITH (NOLOCK)ON SCM.ID = SP.SCID
+		LEFT JOIN [dbo].[Tbl_RIMaster] RI WITH (NOLOCK)ON RI.ID = SP.RIID
+		LEFT JOIN [dbo].[Tbl_UserMaster] UM  WITH (NOLOCK) ON UM.ID = SP.AssignANM_ID 
+		WHERE S.[TestingCHCID] = @TestingCHCId AND SS.[IsPositive]  = 0
+		AND (@CHCID  = 0 OR SP.[CHCID] = @CHCID) 
+		AND (@PHCID  = 0 OR SP.[PHCID] = @PHCID) 
+		AND (@ANMID  = 0 OR SP.[AssignANM_ID] = @ANMID) 
+		AND (CONVERT(DATE,SP.[DateofRegister],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
+		--AND (CONVERT(DATE,SS.[CreatedOn],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
+		ORDER BY ShipmentDateTime DESC
 	END
 END

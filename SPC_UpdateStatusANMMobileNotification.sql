@@ -1,4 +1,4 @@
-USE [Eduquaydb]
+--USE [Eduquaydb]
 GO
 
 SET ANSI_NULLS ON
@@ -6,7 +6,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
---Update the Status in ANM Mobile notification Damaged Samples and Sample Timout
+--Update the Status in ANM Mobile notification Damaged Samples and Sample Timeout
 
 IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_UpdateStatusANMMobileNotification' AND [type] = 'p')
 BEGIN
@@ -17,7 +17,7 @@ CREATE PROCEDURE [dbo].[SPC_UpdateStatusANMMobileNotification]
 (	
 	@BarcodeNo VARCHAR(MAX)
 	,@ANMID INT
-	,@NotifiedOn DATETIME
+	,@NotifiedOn VARCHAR(200)
 )
 AS
 BEGIN

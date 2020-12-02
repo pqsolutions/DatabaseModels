@@ -8,6 +8,46 @@ GO
 
 SET QUOTED_IDENTIFIER ON
 GO
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_ANMDetail' AND [type] = 'U')
+BEGIN
+
+CREATE TABLE [dbo].[Tbl_ANMDetail](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[ANMUserId] [int]  NULL,
+	[ANMGovCode] [varchar] (200) NULL,
+	[FirstName] [varchar](200)  NULL,
+	[MiddleName] [varchar] (200) NULL,
+	[LastName] [varchar](200)  NULL,
+	[StartDate] [datetime] NULL,
+	[EndDate] [datetime] NULL,
+	[CHCID] [int] NULL,
+	[RIID] [varchar] (max) NULL,
+	[IsActive] [bit] NULL,
+	[ReasonforInactive] [varchar](max) NULL,
+	[CreatedOn] [datetime] NULL,
+	[CreatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END
+
+
+-------------------------------------------------------------------
+
+USE [Eduquaydb]
+GO
+
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
 IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_ANMLogin' AND [type] = 'U')
 BEGIN
 
@@ -2642,6 +2682,9 @@ CREATE TABLE [dbo].[Tbl_HPLCTestedDetail](
 	[UpdatedOn] [datetime] NULL,
 	[UpdatedBy] [int] NULL,
 	[MachineId] [varchar](max)  NULL,
+	[OperatorId] [varchar](max)  NULL,
+	[ValuesUpdatedBy] [int] NULL,
+	[ValuesUpdatedOn] [datetime] NULL,
 	[HbF_CArea] [decimal] (10,3)  NULL,
 	[HbA0_CArea] [decimal] (10,3)  NULL,
 	[HbA2_CArea] [decimal] (10,3)  NULL,
@@ -2657,7 +2700,6 @@ CREATE TABLE [dbo].[Tbl_HPLCTestedDetail](
 	[HbA2_PArea] [decimal] (10,3)  NULL,
 	[HbS_PArea] [decimal] (10,3)  NULL,
 	[HbD_PArea] [decimal] (10,3)  NULL,
-	[OperatorId] [varchar](max)  NULL
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
@@ -2702,3 +2744,104 @@ PRIMARY KEY CLUSTERED
 END
 
 --------------------------------------------------------------------------------------------------------------------
+
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_HoribaMachineLocationMaster' AND [type] = 'U')
+BEGIN
+
+CREATE TABLE [dbo].[Tbl_HoribaMachineLocationMaster](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[MachineId] [varchar](max) NULL,
+	[TestingCHCId] [int] NULL,
+	[TestingCHCName] [varchar] (250) NULL,
+	[Createdon] [datetime] NULL,
+	[Createdby] [int] NULL,
+	[Updatedon] [datetime] NULL,
+	[Updatedby] [int] NULL,
+	[Comments] [varchar](max) NULL,
+	[Isactive] [bit] NULL,
+	
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END
+
+---------------------------------------------------------------------------------------------------------------------------------
+
+
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_MobileAppLeftSideMenu' AND [type] = 'U')
+BEGIN
+
+CREATE TABLE [dbo].[Tbl_MobileAppLeftSideMenu](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[MenuName][varchar](200) NULL,
+	[MenuLink] [varchar](max)  NULL,
+	[Createdon] [datetime] NULL,
+	[Createdby] [int] NULL,
+	[Updatedon] [datetime] NULL,
+	[Updatedby] [int] NULL,
+	[Comments] [varchar](max) NULL,
+	[Isactive] [bit] NULL,
+	[OdiyaName] [varchar] (200) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END
+
+---------------------------------------------------------------------------------------------------------------------------------
+
+USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_MobileAppAlert' AND [type] = 'U')
+BEGIN
+
+CREATE TABLE [dbo].[Tbl_MobileAppAlert](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[AlertMsg] [varchar](max) NULL,
+	[Createdon] [datetime] NULL,
+	[Createdby] [int] NULL,
+	[Updatedon] [datetime] NULL,
+	[Updatedby] [int] NULL,
+	[Comments] [varchar](max) NULL,
+	[Isactive] [bit] NULL,
+	
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END
+
+---------------------------------------------------------------------------------------------------------------------------------
+

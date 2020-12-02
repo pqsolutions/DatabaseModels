@@ -57,6 +57,7 @@ BEGIN
 			,HD.[HPLCResultMasterId]
 			,HD.[OthersResult] 
 			,HD.[DiagnosisSummary]
+			,HTD.[PdfFileName] 
 	FROM [dbo].[Tbl_HPLCDiagnosisResult]   HD	
 	LEFT JOIN [dbo].[Tbl_HPLCTestResult]  HR WITH (NOLOCK) ON HD.[HPLCTestResultId] = HR.[ID]
 	LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SPRD WITH (NOLOCK) ON HR.[UniqueSubjectID] = SPRD.[UniqueSubjectID] 
@@ -69,6 +70,8 @@ BEGIN
 	LEFT JOIN [dbo].[Tbl_CHCMaster] CM WITH (NOLOCK) ON CM.[ID] = SPRD.[CHCID] 
 	LEFT JOIN [dbo].[Tbl_CHCMaster] C WITH (NOLOCK) ON C.[ID]  = CM.[TestingCHCID] 
 	LEFT JOIN [dbo].[Tbl_RIMaster] RM WITH (NOLOCK) ON RM.[ID] = SPRD.[RIID]  
+	LEFT JOIN [dbo].[Tbl_HPLCTestedDetail] HTD WITH (NOLOCK) ON  HTD.Barcode = HR.[BarcodeNo] 
 	WHERE  HD.[CentralLabId] = @CentralLabId  AND ( HD.[IsDiagnosisComplete] IS NULL  OR  HD.[IsDiagnosisComplete] = 0)
+	AND HTD.[ProcessStatus] = 1  AND HTD.[SampleStatus] = 1
 	ORDER BY [GestationalAge] DESC
 END
