@@ -95,8 +95,8 @@ BEGIN
 		   ,'Dr. Alok Srivastava' AS OrderingPhysician
 		   ,(LTUM.[FirstName] + ' ' + LTUM.[LastName]) AS LabTechnicianName
 		   --,'Mr. Solomon Ekka' AS LabTechnicianName
-		   ,(PUM.[FirstName] + ' ' + PUM.[LastName]) AS PathologistName
-		   --,'Dr. Sreeya Das' AS PathologistName
+		   --,(PUM.[FirstName] + ' ' + PUM.[LastName]) AS PathologistName
+		   ,'Dr. Sreeya Das' AS PathologistName
 		FROM [dbo].[Tbl_PositiveResultSubjectsDetail] PRSD 
 		LEFT JOIN  [dbo].[Tbl_HPLCTestResult] HT WITH (NOLOCK) ON PRSD.BarcodeNo = HT.BarcodeNo
 		LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.BarcodeNo = HT.BarcodeNo 
@@ -122,7 +122,7 @@ BEGIN
 		AND (@PHCID  = 0 OR SP.[PHCID] = @PHCID)   
 		AND (@ANMID  = 0 OR SP.[AssignANM_ID] = @ANMID)   
 		AND (CONVERT(DATE,HT.[HPLCTestCompletedOn],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103))
-		--AND HTD.[ProcessStatus] = 1  AND HTD.[SampleStatus] = 1
+		AND HTD.[ProcessStatus] = 1  AND HTD.[SampleStatus] = 1
 	END  
 	IF @StatusName =  'Diagnosis Pending'   
 	BEGIN  
@@ -259,8 +259,8 @@ BEGIN
 		   ,'Dr. Alok Srivastava' AS OrderingPhysician
 		   ,(LTUM.[FirstName] + ' ' + LTUM.[LastName]) AS LabTechnicianName
 		   --,'Mr. Solomon Ekka' AS LabTechnicianName
-		   ,(PUM.[FirstName] + ' ' + PUM.[LastName]) AS PathologistName
-		   --,'Dr. Sreeya Das' AS PathologistName
+		   --,(PUM.[FirstName] + ' ' + PUM.[LastName]) AS PathologistName
+		   ,'Dr. Sreeya Das' AS PathologistName
 		FROM [dbo].[Tbl_HPLCTestResult] HT   
 		LEFT JOIN [dbo].[Tbl_HPLCDiagnosisResult] HD WITH (NOLOCK) ON HD.BarcodeNo = HT.BarcodeNo   
 		LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.BarcodeNo = HT.BarcodeNo   
@@ -343,8 +343,8 @@ BEGIN
 		     ,'Dr. Alok Srivastava' AS OrderingPhysician
 		   ,(LTUM.[FirstName] + ' ' + LTUM.[LastName]) AS LabTechnicianName
 		   --,'Mr. Solomon Ekka' AS LabTechnicianName
-		   ,(PUM.[FirstName] + ' ' + PUM.[LastName]) AS PathologistName
-		   --,'Dr. Sreeya Das' AS PathologistName
+		   --,(PUM.[FirstName] + ' ' + PUM.[LastName]) AS PathologistName
+		   ,'Dr. Sreeya Das' AS PathologistName
 		FROM [dbo].[Tbl_HPLCTestResult] HT   
 		LEFT JOIN [dbo].[Tbl_HPLCDiagnosisResult] HD WITH (NOLOCK) ON HD.BarcodeNo = HT.BarcodeNo   
 		LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.BarcodeNo = HT.BarcodeNo   
@@ -426,8 +426,8 @@ BEGIN
 		    ,'Dr. Alok Srivastava' AS OrderingPhysician
 		   ,(LTUM.[FirstName] + ' ' + LTUM.[LastName]) AS LabTechnicianName
 		   --,'Mr. Solomon Ekka' AS LabTechnicianName
-		   ,(PUM.[FirstName] + ' ' + PUM.[LastName]) AS PathologistName
-		   --,'Dr. Sreeya Das' AS PathologistName
+		   --,(PUM.[FirstName] + ' ' + PUM.[LastName]) AS PathologistName
+		   ,'Dr. Sreeya Das' AS PathologistName
 		FROM [dbo].[Tbl_HPLCTestResult] HT   
 		LEFT JOIN [dbo].[Tbl_HPLCDiagnosisResult] HD WITH (NOLOCK) ON HD.BarcodeNo = HT.BarcodeNo   
 		LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.BarcodeNo = HT.BarcodeNo   
@@ -509,8 +509,8 @@ BEGIN
 		   ,'Dr. Alok Srivastava' AS OrderingPhysician
 		   ,(LTUM.[FirstName] + ' ' + LTUM.[LastName]) AS LabTechnicianName
 		   --,'Mr. Solomon Ekka' AS LabTechnicianName
-		   ,(PUM.[FirstName] + ' ' + PUM.[LastName]) AS PathologistName
-		   --,'Dr. Sreeya Das' AS PathologistName
+		   --,(PUM.[FirstName] + ' ' + PUM.[LastName]) AS PathologistName
+		   ,'Dr. Sreeya Das' AS PathologistName
 		FROM [dbo].[Tbl_HPLCTestResult] HT   
 		LEFT JOIN [dbo].[Tbl_HPLCDiagnosisResult] HD WITH (NOLOCK) ON HD.BarcodeNo = HT.BarcodeNo   
 		LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.BarcodeNo = HT.BarcodeNo   

@@ -1,4 +1,4 @@
-USE [Eduquaydb]
+--USE [Eduquaydb]
 GO
 
 SET ANSI_NULLS ON
@@ -24,7 +24,12 @@ BEGIN
 			 END  AS  [DateofRegister]
 			,SPAD.[UniqueSubjectID]
 			,SPRD.[SpouseSubjectID]
-
+			,SPRD.[Age]
+			,SPRD.[Gender]
+			,SPRD.[ChildSubjectTypeID]
+			,CASE WHEN  SPRD.[ChildSubjectTypeID] = 1 THEN CONVERT(VARCHAR,SPD.[LMP_Date],103) ELSE '' END AS LMPDate
+			,CASE WHEN  SPRD.[ChildSubjectTypeID] = 1 THEN (SELECT [dbo].[FN_CalculateGestationalAge](SPRD.[ID])) ELSE '' END AS [Gestational_period]
+			,(SPRD.[Spouse_FirstName] + '' + SPRD.[Spouse_LastName]) AS SpouseName
 			,CASE WHEN SC.[BarcodeNo] IS NULL THEN 0 ELSE 1 END  AS SamplingStatus
 			,CASE WHEN SC.[BarcodeNo] IS NULL THEN '' ELSE  SC.[BarcodeNo] END AS BarcodeNo
 			,CASE WHEN SC.[SampleCollectionDate] IS NULL THEN '' ELSE

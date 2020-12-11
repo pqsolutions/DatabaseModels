@@ -1,6 +1,6 @@
 
 
-USE [Eduquaydb]
+--USE [Eduquaydb]
 GO
 
 SET ANSI_NULLS ON
@@ -38,16 +38,16 @@ BEGIN
 	BEGIN TRY
 		SELECT @Barcode =  Barcode, @MCV = MCV, @RDW = RDW ,@RBC = RBC , @TestCompleteOn= TestedDateTime  FROM Tbl_CBCTestedDetail WHERE ID = @TestedId
 		SELECT @SubjectId = ID FROM Tbl_SubjectPrimaryDetail WHERE UniqueSubjectID = @UniqueSubjectId 
-		IF(@MCV <= 80 AND @RDW < 16)
+		IF(@MCV < 80 AND @RDW < 16)
 		BEGIN
 			SET @IsPositive = 1
-			SET @CBCResult = 'Screening Test Positive'
+			SET @CBCResult = 'CBC Positive'
 			SET @CBCStatus = 'P'
 		END
 		ELSE
 		BEGIN
 		SET @IsPositive = 0
-			SET @CBCResult = 'Screening Test Negative'
+			SET @CBCResult = 'CBC Negative'
 			SET @CBCStatus = 'N'
 		END
 

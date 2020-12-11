@@ -1,4 +1,4 @@
-USE [Eduquaydb]
+--USE [Eduquaydb]
 GO
 
 SET ANSI_NULLS ON
@@ -22,9 +22,15 @@ BEGIN
 			 CASE WHEN ISNULL(SPRD.[DateofRegister],'') = '' THEN '' 
 			 ELSE CONVERT(VARCHAR,SPRD.[DateofRegister],103)
 			 END  AS  [DateofRegister]
+			 ,(SPRD.[FirstName] + '' + SPRD.[LastName]) AS SubjectName
 			,SPAD.[UniqueSubjectID]
 			,SPRD.[SpouseSubjectID]
-
+			,SPRD.[Age]
+			,SPRD.[Gender]
+			,SPRD.[ChildSubjectTypeID] 
+			,CASE WHEN  SPRD.[ChildSubjectTypeID] = 1 THEN CONVERT(VARCHAR,SPD.[LMP_Date],103) ELSE '' END AS LMPDate
+			,CASE WHEN  SPRD.[ChildSubjectTypeID] = 1 THEN (SELECT [dbo].[FN_CalculateGestationalAge](SPRD.[ID])) ELSE '' END AS [Gestational_period]
+			,(SPRD.[Spouse_FirstName] + '' + SPRD.[Spouse_LastName]) AS SpouseName
 			,CASE WHEN SC.[BarcodeNo] IS NULL THEN 0 ELSE 1 END  AS SamplingStatus
 			,CASE WHEN SC.[BarcodeNo] IS NULL THEN '' ELSE  SC.[BarcodeNo] END AS BarcodeNo
 			,CASE WHEN SC.[SampleCollectionDate] IS NULL THEN '' ELSE
@@ -69,6 +75,7 @@ BEGIN
 			,CASE WHEN HD.[ID] IS NULL THEN ''   WHEN HD.[IsNormal] = 1 THEN 'Negative' WHEN HD.[IsNormal]=0 THEN 'Positive' ELSE '' END AS HPLCResult
 			,CASE WHEN HD.[ID] IS NULL THEN '' WHEN HD.[IsDiagnosisComplete] = 0 THEN 'Disagnosis Not Completed'  ELSE 
 			(CONVERT(VARCHAR,HD.[UpdatedOn],103) + ' ' +CONVERT(VARCHAR(5),HD.[UpdatedOn],108)) END AS HPLCDiagnosisCompletedDate
+
 
 			,CASE WHEN PS.[ID] IS NULL THEN 0 WHEN PS.[IsCounselled] = 0 THEN 0 ELSE 1 END PrePNDTCounsellingStatus
 			,CASE WHEN PS.[ID] IS NULL THEN '' ELSE

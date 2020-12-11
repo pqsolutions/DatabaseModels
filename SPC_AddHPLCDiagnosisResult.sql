@@ -1,5 +1,5 @@
 
-USE [Eduquaydb]
+--USE [Eduquaydb]
 GO
 
 SET ANSI_NULLS ON
@@ -28,6 +28,7 @@ CREATE PROCEDURE [dbo].[SPC_AddHPLCDiagnosisResult]
 	,@CreatedBy INT
 	,@IsDiagnosisComplete BIT
 	,@OthersResult VARCHAR(MAX)
+	,@OthersDiagnosis VARCHAR(MAX)
 )
 AS
 DECLARE 
@@ -80,6 +81,7 @@ BEGIN
 				,DiagnosisSummary
 				,UpdatedBy
 				,UpdatedOn
+				,OthersDiagnosis
 				)VALUES(
 				@SubjectID 
 				,@UniqueSubjectID
@@ -99,7 +101,8 @@ BEGIN
 				,@DiagnosisCompletedThrough
 				,@DiagnosisSummary
 				,@CreatedBy 
-				,GETDATE())
+				,GETDATE()
+				,@OthersDiagnosis)
 			SELECT @GetId = SCOPE_IDENTITY()
 				
 			IF @IsDiagnosisComplete = 1
@@ -122,7 +125,7 @@ BEGIN
 					SELECT @ResultName = HPLCResultName FROM Tbl_HPLCResultMaster WHERE ID = CAST(@CurrentIndex AS INT)
 					IF @ResultName = 'Others'
 					BEGIN
-						SET @Results = @ResultName + ' ('+ @OthersResult + '))'
+						SET @Results = @Results + @ResultName + ' ('+ @OthersResult + '))'
 					END
 					ELSE
 					BEGIN
@@ -140,7 +143,14 @@ BEGIN
 					SELECT @IndexVar1 = @IndexVar1 + 1
 					SELECT @CurrentIndex1 = Value FROM  [dbo].[FN_Split](@GetHPLCDiagnosisId,',') WHERE id = @Indexvar1
 					SELECT @ResultName1 = DiagnosisName FROM Tbl_ClinicalDiagnosisMaster WHERE ID = CAST(@CurrentIndex1 AS INT) AND Isactive = 1
-					SET @Results1 = @Results1 + @ResultName1 + ', '
+					IF @ResultName1 = 'Others'
+					BEGIN
+						SET @Results1 = @Results1+ @ResultName1 + ' ('+ @OthersDiagnosis + '))'
+					END
+					ELSE
+					BEGIN
+						SET @Results1 = @Results1 + @ResultName1 + ', '
+					END
 				END	
 				SET @LabDiagnosis = (SELECT LEFT(@Results1,LEN(@Results1)-1))
 
@@ -188,6 +198,7 @@ BEGIN
 				,IsDiagnosisComplete = @IsDiagnosisComplete
 				,DiagnosisCompletedThrough = @DiagnosisCompletedThrough
 				,DiagnosisSummary = @DiagnosisSummary
+				,OthersDiagnosis = @OthersDiagnosis
 			WHERE BarcodeNo = @BarcodeNo 
 			
 			SELECT @GetId = ID FROM Tbl_HPLCDiagnosisResult WHERE BarcodeNo = @BarcodeNo 
@@ -211,7 +222,7 @@ BEGIN
 					SELECT @ResultName = HPLCResultName FROM Tbl_HPLCResultMaster WHERE ID = CAST(@CurrentIndex AS INT)
 					IF @ResultName = 'Others'
 					BEGIN
-						SET @Results = @ResultName + ' ('+ @OthersResult + '))'
+						SET @Results = @Results + @ResultName + ' ('+ @OthersResult + '))'
 					END
 					ELSE
 					BEGIN
@@ -228,7 +239,14 @@ BEGIN
 					SELECT @IndexVar1 = @IndexVar1 + 1
 					SELECT @CurrentIndex1 = Value FROM  [dbo].[FN_Split](@GetHPLCDiagnosisId,',') WHERE id = @Indexvar1
 					SELECT @ResultName1 = DiagnosisName FROM Tbl_ClinicalDiagnosisMaster WHERE ID = CAST(@CurrentIndex1 AS INT) AND Isactive = 1
-					SET @Results1 = @Results1 + @ResultName1 + ', '
+					IF @ResultName1 = 'Others'
+					BEGIN
+						SET @Results1 = @Results1 + @ResultName1 + ' ('+ @OthersDiagnosis + '))'
+					END
+					ELSE
+					BEGIN
+						SET @Results1 = @Results1 + @ResultName1 + ', '
+					END
 				END	
 				SET @LabDiagnosis = (SELECT LEFT(@Results1,LEN(@Results1)-1))
 

@@ -1,4 +1,4 @@
-USE [Eduquaydb]
+--USE [Eduquaydb]
 GO
 
 SET ANSI_NULLS ON
@@ -37,7 +37,7 @@ BEGIN
 		AND SC.SampleDamaged = 0 AND SC.SampleTimeoutExpiry = 0
 		AND SC.BarcodeNo IN (SELECT BarcodeNo FROM Tbl_CBCTestResult WHERE TestingCHCId = @CHCID)  
 		AND SC.BarcodeNo IN (SELECT BarcodeNo FROM Tbl_SSTestResult WHERE TestingCHCId = @CHCID)
-		AND SC.BarcodeNo IN (SELECT BarcodeNo FROM Tbl_PositiveResultSubjectsDetail WHERE CBCStatus = 'P' OR SSTStatus = 'P') 
+		--AND SC.BarcodeNo IN (SELECT BarcodeNo FROM Tbl_PositiveResultSubjectsDetail WHERE CBCStatus = 'P' OR SSTStatus = 'P') 
 		AND SC.BarcodeNo NOT IN (SELECT BarcodeNo FROM Tbl_CHCShipmentsDetail)
 	ORDER BY SDT DESC
 END

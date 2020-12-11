@@ -1624,6 +1624,7 @@ END
 
 
 
+
 USE [Eduquaydb]
 GO
 
@@ -1652,7 +1653,8 @@ CREATE TABLE [dbo].[Tbl_HPLCDiagnosisResult](
 	[UpdatedBy] [int] NULL,
 	[UpdatedOn] [datetime] NULL,
 	[IsDiagnosisComplete] [bit] NULL,
-	[DiagnosisCompletedThrough] [varchar] (max) NULL
+	[DiagnosisCompletedThrough] [varchar] (max) NULL,
+	[OthersDiagnosis] [varchar] (max) NULL
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC

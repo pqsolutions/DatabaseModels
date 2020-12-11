@@ -1,4 +1,4 @@
-USE [Eduquaydb]
+--USE [Eduquaydb]
 GO
 
 /****** Object:  StoredProcedure [dbo].[SPC_AddCHC]    Script Date: 03/25/2020 22:42:11 ******/
@@ -31,7 +31,7 @@ CREATE PROCEDURE [dbo].[SPC_AddCHC]
 	,@Comments VARCHAR(150)
 	,@Createdby INT
 	,@Updatedby INT
-	,@Scope_output INT OUTPUT
+	
 ) AS
 Declare
 	@chcCount INT
@@ -87,8 +87,7 @@ BEGIN
 				BEGIN
 					UPDATE Tbl_CHCMaster SET TestingCHCID = @getId  WHERE ID = @getId 
 				END
-				SET @tempUserId = IDENT_CURRENT('Tbl_CHCMaster')
-				SET @Scope_output = 1
+				SELECT 'CHC added successfully' AS Msg
 				
 			END
 			ELSE
@@ -115,12 +114,12 @@ BEGIN
 				BEGIN
 					UPDATE Tbl_CHCMaster SET TestingCHCID = @id  WHERE ID = @id 
 				END
-				
+				SELECT 'CHC updated successfully' AS Msg
 			END
 		END
 		ELSE
 		BEGIN
-			SET @Scope_output = -1
+			SELECT 'CHC code is missing' AS Msg
 		END
 	END TRY
 	BEGIN CATCH
