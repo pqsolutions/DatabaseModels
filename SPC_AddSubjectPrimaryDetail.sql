@@ -1,4 +1,4 @@
-USE [Eduquaydb]
+--USE [Eduquaydb]
 GO
 
 SET ANSI_NULLS ON
@@ -44,6 +44,7 @@ CREATE PROCEDURE [dbo].[SPC_AddSubjectPrimaryDetail]
       ,@CreatedBy INT     
 	  ,@UniqueSubjectId VARCHAR(200) 
 	  ,@Source CHAR(1) -- N/F/M (N-Online, F-Offline, M-Manual)
+	  ,@SpouseWillingness BIT = 1
 	  
 )AS
 DECLARE 
@@ -61,9 +62,9 @@ BEGIN
 			 BEGIN
 				SET @DateOfBirth = NULL
 			 END
-			IF ISNULL(@DateofRegister,'') = ''
+			 IF @SpouseWillingness IS NULL
 			 BEGIN
-				SET @DateofReg = (SELECT GETDATE())
+				SET @SpouseWillingness = 1
 			 END
 			 IF (@Count <= 0)
 			 BEGIN
@@ -198,6 +199,7 @@ BEGIN
 					  ,UpdatedBy = @CreatedBy 
 					  ,UpdatedOn = GETDATE()
 					  ,IsActive = 1
+					  ,SpouseWillingness=@SpouseWillingness
 					WHERE ID = @ID
 					IF @SubjectTypeID = 2 OR @ChildSubjectTypeID = 2 OR @SubjectTypeID = 1 OR @ChildSubjectTypeID = 1
 					BEGIN

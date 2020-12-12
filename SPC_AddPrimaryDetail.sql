@@ -1,4 +1,4 @@
-USE [Eduquaydb]
+--USE [Eduquaydb]
 GO
 
 SET ANSI_NULLS ON
@@ -62,10 +62,6 @@ BEGIN
 		IF ISNULL(@DOB,'') = ''
 		BEGIN
 			SET @DateOfBirth = NULL
-		END
-		IF ISNULL(@DateofRegister,'') = ''
-		BEGIN
-			SET @DateofReg = (SELECT GETDATE())
 		END
 		IF @SpouseWillingness IS NULL
 		BEGIN
@@ -202,7 +198,6 @@ BEGIN
 					  ,Spouse_GovIdType_ID = @Spouse_GovIdType_ID
 					  ,Spouse_GovIdDetail = @Spouse_GovIdDetail
 					  ,AssignANM_ID = @AssignANM_ID
-					  ,DateofRegister = @DateofReg
 					  ,UpdatedBy = @UpdatedBy
 					  ,UpdatedOn = GETDATE()
 					  ,IsActive = @IsActive

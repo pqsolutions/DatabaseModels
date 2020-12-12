@@ -105,8 +105,8 @@ BEGIN
 		
 		SET @A2 = (SELECT COUNT(1) FROM #TempANMCompaileanceRepTable WHERE (DateOfRegister BETWEEN @StartDate AND @EndDate) AND RegistrationFrom = 8 AND (SubjectCreatedOn <= CBCTestedDate))
 
-		SET @A3 = (SELECT COUNT(1) FROM #TempANMCompaileanceRepTable WHERE (DateOfRegister BETWEEN @StartDate AND @EndDate) AND  RegistrationFrom = 8 AND  ((CONVERT(DATE,DateOfRegister,103) > CONVERT(DATE,CBCTestedDate,103))
-					OR (SubjectCreatedOn > CBCTestedDate)))
+		SET @A3 = (SELECT COUNT(1) FROM #TempANMCompaileanceRepTable WHERE (DateOfRegister BETWEEN @StartDate AND @EndDate) AND  RegistrationFrom = 8 AND  (CONVERT(DATE,DateOfRegister,103) > CONVERT(DATE,CBCTestedDate,103)
+					OR SubjectCreatedOn > CBCTestedDate))
 
 		SET @A4 = ISNULL((@A2 * 100 )/ NULLIF(@A1,0),0)
 
