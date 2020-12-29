@@ -5,12 +5,12 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_NHMReport' AND [type] = 'p')
+IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_NHMReportHPLCPathoDetails' AND [type] = 'p')
 BEGIN
-	DROP PROCEDURE SPC_NHMReport --'','',0,0,0,0
+	DROP PROCEDURE SPC_NHMReportHPLCPathoDetails -- '','',0,0,0,0,3
 END
 GO
-CREATE PROCEDURE [dbo].[SPC_NHMReport]
+CREATE PROCEDURE [dbo].[SPC_NHMReportHPLCPathoDetails]
 (
 	@FromDate VARCHAR(50)
 	,@ToDate VARCHAR(50)
@@ -18,9 +18,10 @@ CREATE PROCEDURE [dbo].[SPC_NHMReport]
 	,@BlockId INT
 	,@CHCID INT
 	,@ANMID INT
+	,@Status INT
 )AS
 BEGIN
-	DECLARE  @StartDate VARCHAR(50), @EndDate VARCHAR(50), @Indexvar INT, @TotalCount INT,@SpouseSubjectId VARCHAr(250),@UniqueSubjectId VARCHAr(250)
+	DECLARE  @StartDate VARCHAR(50), @EndDate VARCHAR(50), @Indexvar INT, @TotalCount INT,@SpouseSubjectId VARCHAR(250),@UniqueSubjectId VARCHAR(250)
 		
 	IF @FromDate = NULL OR @FromDate = ''
 	BEGIN
@@ -41,23 +42,70 @@ BEGIN
 
 	CREATE  TABLE #TempUniqueSubjectID(ID INT IDENTITY(1,1),[UniqueSubjectId] VARCHAR(250)) 
 
-	INSERT INTO #TempUniqueSubjectID([UniqueSubjectId])
-	SELECT [UniqueSubjectId] FROM Tbl_SubjectPrimaryDetail SP
-	LEFT JOIN Tbl_CHCMaster CM  WITH (NOLOCK) ON CM.ID = SP.CHCID
-	LEFT JOIN Tbl_BlockMaster BM WITH (NOLOCK) ON CM.BlockID = BM.ID
-	LEFT JOIN Tbl_UserMaster UM WITH (NOLOCK) ON UM.ID = SP.AssignANM_ID
-	WHERE SP.ChildSubjectTypeID = 1 AND SP.ID IN( SELECT SubjectID FROM Tbl_SubjectParentDetail)
-	AND (SP.DistrictID = @DistrictId OR @DistrictId = 0)
-	AND (BM.ID = @BlockId OR @BlockId = 0)
-	AND (SP.CHCID = @CHCID OR @CHCID = 0)
-	AND (SP.AssignANM_ID = @ANMID OR @ANMID = 0)
-	AND SP.DateofRegister BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103) 
-	AND UM.UserType_ID IN (SELECT ID FROM Tbl_UserTypeMaster WHERE Usertype = 'ANM')
-	 
+
+	IF @Status = 1  --  All Positive anw subjects(Abnormal & Normal)
+	BEGIN
+		INSERT INTO #TempUniqueSubjectID([UniqueSubjectId])
+		SELECT SP.[UniqueSubjectId] FROM  Tbl_HPLCDiagnosisResult HD
+		LEFT JOIN Tbl_HPLCTestResult HT WITH (NOLOCK) ON HT.BarcodeNo = HD.BarcodeNo
+		LEFT JOIN Tbl_SampleCollection SC WITH (NOLOCK) ON SC.BarcodeNo = HD.BarcodeNo
+		LEFT JOIN Tbl_SubjectPrimaryDetail SP WITH (NOLOCK) ON SP.UniqueSubjectID = SC.UniqueSubjectID
+		LEFT JOIN Tbl_CHCMaster CM  WITH (NOLOCK) ON CM.ID = SP.CHCID
+		LEFT JOIN Tbl_BlockMaster BM WITH (NOLOCK) ON CM.BlockID = BM.ID
+		LEFT JOIN Tbl_UserMaster UM WITH (NOLOCK) ON UM.ID = SP.AssignANM_ID
+		WHERE SP.ChildSubjectTypeID = 1 AND SP.ID IN (SELECT SubjectID FROM Tbl_SubjectParentDetail)
+		AND HD.[BarcodeNo] IN (SELECT BarcodeNo FROM Tbl_SampleCollection WHERE SampleDamaged != 1 AND SampleTimeoutExpiry != 1)
+		AND (SP.DistrictID = @DistrictId OR @DistrictId = 0)
+		AND (BM.ID = @BlockId OR @BlockId = 0)
+		AND (SP.CHCID = @CHCID OR @CHCID = 0)
+		AND (SP.AssignANM_ID = @ANMID OR @ANMID = 0)
+		AND SP.DateofRegister BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103) 
+		AND UM.UserType_ID IN (SELECT ID FROM Tbl_UserTypeMaster WHERE Usertype = 'ANM')
+		AND HD.IsDiagnosisComplete = 1
+	END 
+	IF @Status = 2   -- Get Abnormal subjects
+	BEGIN
+		INSERT INTO #TempUniqueSubjectID([UniqueSubjectId])
+		SELECT SP.[UniqueSubjectId] FROM  Tbl_HPLCDiagnosisResult HD
+		LEFT JOIN Tbl_HPLCTestResult HT WITH (NOLOCK) ON HT.BarcodeNo = HD.BarcodeNo
+		LEFT JOIN Tbl_SampleCollection SC WITH (NOLOCK) ON SC.BarcodeNo = HD.BarcodeNo
+		LEFT JOIN Tbl_SubjectPrimaryDetail SP WITH (NOLOCK) ON SP.UniqueSubjectID = SC.UniqueSubjectID
+		LEFT JOIN Tbl_CHCMaster CM  WITH (NOLOCK) ON CM.ID = SP.CHCID
+		LEFT JOIN Tbl_BlockMaster BM WITH (NOLOCK) ON CM.BlockID = BM.ID
+		LEFT JOIN Tbl_UserMaster UM WITH (NOLOCK) ON UM.ID = SP.AssignANM_ID
+		WHERE SP.ChildSubjectTypeID = 1 AND SP.ID IN (SELECT SubjectID FROM Tbl_SubjectParentDetail)
+		AND HD.[BarcodeNo] IN (SELECT BarcodeNo FROM Tbl_SampleCollection WHERE SampleDamaged != 1 AND SampleTimeoutExpiry != 1)
+		AND (SP.DistrictID = @DistrictId OR @DistrictId = 0)
+		AND (BM.ID = @BlockId OR @BlockId = 0)
+		AND (SP.CHCID = @CHCID OR @CHCID = 0)
+		AND (SP.AssignANM_ID = @ANMID OR @ANMID = 0)
+		AND SP.DateofRegister BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103) 
+		AND UM.UserType_ID IN (SELECT ID FROM Tbl_UserTypeMaster WHERE Usertype = 'ANM')
+		AND HD.IsDiagnosisComplete = 1 AND HD.IsNormal = 0
+	END 
+	IF @Status = 3  -- Get Normal subjects
+	BEGIN
+		INSERT INTO #TempUniqueSubjectID([UniqueSubjectId])
+		SELECT SP.[UniqueSubjectId] FROM  Tbl_HPLCDiagnosisResult HD
+		LEFT JOIN Tbl_HPLCTestResult HT WITH (NOLOCK) ON HT.BarcodeNo = HD.BarcodeNo
+		LEFT JOIN Tbl_SampleCollection SC WITH (NOLOCK) ON SC.BarcodeNo = HD.BarcodeNo
+		LEFT JOIN Tbl_SubjectPrimaryDetail SP WITH (NOLOCK) ON SP.UniqueSubjectID = SC.UniqueSubjectID
+		LEFT JOIN Tbl_CHCMaster CM  WITH (NOLOCK) ON CM.ID = SP.CHCID
+		LEFT JOIN Tbl_BlockMaster BM WITH (NOLOCK) ON CM.BlockID = BM.ID
+		LEFT JOIN Tbl_UserMaster UM WITH (NOLOCK) ON UM.ID = SP.AssignANM_ID
+		WHERE SP.ChildSubjectTypeID = 1 AND SP.ID IN (SELECT SubjectID FROM Tbl_SubjectParentDetail)
+		AND HD.[BarcodeNo] IN (SELECT BarcodeNo FROM Tbl_SampleCollection WHERE SampleDamaged != 1 AND SampleTimeoutExpiry != 1)
+		AND (SP.DistrictID = @DistrictId OR @DistrictId = 0)
+		AND (BM.ID = @BlockId OR @BlockId = 0)
+		AND (SP.CHCID = @CHCID OR @CHCID = 0)
+		AND (SP.AssignANM_ID = @ANMID OR @ANMID = 0)
+		AND SP.DateofRegister BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103) 
+		AND UM.UserType_ID IN (SELECT ID FROM Tbl_UserTypeMaster WHERE Usertype = 'ANM')
+		AND HD.IsDiagnosisComplete = 1 AND HD.IsNormal = 1
+	END 
 
 	CREATE  TABLE #TempReportDetail(ID INT IDENTITY(1,1), ANMID VARCHAr(100), ANMName VARCHAR(MAX), UniqueSubjectId VARCHAR(250),  SubjectType VARCHAr(150), FirstName VARCHAR(250), SpouseSubjectId VARCHAR(250),
-	RCHID VARCHAR(250),
-	DateOfRegister VARCHAR(150), Barcode VARCHAR(150), RI VARCHAR(250), MobileNo VARCHAR(200), Village VARCHAR(MAX), GA VARCHAR(10), SampleCollected VARCHAR(20), SampleCollectionDateTime VARCHAR(250),
+	RCHID VARCHAR(250), DateOfRegister VARCHAR(150), Barcode VARCHAR(150), RI VARCHAR(250), MobileNo VARCHAR(200), Village VARCHAR(MAX), GA VARCHAR(10), SampleCollected VARCHAR(20), SampleCollectionDateTime VARCHAR(250),
 	SampleTestedDateTime VARCHAR(250), CBCResult VARCHAR(200), SSTResult VARCHAR(200), HPLCTestedDate VARCHAR(250), HPLCLabDiagnosis VARCHAR(MAX), HPLCPathoLabResult VARCHAR(MAX),
 	PrePNDTCounselling VARCHAR(200), PNDTResult VARCHAR(MAX), PostPNDTCounselling VARCHAR(200), MTPService VARCHAR(MAX), 
 	[ROW NUMBER] INT) 
@@ -87,7 +135,7 @@ BEGIN
 			  ,SP.[MobileNo]
 			  ,SAD.[Address3]
 			  ,(SELECT [dbo].[FN_CalculateGestationalAge](SPD.[SubjectID])) AS [GA] 
-			  ,CASE WHEN SC.[ID] IS NULL THEN 'No' ELSE 'Yes' END AS SampleCollected
+			  ,CASE WHEN SC.[ID] IS NULL THEN 'No' WHEN SC.[SampleTimeoutExpiry] = 1 THEN 'Timeout Expiry' WHEN SC.[SampleDamaged] =1 THEN 'Sample Damaged' ELSE 'Yes' END AS SampleCollected
 			  ,CASE WHEN SC.[ID] IS NULL THEN '--' ELSE (CONVERT(VARCHAR,SC.[SampleCollectionDate],103) + ' ' +CONVERT(VARCHAR(5),SC.[SampleCollectionTime],108)) END AS SampleCollectionDateTime
 			  ,CASE WHEN CR.[ID] IS NULL THEN '--' ELSE (CONVERT(VARCHAR,CR.[TestCompleteOn],103) + ' '+ CONVERT(VARCHAR(5),CR.[TestCompleteOn],108)) END AS SampleTestedDateTime
 			  ,CASE WHEN CR.[ID] IS NULL THEN '--' ELSE CR.[CBCResult] END AS CBCResult
@@ -140,7 +188,7 @@ BEGIN
 					,CASE WHEN LEN(SP.[SpouseSubjectID] ) > 0 THEN 'Yes' ELSE 'No' END AS SpouseSubjectID
 				  ,SPD.[RCHID]
 				  ,(CONVERT(VARCHAR,SP.[DateofRegister],103)) AS RegisteredDate
-				 ,CASE WHEN SC.[BarcodeNo] IS NULL THEN '--' ELSE SC.[BarcodeNo] END AS BarcodeNo
+				  ,CASE WHEN SC.[BarcodeNo] IS NULL THEN '--' ELSE SC.[BarcodeNo] END AS BarcodeNo
 				  ,RM.[RIsite]
 				  ,SP.[MobileNo]
 				  ,SAD.[Address3]

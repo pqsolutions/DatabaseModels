@@ -1,4 +1,4 @@
-USE [Eduquaydb]
+--USE [Eduquaydb]
 GO
 
 SET ANSI_NULLS ON
@@ -26,5 +26,5 @@ BEGIN
   ,D.[Updatedby]        
  FROM [dbo].[Tbl_DistrictMaster] D  
  LEFT JOIN [dbo].[Tbl_StateMaster] S WITH (NOLOCK) ON S.ID = D.StateID  
- Order by D.[ID]  
+ Order by D.[Districtname]   
 END

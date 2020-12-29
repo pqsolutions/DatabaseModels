@@ -17,6 +17,6 @@ AS
 BEGIN
 	SELECT [ID] AS Id
 		,[Districtname] AS Name
-	FROM Tbl_DistrictMaster 
+	FROM Tbl_DistrictMaster ORDER BY [Districtname]
 	
 END

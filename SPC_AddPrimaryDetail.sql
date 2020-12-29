@@ -169,17 +169,9 @@ BEGIN
 		ELSE
 		BEGIN
 		
-		SET @ID = (SELECT ID FROM Tbl_SubjectPrimaryDetail WHERE UniqueSubjectID = @UniqueSubjectID) 
+			SET @ID = (SELECT ID FROM Tbl_SubjectPrimaryDetail WHERE UniqueSubjectID = @UniqueSubjectID) 
 			UPDATE [dbo].[Tbl_SubjectPrimaryDetail]
-				   SET SubjectTypeID = @SubjectTypeID	
-					  ,ChildSubjectTypeID = @ChildSubjectTypeID				  
-					  ,DistrictID = @DistrictID
-					  ,CHCID = @CHCID
-					  ,PHCID = @PHCID
-					  ,SCID = @SCID
-					  ,RIID = @RIID
-					  ,SubjectTitle = @SubjectTitle
-					  ,FirstName = @FirstName
+				   SET FirstName = @FirstName
 					  ,MiddleName = @MiddleName
 					  ,LastName = @LastName
 					  ,DOB = @DateOfBirth

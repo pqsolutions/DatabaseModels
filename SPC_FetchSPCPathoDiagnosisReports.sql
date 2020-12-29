@@ -6,18 +6,19 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_FetchPathoDiagnosisReports' AND [type] = 'p')
+IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_FetchSPCPathoDiagnosisReports' AND [type] = 'p')
 BEGIN
-	DROP PROCEDURE SPC_FetchPathoDiagnosisReports --4,1,0,0,0,'17/12/2020','24/12/2020'
+	DROP PROCEDURE SPC_FetchSPCPathoDiagnosisReports --0,0,0,0,3,'17/12/2020','24/12/2020'
 END
 GO
-CREATE PROCEDURE [dbo].[SPC_FetchPathoDiagnosisReports] 
+CREATE PROCEDURE [dbo].[SPC_FetchSPCPathoDiagnosisReports] 
 (
-	@SampleStatus INT
-	,@CentralLabId INT
+	
+	@DistrictId INT
+	,@BlockId INT
 	,@CHCID INT
-	,@PHCID INT
 	,@ANMID INT
+	,@SampleStatus INT
 	,@FromDate VARCHAR(100)
 	,@ToDate VARCHAR(100)
 )
@@ -26,7 +27,7 @@ AS
 BEGIN
 	IF @FromDate = NULL OR @FromDate = ''
 	BEGIN
-		SET @StartDate = (SELECT CONVERT(VARCHAR,DATEADD(MONTH ,-3,GETDATE()),103))
+		SET @StartDate = (SELECT CONVERT(VARCHAR,DATEADD(DAY ,-7,GETDATE()),103))
 	END
 	ELSE
 	BEGIN
@@ -118,9 +119,9 @@ BEGIN
 		LEFT JOIN [dbo].[Tbl_HPLCDiagnosisResult] HD WITH (NOLOCK) ON  HD.BarcodeNo = PRSD.BarcodeNo 
 		LEFT JOIN [dbo].[Tbl_UserMaster] LTUM WITH (NOLOCK) ON LTUM.ID = HT.CreatedBy
 		LEFT JOIN [dbo].[Tbl_UserMaster] PUM WITH (NOLOCK) ON PUM.ID = HD.CreatedBy
-		WHERE  HT.[CentralLabId] = @CentralLabId   
+		WHERE (@DistrictId = 0 OR SP.[DistrictID] = @DistrictId)   
+		AND (@BlockId  = 0 OR B.[ID] = @BlockId)
 		AND (@CHCID  = 0 OR SP.[CHCID] = @CHCID)   
-		AND (@PHCID  = 0 OR SP.[PHCID] = @PHCID)   
 		AND (@ANMID  = 0 OR SP.[AssignANM_ID] = @ANMID)   
 		AND (CONVERT(DATE,HT.[HPLCTestCompletedOn],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103))
 		AND HTD.[ProcessStatus] = 1  AND HTD.[SampleStatus] = 1
@@ -199,11 +200,11 @@ BEGIN
 		LEFT JOIN [dbo].[Tbl_HPLCTestedDetail] HTD WITH (NOLOCK) ON  HTD.Barcode = HT.[BarcodeNo]  
 		LEFT JOIN [dbo].[Tbl_UserMaster] U WITH (NOLOCK) ON U.ID = SP.AssignANM_ID 
 		LEFT JOIN [dbo].[Tbl_UserMaster] LTUM WITH (NOLOCK) ON LTUM.ID = HT.CreatedBy
-		WHERE  HT.[CentralLabId] = @CentralLabId   
-		AND HT.[BarcodeNo]   NOT IN (SELECT BarcodeNo FROM Tbl_HPLCDiagnosisResult)  
+		WHERE  HT.[BarcodeNo]   NOT IN (SELECT BarcodeNo FROM Tbl_HPLCDiagnosisResult)  
+		AND (@DistrictId = 0 OR SP.[DistrictID] = @DistrictId)   
+		AND (@BlockId  = 0 OR B.[ID] = @BlockId)
 		AND (@CHCID  = 0 OR SP.[CHCID] = @CHCID)   
-		AND (@PHCID  = 0 OR SP.[PHCID] = @PHCID)   
-		AND (@ANMID  = 0 OR SP.[AssignANM_ID] = @ANMID)   
+		AND (@ANMID  = 0 OR SP.[AssignANM_ID] = @ANMID)  
 		AND (CONVERT(DATE,HT.[HPLCTestCompletedOn],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103))  
 		AND HTD.[ProcessStatus] = 1  AND HTD.[SampleStatus] = 1
 	END  
@@ -283,11 +284,11 @@ BEGIN
 		LEFT JOIN [dbo].[Tbl_UserMaster] U WITH (NOLOCK) ON U.ID = SP.AssignANM_ID 
 		LEFT JOIN [dbo].[Tbl_UserMaster] LTUM WITH (NOLOCK) ON LTUM.ID = HT.CreatedBy
 		LEFT JOIN [dbo].[Tbl_UserMaster] PUM WITH (NOLOCK) ON PUM.ID = HD.CreatedBy
-		WHERE  HT.[CentralLabId] = @CentralLabId   
-		AND HT.[BarcodeNo]  IN (SELECT BarcodeNo FROM Tbl_HPLCDiagnosisResult)  
-		AND (@CHCID  = 0 OR SP.[CHCID] = @CHCID)   
-		AND (@PHCID  = 0 OR SP.[PHCID] = @PHCID)   
-		AND (@ANMID  = 0 OR SP.[AssignANM_ID] = @ANMID)   
+		WHERE  HT.[BarcodeNo]  IN (SELECT BarcodeNo FROM Tbl_HPLCDiagnosisResult)  
+		AND (@DistrictId = 0 OR SP.[DistrictID] = @DistrictId)   
+		AND (@BlockId  = 0 OR B.[ID] = @BlockId)
+		AND (@CHCID  = 0 OR SP.[CHCID] = @CHCID)     
+		AND (@ANMID  = 0 OR SP.[AssignANM_ID] = @ANMID)    
 		AND HD.[IsDiagnosisComplete] = 1  
 		AND (CONVERT(DATE,HT.[HPLCResultUpdatedOn],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
 		AND HTD.[ProcessStatus] = 1  AND HTD.[SampleStatus] = 1
@@ -368,9 +369,9 @@ BEGIN
 		LEFT JOIN [dbo].[Tbl_UserMaster] U WITH (NOLOCK) ON U.ID = SP.AssignANM_ID  
 		LEFT JOIN [dbo].[Tbl_UserMaster] LTUM WITH (NOLOCK) ON LTUM.ID = HT.CreatedBy
 		LEFT JOIN [dbo].[Tbl_UserMaster] PUM WITH (NOLOCK) ON PUM.ID = HD.CreatedBy
-		WHERE  HT.[CentralLabId] = @CentralLabId   
-		AND (@CHCID  = 0 OR SP.[CHCID] = @CHCID)   
-		AND (@PHCID  = 0 OR SP.[PHCID] = @PHCID)   
+		WHERE (@DistrictId = 0 OR SP.[DistrictID] = @DistrictId)   
+		AND (@BlockId  = 0 OR B.[ID] = @BlockId)
+		AND (@CHCID  = 0 OR SP.[CHCID] = @CHCID)    
 		AND (@ANMID  = 0 OR SP.[AssignANM_ID] = @ANMID)   
 		AND HD.[IsDiagnosisComplete] = 1 AND HD.[IsNormal] = 0  
 		AND (CONVERT(DATE,HT.[HPLCResultUpdatedOn],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103))   
@@ -452,9 +453,9 @@ BEGIN
 		LEFT JOIN [dbo].[Tbl_UserMaster] U WITH (NOLOCK) ON U.ID = SP.AssignANM_ID
 		LEFT JOIN [dbo].[Tbl_UserMaster] LTUM WITH (NOLOCK) ON LTUM.ID = HT.CreatedBy
 		LEFT JOIN [dbo].[Tbl_UserMaster] PUM WITH (NOLOCK) ON PUM.ID = HD.CreatedBy
-		WHERE  HT.[CentralLabId] = @CentralLabId   
-		AND (@CHCID  = 0 OR SP.[CHCID] = @CHCID)   
-		AND (@PHCID  = 0 OR SP.[PHCID] = @PHCID)   
+		WHERE (@DistrictId = 0 OR SP.[DistrictID] = @DistrictId)   
+		AND (@BlockId  = 0 OR B.[ID] = @BlockId)
+		AND (@CHCID  = 0 OR SP.[CHCID] = @CHCID)  
 		AND (@ANMID  = 0 OR SP.[AssignANM_ID] = @ANMID)   
 		AND HD.[IsDiagnosisComplete] = 1 AND HD.[IsNormal] = 1  
 		AND (CONVERT(DATE,HT.[HPLCResultUpdatedOn],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103)) 
@@ -536,9 +537,9 @@ BEGIN
 		LEFT JOIN [dbo].[Tbl_UserMaster] U WITH (NOLOCK) ON U.ID = SP.AssignANM_ID
 		LEFT JOIN [dbo].[Tbl_UserMaster] LTUM WITH (NOLOCK) ON LTUM.ID = HT.CreatedBy
 		LEFT JOIN [dbo].[Tbl_UserMaster] PUM WITH (NOLOCK) ON PUM.ID = HD.CreatedBy
-		WHERE  HT.[CentralLabId] = @CentralLabId   
-		AND (@CHCID  = 0 OR SP.[CHCID] = @CHCID)   
-		AND (@PHCID  = 0 OR SP.[PHCID] = @PHCID)   
+		WHERE  (@DistrictId = 0 OR SP.[DistrictID] = @DistrictId)   
+		AND (@BlockId  = 0 OR B.[ID] = @BlockId)
+		AND (@CHCID  = 0 OR SP.[CHCID] = @CHCID)    
 		AND (@ANMID  = 0 OR SP.[AssignANM_ID] = @ANMID)   
 		AND HD.[IsDiagnosisComplete] = 1 AND HD.[IsConsultSeniorPathologist] = 1  
 		AND (CONVERT(DATE,HT.[HPLCResultUpdatedOn],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103))   

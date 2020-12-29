@@ -1,0 +1,24 @@
+
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+
+
+IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_FetchCHCByBlock' AND [type] = 'p')
+BEGIN
+	DROP PROCEDURE SPC_FetchCHCByBlock
+END
+GO
+CREATE Procedure [dbo].[SPC_FetchCHCByBlock] (@Id INT)
+AS
+BEGIN
+	SELECT ID 
+		,CHCname AS Name
+	FROM Tbl_CHCMaster
+	WHERE BlockID = @Id	 ORDER BY CHCname
+END
+

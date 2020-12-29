@@ -1,4 +1,4 @@
-USE [Eduquaydb]
+--USE [Eduquaydb]
 GO
 
 SET ANSI_NULLS ON
@@ -84,8 +84,7 @@ BEGIN
 			ELSE 
 			BEGIN
 				UPDATE [dbo].[Tbl_SubjectPregnancyDetail]
-				   SET RCHID = @RCHID
-					  ,ECNumber = @ECNumber
+				   SET ECNumber = @ECNumber
 					  ,LMP_Date = @LMP
 					  ,G = @G
 					  ,P = @P

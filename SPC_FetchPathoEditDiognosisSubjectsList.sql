@@ -72,7 +72,7 @@ BEGIN
 	LEFT JOIN [dbo].[Tbl_CHCMaster] C WITH (NOLOCK) ON C.[ID]  = CM.[TestingCHCID] 
 	LEFT JOIN [dbo].[Tbl_RIMaster] RM WITH (NOLOCK) ON RM.[ID] = SPRD.[RIID]  
 	LEFT JOIN [dbo].[Tbl_HPLCTestedDetail] HTD WITH (NOLOCK) ON  HTD.Barcode = HR.[BarcodeNo] 
-	WHERE  HD.[CentralLabId] = @CentralLabId  AND ( HD.[IsDiagnosisComplete] IS NULL  OR  HD.[IsDiagnosisComplete] = 0)
+	WHERE  HD.[CentralLabId] = @CentralLabId  AND ( HD.[IsDiagnosisComplete] IS NULL  OR  HD.[IsDiagnosisComplete] = 0) AND HD.[IsConsultSeniorPathologist] = 0
 	AND HTD.[ProcessStatus] = 1  AND HTD.[SampleStatus] = 1
 	ORDER BY [GestationalAge] DESC
 END

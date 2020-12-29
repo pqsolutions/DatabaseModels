@@ -5,55 +5,42 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_NHMReport' AND [type] = 'p')
+IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_NHMReportParticularDetails' AND [type] = 'p')
 BEGIN
-	DROP PROCEDURE SPC_NHMReport --'','',0,0,0,0
+	DROP PROCEDURE SPC_NHMReportParticularDetails --'120',0,0
 END
 GO
-CREATE PROCEDURE [dbo].[SPC_NHMReport]
+CREATE PROCEDURE [dbo].[SPC_NHMReportParticularDetails]
 (
-	@FromDate VARCHAR(50)
-	,@ToDate VARCHAR(50)
+	@UserInput VARCHAR(MAX)
 	,@DistrictId INT
 	,@BlockId INT
-	,@CHCID INT
-	,@ANMID INT
 )AS
 BEGIN
-	DECLARE  @StartDate VARCHAR(50), @EndDate VARCHAR(50), @Indexvar INT, @TotalCount INT,@SpouseSubjectId VARCHAr(250),@UniqueSubjectId VARCHAr(250)
+	DECLARE  @Indexvar INT, @TotalCount INT,@SpouseSubjectId VARCHAr(250),@UniqueSubjectId VARCHAr(250)
 		
-	IF @FromDate = NULL OR @FromDate = ''
-	BEGIN
-		SET @StartDate = (SELECT CONVERT(VARCHAR,DATEADD(MONTH ,-3,GETDATE()),103))
-	END
-	ELSE
-	BEGIN
-		SET @StartDate = @FromDate
-	END
-	IF @ToDate = NULL OR @ToDate = ''
-	BEGIN
-		SET @EndDate = (SELECT CONVERT(VARCHAR,GETDATE(),103))
-	END
-	ELSE
-	BEGIN
-		SET @EndDate = @ToDate
-	END
 
-	CREATE  TABLE #TempUniqueSubjectID(ID INT IDENTITY(1,1),[UniqueSubjectId] VARCHAR(250)) 
+	CREATE  TABLE #TempUniqueSubjectID(ID INT IDENTITY(1,1),[UniqueSubjectId] VARCHAR(250),[ROW NUMBER] INT) 
 
-	INSERT INTO #TempUniqueSubjectID([UniqueSubjectId])
-	SELECT [UniqueSubjectId] FROM Tbl_SubjectPrimaryDetail SP
+	INSERT INTO #TempUniqueSubjectID([UniqueSubjectId],[ROW NUMBER])
+	SELECT  * FROM (
+	SELECT SP.[UniqueSubjectId] 
+	,ROW_NUMBER() OVER (PARTITION BY SP.[UniqueSubjectID]  ORDER BY SC.[CreatedOn] DESC) AS [ROW NUMBER]
+	FROM Tbl_SubjectPrimaryDetail SP
+	LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail] SPD WITH (NOLOCK) ON SPD.[UniqueSubjectID] = SP.[UniqueSubjectID] 
+	LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.[UniqueSubjectID] = SP.[UniqueSubjectID]
 	LEFT JOIN Tbl_CHCMaster CM  WITH (NOLOCK) ON CM.ID = SP.CHCID
 	LEFT JOIN Tbl_BlockMaster BM WITH (NOLOCK) ON CM.BlockID = BM.ID
 	LEFT JOIN Tbl_UserMaster UM WITH (NOLOCK) ON UM.ID = SP.AssignANM_ID
 	WHERE SP.ChildSubjectTypeID = 1 AND SP.ID IN( SELECT SubjectID FROM Tbl_SubjectParentDetail)
 	AND (SP.DistrictID = @DistrictId OR @DistrictId = 0)
 	AND (BM.ID = @BlockId OR @BlockId = 0)
-	AND (SP.CHCID = @CHCID OR @CHCID = 0)
-	AND (SP.AssignANM_ID = @ANMID OR @ANMID = 0)
-	AND SP.DateofRegister BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103) 
-	AND UM.UserType_ID IN (SELECT ID FROM Tbl_UserTypeMaster WHERE Usertype = 'ANM')
-	 
+	AND(SP.[UniqueSubjectID]  LIKE '%'+ @UserInput +'%' OR SP.[MobileNo] LIKE '%'+ @UserInput +'%' OR 
+	SPD.[RCHID] LIKE '%'+ @UserInput +'%' OR SP.[FirstName] LIKE '%'+ @UserInput +'%' OR SC.[barcodeNo] LIKE '%'+ @UserInput +'%')
+	)GROUPS1
+		WHERE GROUPS1.[ROW NUMBER] = 1 
+		ORDER BY GROUPS1.UniqueSubjectID ASC
+
 
 	CREATE  TABLE #TempReportDetail(ID INT IDENTITY(1,1), ANMID VARCHAr(100), ANMName VARCHAR(MAX), UniqueSubjectId VARCHAR(250),  SubjectType VARCHAr(150), FirstName VARCHAR(250), SpouseSubjectId VARCHAR(250),
 	RCHID VARCHAR(250),
@@ -78,11 +65,11 @@ BEGIN
 			  ,SP.[UniqueSubjectID]
 			  ,ST.[SubjectType]
 			  ,(SELECT [dbo].[FN_ProperCase] (SP.[FirstName])) AS FirstName
-			  --,CASE WHEN LEN(SP.[SpouseSubjectID] ) > 0 THEN SP.[SpouseSubjectID] ELSE '--' END AS SpouseSubjectID
+			   --,CASE WHEN LEN(SP.[SpouseSubjectID] ) > 0 THEN SP.[SpouseSubjectID] ELSE '--' END AS SpouseSubjectID
 			  ,CASE WHEN LEN(SP.[SpouseSubjectID] ) > 0 THEN 'Yes' ELSE 'No' END AS SpouseSubjectID
 			  ,SPD.[RCHID]
 			  ,(CONVERT(VARCHAR,SP.[DateofRegister],103)) AS RegisteredDate
-			  ,CASE WHEN SC.[BarcodeNo] IS NULL THEN '--' ELSE SC.[BarcodeNo] END AS BarcodeNo
+			   ,CASE WHEN SC.[BarcodeNo] IS NULL THEN '--' ELSE SC.[BarcodeNo] END AS BarcodeNo
 			  ,RM.[RIsite]
 			  ,SP.[MobileNo]
 			  ,SAD.[Address3]
@@ -97,8 +84,7 @@ BEGIN
 			  ,CASE WHEN  HT.[ID] IS NULL THEN '--' WHEN HT.[IsPositive] IS NULL THEN '--' ELSE HT.[HPLCResult] END AS HPLCPathoLabResult
 			  ,CASE WHEN PS.[ID] IS NULL THEN '--' WHEN (PC.[ID] IS NOT NULL AND PS.[IsCounselled] = 0 ) THEN 'Pending' WHEN PC.[IsPNDTAgreeYes] = 1  THEN 'Agreed' WHEN PC.[IsPNDTAgreeNo] = 1  THEN 'Disagreed'              
 			   WHEN PC.[IsPNDTAgreePending] = 1  THEN 'Decision Awaiting'  END PrePNDTCounselling
-			  ,CASE WHEN PT.[ID] IS NULL THEN '--' WHEN PT.[PNDTResultId] = 1 THEN 'Normal Foetus' WHEN  PT.[PNDTResultId] = 2 THEN 'Affected Foetus'  
-			  WHEN PT.[PNDTResultId] = 3 THEN 'Foetus is a carrier' END AS PNDTResult
+			  ,CASE WHEN PT.[ID] IS NULL THEN '--' WHEN PT.[PNDTResultId] = 1 THEN 'Normal Foetus' WHEN  PT.[PNDTResultId] = 2 THEN 'Affected Foetus'  WHEN PT.[PNDTResultId] = 3 THEN 'Foetus is a carrier' END AS PNDTResult
 			  ,CASE WHEN POS.[ID] IS NULL THEN '--' WHEN (POC.[ID] IS NOT NULL AND POS.[IsCounselled] = 0 ) THEN 'Pending' WHEN POC.[IsMTPTestdAgreedYes] = 1  THEN 'Agreed' WHEN POC.[IsMTPTestdAgreedNo] = 1  THEN 'Disagreed'              
 			   WHEN POC.[IsMTPTestdAgreedPending] = 1  THEN 'Decision Awaiting'  END PostPNDTCounselling 
 			  ,CASE WHEN MT.[ID] IS NULL THEN '--' ELSE 'Completed' END MTPService
@@ -140,12 +126,12 @@ BEGIN
 					,CASE WHEN LEN(SP.[SpouseSubjectID] ) > 0 THEN 'Yes' ELSE 'No' END AS SpouseSubjectID
 				  ,SPD.[RCHID]
 				  ,(CONVERT(VARCHAR,SP.[DateofRegister],103)) AS RegisteredDate
-				 ,CASE WHEN SC.[BarcodeNo] IS NULL THEN '--' ELSE SC.[BarcodeNo] END AS BarcodeNo
+				  ,CASE WHEN SC.[BarcodeNo] IS NULL THEN '--' ELSE SC.[BarcodeNo] END AS BarcodeNo
 				  ,RM.[RIsite]
 				  ,SP.[MobileNo]
 				  ,SAD.[Address3]
 				  ,'--' AS [GA] 
-				  ,CASE WHEN SC.[ID] IS NULL THEN 'No' ELSE 'Yes' END AS SampleCollected
+				  ,CASE WHEN SC.[ID] IS NULL THEN 'NO' ELSE 'YES' END AS SampleCollected
 				  ,CASE WHEN SC.[ID] IS NULL THEN '--' ELSE (CONVERT(VARCHAR,SC.[SampleCollectionDate],103) + ' ' +CONVERT(VARCHAR(5),SC.[SampleCollectionTime],108)) END AS SampleCollectionDateTime
 				  ,CASE WHEN CR.[ID] IS NULL THEN '--' ELSE (CONVERT(VARCHAR,CR.[TestCompleteOn],103) + ' '+ CONVERT(VARCHAR(5),CR.[TestCompleteOn],108)) END AS SampleTestedDateTime
 				  ,CASE WHEN CR.[ID] IS NULL THEN '--' ELSE CR.[CBCResult] END AS CBCResult
@@ -153,11 +139,11 @@ BEGIN
 				  ,CASE WHEN HT.[ID] IS NULL THEN '--' ELSE CONVERT(VARCHAR,HT.[HPLCTestCompletedOn],103) END AS HPLCTestedDate
 				  ,CASE WHEN HT.[ID] IS NULL THEN '--' WHEN HT.[IsPositive] IS NULL THEN '--' ELSE HT.[LabDiagnosis] END AS HPLCLabDiagnosis
 				  ,CASE WHEN  HT.[ID] IS NULL THEN '--' WHEN HT.[IsPositive] IS NULL THEN '--' ELSE HT.[HPLCResult] END AS HPLCPathoLabResult
-				  ,CASE WHEN PS.[ID] IS NULL THEN '--' WHEN (PC.[ID] IS NOT NULL AND PS.[IsCounselled] = 0 ) THEN 'Pending' WHEN PC.[IsPNDTAgreeYes] = 1  THEN 'Agreed' WHEN PC.[IsPNDTAgreeNo] = 1  THEN 'Disagreed'              
+				  ,CASE WHEN PS.[ID] IS NULL THEN '--' WHEN  (PC.[ID] IS NOT NULL AND PS.[IsCounselled] = 0 ) THEN 'Pending' WHEN PC.[IsPNDTAgreeYes] = 1  THEN 'Agreed' WHEN PC.[IsPNDTAgreeNo] = 1  THEN 'Disagreed'              
 				   WHEN PC.[IsPNDTAgreePending] = 1  THEN 'Decision Awaiting'  END PrePNDTCounselling
 				   ,'--' AS PNDTResult
 				 -- ,CASE WHEN PT.[ID] IS NULL THEN '-' WHEN PT.[PNDTResultId] = 1 THEN 'Normal Foetus' WHEN  PT.[PNDTResultId] = 2 THEN 'Affected Foetus'  WHEN PT.[PNDTResultId] = 3 THEN 'Foetus is a carrier' END AS PNDTResult
-				  ,CASE WHEN POS.[ID] IS NULL THEN '--' WHEN  (POC.[ID] IS NOT NULL AND POS.[IsCounselled] = 0 ) THEN 'Pending' WHEN POC.[IsMTPTestdAgreedYes] = 1  THEN 'Agreed' WHEN POC.[IsMTPTestdAgreedNo] = 1  THEN 'Disagreed'              
+				  ,CASE WHEN POS.[ID] IS NULL THEN '--' WHEN (POC.[ID] IS NOT NULL AND POS.[IsCounselled] = 0 ) THEN 'Pending' WHEN POC.[IsMTPTestdAgreedYes] = 1  THEN 'Agreed' WHEN POC.[IsMTPTestdAgreedNo] = 1  THEN 'Disagreed'              
 				   WHEN POC.[IsMTPTestdAgreedPending] = 1  THEN 'Decision Awaiting'  END PostPNDTCounselling 
 				  ,'--' AS MTPService
 				  --,CASE WHEN MT.[ID] IS NULL THEN '--' ELSE 'Completed' END MTPService
