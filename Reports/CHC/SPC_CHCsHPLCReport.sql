@@ -5,16 +5,16 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_ANMHPLCReport' AND [type] = 'p')
+IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_CHCsHPLCReport' AND [type] = 'p')
 BEGIN
-	DROP PROCEDURE SPC_ANMHPLCReport  --'','',1,0,0,5
+	DROP PROCEDURE SPC_CHCsHPLCReport  --'','',1,0,0,5
 END
 GO
-CREATE PROCEDURE [dbo].[SPC_ANMHPLCReport]
+CREATE PROCEDURE [dbo].[SPC_CHCsHPLCReport]
 (
 	@FromDate VARCHAR(50)
 	,@ToDate VARCHAR(50)
-	,@ANMID INT
+	,@CHCID INT
 	,@RIID INT
 	,@SubjectType INT
 	,@Status INT
@@ -93,7 +93,8 @@ BEGIN
 			AND(SPRD.[DateofRegister] BETWEEN  CONVERT(DATETIME,@StartDate,103) AND CONVERT(DATETIME,@EndDate,103))
 			AND (SPRD.[RIID] = @RIID OR @RIID = 0)
 			AND (SPRD.[ChildSubjectTypeID] = @SubjectType OR @SubjectType = 0)
-			AND SPRD.[AssignANM_ID] = @ANMID
+			AND (SPRD.[CHCID] = @CHCID OR @CHCID = 0)
+			AND SPRD.[RegisteredFrom] = 9
 			AND ASD.[BarcodeNo] IN (SELECT BarcodeNo FROM Tbl_CBCTestResult)
 			AND ASD.[BarcodeNo] IN (SELECT BarcodeNo FROM Tbl_SSTestResult)
 			AND ASD.[IsAccept] = 1 AND ASD.[SampleDamaged] = 0 AND ASD.[SampleTimeoutExpiry] = 0
@@ -150,7 +151,8 @@ BEGIN
 			AND(SPRD.[DateofRegister] BETWEEN  CONVERT(DATETIME,@StartDate,103) AND CONVERT(DATETIME,@EndDate,103))
 			AND (SPRD.[RIID] = @RIID OR @RIID = 0)
 			AND (SPRD.[ChildSubjectTypeID] = @SubjectType OR @SubjectType = 0)
-			AND SPRD.[AssignANM_ID] = @ANMID
+			AND (SPRD.[CHCID] = @CHCID OR @CHCID = 0)
+			AND SPRD.[RegisteredFrom] = 9
 			AND ASD.[BarcodeNo] IN (SELECT BarcodeNo FROM Tbl_CBCTestResult)
 			AND ASD.[BarcodeNo] IN (SELECT BarcodeNo FROM Tbl_SSTestResult)
 			AND ASD.[IsAccept] = 1 AND ASD.[SampleDamaged] = 0 AND ASD.[SampleTimeoutExpiry] = 0
@@ -210,7 +212,8 @@ BEGIN
 			AND(SPRD.[DateofRegister] BETWEEN  CONVERT(DATETIME,@StartDate,103) AND CONVERT(DATETIME,@EndDate,103))
 			AND (SPRD.[RIID] = @RIID OR @RIID = 0)
 			AND (SPRD.[ChildSubjectTypeID] = @SubjectType OR @SubjectType = 0)
-			AND SPRD.[AssignANM_ID] = @ANMID
+			AND (SPRD.[CHCID] = @CHCID OR @CHCID = 0)
+			AND SPRD.[RegisteredFrom] = 9
 			AND ASD.[BarcodeNo] IN (SELECT BarcodeNo FROM Tbl_CBCTestResult)
 			AND ASD.[BarcodeNo] IN (SELECT BarcodeNo FROM Tbl_SSTestResult)
 			AND ASD.[IsAccept] = 1 AND ASD.[SampleDamaged] = 0 AND ASD.[SampleTimeoutExpiry] = 0
@@ -271,7 +274,8 @@ BEGIN
 			AND(SPRD.[DateofRegister] BETWEEN  CONVERT(DATETIME,@StartDate,103) AND CONVERT(DATETIME,@EndDate,103))
 			AND (SPRD.[RIID] = @RIID OR @RIID = 0)
 			AND (SPRD.[ChildSubjectTypeID] = @SubjectType OR @SubjectType = 0)
-			AND SPRD.[AssignANM_ID] = @ANMID
+			AND (SPRD.[CHCID] = @CHCID OR @CHCID = 0)
+			AND SPRD.[RegisteredFrom] = 9
 			AND ASD.[BarcodeNo] IN (SELECT BarcodeNo FROM Tbl_CBCTestResult)
 			AND ASD.[BarcodeNo] IN (SELECT BarcodeNo FROM Tbl_SSTestResult)
 			AND ASD.[IsAccept] = 1 AND ASD.[SampleDamaged] = 0 AND ASD.[SampleTimeoutExpiry] = 0

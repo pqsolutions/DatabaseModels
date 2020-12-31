@@ -1,0 +1,25 @@
+
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+
+
+IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_FetchRIByCHC' AND [type] = 'p')
+BEGIN
+	DROP PROCEDURE SPC_FetchRIByCHC 
+END
+GO
+CREATE Procedure [dbo].[SPC_FetchRIByCHC] (@Id INT)
+AS
+BEGIN
+	SELECT ID 
+		,Risite AS Name
+	FROM Tbl_RIMaster
+	WHERE CHCID = @Id	
+	ORDER BY RIsite
+END
+

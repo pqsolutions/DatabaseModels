@@ -5,16 +5,16 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_ANMShipmentReport' AND [type] = 'p')
+IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_CHCReCollectionReport' AND [type] = 'p')
 BEGIN
-	DROP PROCEDURE SPC_ANMShipmentReport -- '','',1,0,0,1
+	DROP PROCEDURE SPC_CHCReCollectionReport  --'','',1,0,0,2
 END
 GO
-CREATE PROCEDURE [dbo].[SPC_ANMShipmentReport]
+CREATE PROCEDURE [dbo].[SPC_CHCReCollectionReport]
 (
 	@FromDate VARCHAR(50)
 	,@ToDate VARCHAR(50)
-	,@ANMID INT
+	,@CHCID INT
 	,@RIID INT
 	,@SubjectType INT
 	,@Status INT
@@ -39,20 +39,20 @@ BEGIN
 		SET @EndDate = @ToDate
 	END
 
-	CREATE  TABLE #TempReportDetail(ID INT IDENTITY(1,1), ANMID VARCHAR(100), ANMName VARCHAR(MAX), UniqueSubjectId VARCHAR(250), SubjectName VARCHAR(MAX), SubjectType VARCHAR(150),
+	CREATE  TABLE #TempReportDetail(ID INT IDENTITY(1,1), ANMID VARCHAR(100), ANMName VARCHAR(MAX), UniqueSubjectId VARCHAR(250), SubjectName VARCHAR(MAX),  SubjectType VARCHAR(150),
 	RCHID VARCHAR(250), DateOfRegister VARCHAR(250), Barcode VARCHAR(150), RI VARCHAR(250), MobileNo VARCHAR(200), GA VARCHAR(10), SampleCollected VARCHAR(20), SampleCollectionDateTime VARCHAR(250),
 	FirstTimeRecollected VARCHAR(250), RecollectedDateTime VARCHAR(250),
-	ShipmentDone VARCHAR(20), ShipmentDateTime VARCHAR(250), ShipmentId VARCHAR(250),  TestResult VARCHAR(MAX), CHCShipmentDateTime VARCHAR(250),
+	ShipmentDone VARCHAR(20), ShipmentDateTime VARCHAR(250), ShipmentId VARCHAR(250), TestResult VARCHAR(MAX), CHCShipmentDateTime VARCHAR(250),
 	HPLCPathoDiagnosis VARCHAR(MAX), PNDT VARCHAR(MAX), MTP VARCHAR(MAX), CurrentStatus VARCHAR(MAX),
 	[ROW NUMBER] INT) 
 		
 	INSERT INTO #TempReportDetail (ANMID, ANMName, UniqueSubjectId, SubjectName, SubjectType, RCHID, DateOfRegister, Barcode, RI, MobileNo, GA, SampleCollected, SampleCollectionDateTime, FirstTimeRecollected, RecollectedDateTime,
-	ShipmentDone, ShipmentDateTime, ShipmentId, TestResult, CHCShipmentDateTime,HPLCPathoDiagnosis, PNDT, MTP, CurrentStatus,[ROW NUMBER])
+	ShipmentDone, ShipmentDateTime, ShipmentId,  TestResult, CHCShipmentDateTime,HPLCPathoDiagnosis, PNDT, MTP, CurrentStatus,[ROW NUMBER])
 	SELECT * FROM (
 		SELECT	UM.[User_gov_code] AS ANMID
 			,(UM.[FirstName]+ ' ' +UM.[LastName]) AS ANMName
 			,SPRD.[UniqueSubjectID]
-			,(SPRD.[FirstName]+ ' ' +SPRD.[LastName]) AS SubjectName
+			,(SPRD.[FirstName] + ' ' + SPRD.[LastName]) AS SubjectName
 			,ST.[SubjectType]
 			,SPD.[RCHID]
 			,CONVERT(VARCHAR,SPRD.[DateofRegister],103) AS DateofRegister
@@ -63,8 +63,17 @@ BEGIN
 			,CASE WHEN SC.[ID] IS NULL THEN 'No' WHEN SC.[SampleTimeoutExpiry] = 1 THEN 'Timeout Expiry' WHEN SC.[SampleDamaged] =1 THEN 'Sample Damaged' ELSE 'Yes' END AS SampleCollected
 			,CASE WHEN SC.[ID] IS NULL THEN '--' ELSE (CONVERT(VARCHAR,SC.[SampleCollectionDate],103) + ' ' +CONVERT(VARCHAR(5),SC.[SampleCollectionTime],108)) END AS SampleCollectionDateTime
 			,CASE WHEN SC.[ID] IS NULL THEN 'Pending' WHEN (SELECT COUNT(ID) FROM Tbl_SampleCollection WHERE UniqueSubjectID = SPRD.[UniqueSubjectID]) > 1 THEN 'Recollected' 
-				WHEN (SELECT COUNT(ID) FROM Tbl_SampleCollection WHERE UniqueSubjectID = SPRD.[UniqueSubjectID]) = 1 THEN 'First Time' END AS FirstTimeRecollected
-			,CASE WHEN SC.[ID] IS NULL THEN '--' ELSE (CONVERT(VARCHAR,SC.[SampleCollectionDate],103) + ' ' +CONVERT(VARCHAR(5),SC.[SampleCollectionTime],108)) END AS RecollectedDateTime
+				WHEN ((SELECT COUNT(ID) FROM Tbl_SampleCollection WHERE UniqueSubjectID = SPRD.[UniqueSubjectID]) = 1  AND SC.[SampleTimeoutExpiry] = 1) THEN 'Timeout Expiry'
+				WHEN ((SELECT COUNT(ID) FROM Tbl_SampleCollection WHERE UniqueSubjectID = SPRD.[UniqueSubjectID]) = 1  AND SC.[SampleDamaged] = 1) THEN 'Sample Damaged'
+				WHEN ((SELECT COUNT(ID) FROM Tbl_SampleCollection WHERE UniqueSubjectID = SPRD.[UniqueSubjectID]) = 1  AND SC.[SampleDamaged] = 0 AND SC.[SampleTimeoutExpiry] = 0) THEN 'First Time'
+				END AS FirstTimeRecollected
+			,CASE WHEN SC.[ID] IS NULL THEN '--' WHEN (SELECT COUNT(ID) FROM Tbl_SampleCollection WHERE UniqueSubjectID = SPRD.[UniqueSubjectID]) > 1 THEN 
+				(CONVERT(VARCHAR,SC.[SampleCollectionDate],103) + ' ' +CONVERT(VARCHAR(5),SC.[SampleCollectionTime],108)) 
+				WHEN ((SELECT COUNT(ID) FROM Tbl_SampleCollection WHERE UniqueSubjectID = SPRD.[UniqueSubjectID]) = 1  AND SC.[SampleTimeoutExpiry] = 1) THEN '--'
+				WHEN ((SELECT COUNT(ID) FROM Tbl_SampleCollection WHERE UniqueSubjectID = SPRD.[UniqueSubjectID]) = 1  AND SC.[SampleDamaged] = 1) THEN '--'
+				WHEN ((SELECT COUNT(ID) FROM Tbl_SampleCollection WHERE UniqueSubjectID = SPRD.[UniqueSubjectID]) = 1  AND SC.[SampleDamaged] = 0 AND SC.[SampleTimeoutExpiry] = 0) THEN 
+				(CONVERT(VARCHAR,SC.[SampleCollectionDate],103) + ' ' +CONVERT(VARCHAR(5),SC.[SampleCollectionTime],108))
+				END AS RecollectedDateTime
 			,CASE WHEN ACS.[GenratedShipmentID] IS NULL THEN  'No' ELSE 'Yes' END AS ShipmentDone
 			,CASE WHEN ACS.[GenratedShipmentID] IS NULL THEN  '--' ELSE (CONVERT(VARCHAR,ACS.[DateofShipment],103) + ' ' +CONVERT(VARCHAR(5),ACS.[TimeofShipment],108)) END AS ShipmentDateTime
 			,CASE WHEN ACS.[GenratedShipmentID] IS NULL THEN  '--' ELSE ACS.[GenratedShipmentID] END AS ShipmentId
@@ -88,8 +97,8 @@ BEGIN
 		AND SPRD.[ID] IN (SELECT SubjectID FROM [dbo].[Tbl_SampleCollection])
 		AND (SPRD.[RIID] = @RIID OR @RIID = 0)
 		AND (SPRD.[ChildSubjectTypeID] = @SubjectType OR @SubjectType = 0)
-		AND SPRD.[AssignANM_ID] = @ANMID
-		AND SC.[CollectionFrom] = 10
+		AND (SPRD.[CHCID] = @CHCID OR @CHCID = 0)
+		AND SPRD.[RegisteredFrom] = 9
 	)GROUPS
 	WHERE GROUPS.[ROW NUMBER] = 1 
 	ORDER BY GROUPS.UniqueSubjectID ASC
@@ -97,12 +106,12 @@ BEGIN
 	IF @Status = 1
 	BEGIN
 
-		SELECT * FROM #TempReportDetail WHERE ShipmentDone = 'Yes'
+		SELECT * FROM #TempReportDetail WHERE FirstTimeRecollected = 'Recollected'
 	END
 	IF @Status = 2
 	BEGIN
 
-		SELECT * FROM #TempReportDetail WHERE ShipmentDone = 'No'
+		SELECT * FROM #TempReportDetail  WHERE (FirstTimeRecollected = 'Timeout Expiry' OR FirstTimeRecollected = 'Sample Damaged' )
 	END
 	DROP Table #TempReportDetail
 END

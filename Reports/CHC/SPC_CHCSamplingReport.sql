@@ -5,16 +5,16 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_ANMSamplingReport' AND [type] = 'p')
+IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_CHCSamplingReport' AND [type] = 'p')
 BEGIN
-	DROP PROCEDURE SPC_ANMSamplingReport -- '','',1,0,0,1
+	DROP PROCEDURE SPC_CHCSamplingReport -- '','',1,0,0,1
 END
 GO
-CREATE PROCEDURE [dbo].[SPC_ANMSamplingReport]
+CREATE PROCEDURE [dbo].[SPC_CHCSamplingReport]
 (
 	@FromDate VARCHAR(50)
 	,@ToDate VARCHAR(50)
-	,@ANMID INT
+	,@CHCID INT
 	,@RIID INT
 	,@SubjectType INT
 	,@Status INT
@@ -92,8 +92,8 @@ BEGIN
 			AND SPRD.[ID] IN (SELECT SubjectID FROM [dbo].[Tbl_SampleCollection])
 			AND (SPRD.[RIID] = @RIID OR @RIID = 0)
 			AND (SPRD.[ChildSubjectTypeID] = @SubjectType OR @SubjectType = 0)
-			AND SPRD.[AssignANM_ID] = @ANMID
-			AND SC.[CollectionFrom] = 10
+			AND (SPRD.[CHCID] = @CHCID OR @CHCID = 0)
+			AND SPRD.[RegisteredFrom] = 9
 		)GROUPS
 		WHERE GROUPS.[ROW NUMBER] = 1 
 		ORDER BY GROUPS.UniqueSubjectID ASC
@@ -143,8 +143,8 @@ BEGIN
 			AND SPRD.[ID] NOT IN (SELECT SubjectID FROM [dbo].[Tbl_SampleCollection])
 			AND (SPRD.[RIID] = @RIID OR @RIID = 0)
 			AND (SPRD.[ChildSubjectTypeID] = @SubjectType OR @SubjectType = 0)
-			AND SPRD.[AssignANM_ID] = @ANMID
-			AND SC.[CollectionFrom] = 10
+			AND (SPRD.[CHCID] = @CHCID OR @CHCID = 0)
+			AND SPRD.[RegisteredFrom] = 9
 		)GROUPS
 		WHERE GROUPS.[ROW NUMBER] = 1 
 		ORDER BY GROUPS.UniqueSubjectID ASC

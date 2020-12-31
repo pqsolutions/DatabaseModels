@@ -7,7 +7,7 @@ SET QUOTED_IDENTIFIER ON
 GO
 IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_ANMMTPReport' AND [type] = 'p')
 BEGIN
-	DROP PROCEDURE SPC_ANMMTPReport -- '','',2,0,1,1
+	DROP PROCEDURE SPC_ANMMTPReport  --'','',2,0,1,1
 END
 GO
 CREATE PROCEDURE [dbo].[SPC_ANMMTPReport]
@@ -39,7 +39,7 @@ BEGIN
 		SET @EndDate = @ToDate
 	END
 
-	CREATE  TABLE #TempReportDetail(ID INT IDENTITY(1,1), ANMID VARCHAR(100), ANMName VARCHAR(MAX), UniqueSubjectId VARCHAR(250),  SubjectType VARCHAR(150),
+	CREATE  TABLE #TempReportDetail(ID INT IDENTITY(1,1), ANMID VARCHAR(100), ANMName VARCHAR(MAX), UniqueSubjectId VARCHAR(250), SubjectName VARCHAR(MAX), SubjectType VARCHAR(150),
 	RCHID VARCHAR(250), DateOfRegister VARCHAR(250), Barcode VARCHAR(150), RI VARCHAR(250), MobileNo VARCHAR(200), GA VARCHAR(10), SampleCollected VARCHAR(20), SampleCollectionDateTime VARCHAR(250),
 	FirstTimeRecollected VARCHAR(250), RecollectedDateTime VARCHAR(250),
 	ShipmentDone VARCHAR(20), ShipmentDateTime VARCHAR(250), ShipmentId VARCHAR(250), TestResult VARCHAR(MAX), CHCShipmentDateTime VARCHAR(250),
@@ -48,12 +48,13 @@ BEGIN
 
 	IF @Status = 1
 	BEGIN
-		INSERT INTO #TempReportDetail (ANMID, ANMName, UniqueSubjectId,  SubjectType, RCHID, DateOfRegister, Barcode, RI, MobileNo, GA, SampleCollected, SampleCollectionDateTime, FirstTimeRecollected, RecollectedDateTime,
+		INSERT INTO #TempReportDetail (ANMID, ANMName, UniqueSubjectId,  SubjectName, SubjectType, RCHID, DateOfRegister, Barcode, RI, MobileNo, GA, SampleCollected, SampleCollectionDateTime, FirstTimeRecollected, RecollectedDateTime,
 		ShipmentDone, ShipmentDateTime, ShipmentId, TestResult, CHCShipmentDateTime,HPLCPathoDiagnosis, PNDT, MTP, CurrentStatus,[ROW NUMBER])
 		SELECT * FROM (
 			SELECT	UM.[User_gov_code] AS ANMID
 				,(UM.[FirstName]+ ' ' +UM.[LastName]) AS ANMName
 				,SPRD.[UniqueSubjectID]
+				,(SPRD.[FirstName] + ' ' + SPRD.[LastName]) AS SubjectName
 				,ST.[SubjectType]
 				,SPD.[RCHID]
 				,CONVERT(VARCHAR,SPRD.[DateofRegister],103) AS DateofRegister
@@ -131,12 +132,13 @@ BEGIN
 	END
 	IF @Status = 2
 	BEGIN
-		INSERT INTO #TempReportDetail (ANMID, ANMName, UniqueSubjectId,  SubjectType, RCHID, DateOfRegister, Barcode, RI, MobileNo, GA, SampleCollected, SampleCollectionDateTime, FirstTimeRecollected, RecollectedDateTime,
+		INSERT INTO #TempReportDetail (ANMID, ANMName, UniqueSubjectId, SubjectName, SubjectType, RCHID, DateOfRegister, Barcode, RI, MobileNo, GA, SampleCollected, SampleCollectionDateTime, FirstTimeRecollected, RecollectedDateTime,
 		ShipmentDone, ShipmentDateTime, ShipmentId, TestResult, CHCShipmentDateTime,HPLCPathoDiagnosis, PNDT, MTP, CurrentStatus,[ROW NUMBER])
 		SELECT * FROM (
 			SELECT	UM.[User_gov_code] AS ANMID
 				,(UM.[FirstName]+ ' ' +UM.[LastName]) AS ANMName
 				,SPRD.[UniqueSubjectID]
+				,(SPRD.[FirstName] + ' ' + SPRD.[LastName]) AS SubjectName
 				,ST.[SubjectType]
 				,SPD.[RCHID]
 				,CONVERT(VARCHAR,SPRD.[DateofRegister],103) AS DateofRegister
