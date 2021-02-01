@@ -49,7 +49,7 @@ BEGIN
 		
 	
 		UPDATE Tbl_ANMCHCShipments SET 
-				ReceivedDate =CONVERT(DATETIME,@ReceivedDate,103)  
+				ReceivedDate = CONVERT(DATETIME,@ReceivedDate,103)  
 				,ProcessingDateTime = CONVERT(DATETIME,@ProcessingDateTime,103)
 				,ILRInDateTime = @ILRIn
 				,ILROutDateTime = @ILROut

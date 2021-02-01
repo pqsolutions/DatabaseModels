@@ -55,11 +55,11 @@ BEGIN
 		   ,CASE WHEN ISNULL(SP.[DOB],'') = '' THEN '' ELSE CONVERT(VARCHAR,SP.[DOB],103) END DOB  
 		   ,SP.[MobileNo] AS ContactNo  
 		   ,SP.[Spouse_ContactNo] AS SpouseContactNo  
-		   ,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN  
+		   ,CASE WHEN SP.[ChildSubjectTypeID] = 1 THEN  
 			CONVERT(VARCHAR,SPR.[LMP_Date],103) ELSE '' END AS LMPDate  
-		   ,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN  
-		   (SELECT [dbo].[FN_CalculateGestationalAge](SP.[ID])) ELSE '' END AS GestationalAge  
-		   ,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN  
+		   ,CASE WHEN  SP.[ChildSubjectTypeID] = 1 THEN  
+		   (SELECT [dbo].[FN_CalculateGAonHPLCDate](SP.[ID], HT.[BarcodeNo])) ELSE '' END AS GestationalAge  
+		   ,CASE WHEN  SP.[ChildSubjectTypeID] = 1 THEN  
 			('G'+CONVERT(VARCHAR,SPR.[G])+'-P'+CONVERT(VARCHAR,SPR.[P])+'-L'+CONVERT(VARCHAR,SPR.[L])+'-A'+  
 			CONVERT(VARCHAR,SPR.[A])) ELSE '' END AS ObstetricScore  
 		   ,ISNULL(SPR.[ECNumber],'') AS ECNumber  
@@ -102,7 +102,7 @@ BEGIN
 		LEFT JOIN [dbo].[Tbl_CBCTestResult] CBC WITH (NOLOCK) ON CBC.BarcodeNo = PRSD.BarcodeNo  
 		LEFT JOIN [dbo].[Tbl_SSTestResult] SST WITH (NOLOCK) ON SST.BarcodeNo = PRSD.BarcodeNo  
 		LEFT JOIN [dbo].[Tbl_ANMCHCShipmentsDetail] ACS  WITH (NOLOCK) ON ACS.BarcodeNo = HT.BarcodeNo 
-		LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.UniqueSubjectID = ACS.UniqueSubjectID   
+		LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.BarcodeNo = ACS.BarcodeNo   
 		LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP   WITH (NOLOCK) ON SP.UniqueSubjectID = SC.UniqueSubjectID  
 		LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail] SPR   WITH (NOLOCK) ON SPR.UniqueSubjectID = SP.UniqueSubjectID  
 		LEFT JOIN [dbo].[Tbl_SubjectAddressDetail] SPA   WITH (NOLOCK) ON SPA.UniqueSubjectID = SP.UniqueSubjectID  
@@ -139,11 +139,11 @@ BEGIN
 		   ,CASE WHEN ISNULL(SP.[DOB],'') = '' THEN '' ELSE CONVERT(VARCHAR,SP.[DOB],103) END DOB  
 		   ,SP.[MobileNo] AS ContactNo  
 		   ,SP.[Spouse_ContactNo] AS SpouseContactNo  
-		   ,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN  
+		   ,CASE WHEN  SP.[ChildSubjectTypeID] = 1 THEN  
 			CONVERT(VARCHAR,SPR.[LMP_Date],103) ELSE '' END AS LMPDate  
-		   ,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN  
-		   (SELECT [dbo].[FN_CalculateGestationalAge](SP.[ID])) ELSE '' END AS GestationalAge  
-		   ,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN  
+		   ,CASE WHEN  SP.[ChildSubjectTypeID] = 1 THEN  
+			(SELECT [dbo].[FN_CalculateGAonHPLCDate](SP.[ID], HT.[BarcodeNo])) ELSE '' END AS GestationalAge  
+		   ,CASE WHEN  SP.[ChildSubjectTypeID] = 1 THEN  
 			('G'+CONVERT(VARCHAR,SPR.[G])+'-P'+CONVERT(VARCHAR,SPR.[P])+'-L'+CONVERT(VARCHAR,SPR.[L])+'-A'+  
 			CONVERT(VARCHAR,SPR.[A])) ELSE '' END AS ObstetricScore  
 		   ,ISNULL(SPR.[ECNumber],'') AS ECNumber  
@@ -185,7 +185,7 @@ BEGIN
 		LEFT JOIN [dbo].[Tbl_CBCTestResult] CBC WITH (NOLOCK) ON CBC.BarcodeNo = HT.BarcodeNo  
 		LEFT JOIN [dbo].[Tbl_SSTestResult] SST WITH (NOLOCK) ON SST.BarcodeNo = HT.BarcodeNo  
 		LEFT JOIN [dbo].[Tbl_ANMCHCShipmentsDetail] ACS  WITH (NOLOCK) ON ACS.BarcodeNo = HT.BarcodeNo 
-		LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.UniqueSubjectID = ACS.UniqueSubjectID   
+		LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.BarcodeNo = ACS.BarcodeNo   
 		LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP   WITH (NOLOCK) ON SP.UniqueSubjectID = SC.UniqueSubjectID  
 		LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail] SPR   WITH (NOLOCK) ON SPR.UniqueSubjectID = SP.UniqueSubjectID  
 		LEFT JOIN [dbo].[Tbl_SubjectAddressDetail] SPA   WITH (NOLOCK) ON SPA.UniqueSubjectID = SP.UniqueSubjectID  
@@ -221,11 +221,11 @@ BEGIN
 		   ,CASE WHEN ISNULL(SP.[DOB],'') = '' THEN '' ELSE CONVERT(VARCHAR,SP.[DOB],103) END DOB  
 		   ,SP.[MobileNo] AS ContactNo  
 		   ,SP.[Spouse_ContactNo] AS SpouseContactNo  
-		   ,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN  
+		   ,CASE WHEN  SP.[ChildSubjectTypeID] = 1 THEN  
 			CONVERT(VARCHAR,SPR.[LMP_Date],103) ELSE '' END AS LMPDate  
-		   ,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN  
-		   (SELECT [dbo].[FN_CalculateGestationalAge](SP.[ID])) ELSE '' END AS GestationalAge  
-		   ,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN  
+		   ,CASE WHEN  SP.[ChildSubjectTypeID] = 1 THEN  
+		   (SELECT [dbo].[FN_CalculateGAonHPLCDate](SP.[ID], HT.[BarcodeNo])) ELSE '' END AS GestationalAge  
+		   ,CASE WHEN  SP.[ChildSubjectTypeID] = 1 THEN  
 			('G'+CONVERT(VARCHAR,SPR.[G])+'-P'+CONVERT(VARCHAR,SPR.[P])+'-L'+CONVERT(VARCHAR,SPR.[L])+'-A'+  
 			CONVERT(VARCHAR,SPR.[A])) ELSE '' END AS ObstetricScore  
 		   ,ISNULL(SPR.[ECNumber],'') AS ECNumber  
@@ -268,7 +268,7 @@ BEGIN
 		LEFT JOIN [dbo].[Tbl_CBCTestResult] CBC WITH (NOLOCK) ON CBC.BarcodeNo = HT.BarcodeNo  
 		LEFT JOIN [dbo].[Tbl_SSTestResult] SST WITH (NOLOCK) ON SST.BarcodeNo = HT.BarcodeNo  
 		LEFT JOIN [dbo].[Tbl_ANMCHCShipmentsDetail] ACS  WITH (NOLOCK) ON ACS.BarcodeNo = HT.BarcodeNo 
-		LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.UniqueSubjectID = ACS.UniqueSubjectID   
+		LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.BarcodeNo = ACS.BarcodeNo   
 		LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP   WITH (NOLOCK) ON SP.UniqueSubjectID = SC.UniqueSubjectID   
 		LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail] SPR   WITH (NOLOCK) ON SPR.UniqueSubjectID = SP.UniqueSubjectID  
 		LEFT JOIN [dbo].[Tbl_SubjectAddressDetail] SPA   WITH (NOLOCK) ON SPA.UniqueSubjectID = SP.UniqueSubjectID  
@@ -306,11 +306,11 @@ BEGIN
 		   ,CASE WHEN ISNULL(SP.[DOB],'') = '' THEN '' ELSE CONVERT(VARCHAR,SP.[DOB],103) END DOB  
 		   ,SP.[MobileNo] AS ContactNo  
 		   ,SP.[Spouse_ContactNo] AS SpouseContactNo  
-		   ,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN  
+		   ,CASE WHEN  SP.[ChildSubjectTypeID] = 1 THEN  
 			CONVERT(VARCHAR,SPR.[LMP_Date],103) ELSE '' END AS LMPDate  
-		   ,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN  
-		   (SELECT [dbo].[FN_CalculateGestationalAge](SP.[ID])) ELSE '' END AS GestationalAge  
-		   ,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN  
+		   ,CASE WHEN  SP.[ChildSubjectTypeID] = 1 THEN  
+		   (SELECT [dbo].[FN_CalculateGAonHPLCDate](SP.[ID], HT.[BarcodeNo])) ELSE '' END AS GestationalAge  
+		   ,CASE WHEN  SP.[ChildSubjectTypeID] = 1 THEN  
 			('G'+CONVERT(VARCHAR,SPR.[G])+'-P'+CONVERT(VARCHAR,SPR.[P])+'-L'+CONVERT(VARCHAR,SPR.[L])+'-A'+  
 			CONVERT(VARCHAR,SPR.[A])) ELSE '' END AS ObstetricScore  
 		   ,ISNULL(SPR.[ECNumber],'') AS ECNumber  
@@ -353,7 +353,7 @@ BEGIN
 		LEFT JOIN [dbo].[Tbl_CBCTestResult] CBC WITH (NOLOCK) ON CBC.BarcodeNo = HT.BarcodeNo  
 		LEFT JOIN [dbo].[Tbl_SSTestResult] SST WITH (NOLOCK) ON SST.BarcodeNo = HT.BarcodeNo  
 		LEFT JOIN [dbo].[Tbl_ANMCHCShipmentsDetail] ACS  WITH (NOLOCK) ON ACS.BarcodeNo = HT.BarcodeNo 
-		LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.UniqueSubjectID = ACS.UniqueSubjectID   
+		LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.BarcodeNo = ACS.BarcodeNo   
 		LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP   WITH (NOLOCK) ON SP.UniqueSubjectID = SC.UniqueSubjectID  
 		LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail] SPR   WITH (NOLOCK) ON SPR.UniqueSubjectID = SP.UniqueSubjectID  
 		LEFT JOIN [dbo].[Tbl_SubjectAddressDetail] SPA   WITH (NOLOCK) ON SPA.UniqueSubjectID = SP.UniqueSubjectID   
@@ -390,11 +390,11 @@ BEGIN
 		   ,CASE WHEN ISNULL(SP.[DOB],'') = '' THEN '' ELSE CONVERT(VARCHAR,SP.[DOB],103) END DOB  
 		   ,SP.[MobileNo] AS ContactNo  
 		   ,SP.[Spouse_ContactNo] AS SpouseContactNo  
-		   ,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN  
+		   ,CASE WHEN  SP.[ChildSubjectTypeID] = 1 THEN  
 			CONVERT(VARCHAR,SPR.[LMP_Date],103) ELSE '' END AS LMPDate  
-		   ,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN  
-		   (SELECT [dbo].[FN_CalculateGestationalAge](SP.[ID])) ELSE '' END AS GestationalAge  
-		   ,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN  
+		   ,CASE WHEN  SP.[ChildSubjectTypeID] = 1 THEN  
+		   (SELECT [dbo].[FN_CalculateGAonHPLCDate](SP.[ID], HT.[BarcodeNo])) ELSE '' END AS GestationalAge   
+		   ,CASE WHEN  SP.[ChildSubjectTypeID] = 1 THEN  
 			('G'+CONVERT(VARCHAR,SPR.[G])+'-P'+CONVERT(VARCHAR,SPR.[P])+'-L'+CONVERT(VARCHAR,SPR.[L])+'-A'+  
 			CONVERT(VARCHAR,SPR.[A])) ELSE '' END AS ObstetricScore  
 		   ,ISNULL(SPR.[ECNumber],'') AS ECNumber  
@@ -437,7 +437,7 @@ BEGIN
 		LEFT JOIN [dbo].[Tbl_CBCTestResult] CBC WITH (NOLOCK) ON CBC.BarcodeNo = HT.BarcodeNo  
 		LEFT JOIN [dbo].[Tbl_SSTestResult] SST WITH (NOLOCK) ON SST.BarcodeNo = HT.BarcodeNo  
 		LEFT JOIN [dbo].[Tbl_ANMCHCShipmentsDetail] ACS  WITH (NOLOCK) ON ACS.BarcodeNo = HT.BarcodeNo 
-		LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.UniqueSubjectID = ACS.UniqueSubjectID   
+		LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.BarcodeNo = ACS.BarcodeNo   
 		LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP   WITH (NOLOCK) ON SP.UniqueSubjectID = SC.UniqueSubjectID 
 		LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail] SPR   WITH (NOLOCK) ON SPR.UniqueSubjectID = SP.UniqueSubjectID  
 		LEFT JOIN [dbo].[Tbl_SubjectAddressDetail] SPA   WITH (NOLOCK) ON SPA.UniqueSubjectID = SP.UniqueSubjectID  
@@ -474,11 +474,11 @@ BEGIN
 		   ,CASE WHEN ISNULL(SP.[DOB],'') = '' THEN '' ELSE CONVERT(VARCHAR,SP.[DOB],103) END DOB  
 		   ,SP.[MobileNo] AS ContactNo  
 		   ,SP.[Spouse_ContactNo] AS SpouseContactNo  
-		   ,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN  
+		   ,CASE WHEN  SP.[ChildSubjectTypeID] = 1 THEN  
 			CONVERT(VARCHAR,SPR.[LMP_Date],103) ELSE '' END AS LMPDate  
-		   ,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN  
-		   (SELECT [dbo].[FN_CalculateGestationalAge](SP.[ID])) ELSE '' END AS GestationalAge  
-		   ,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN  
+		   ,CASE WHEN  SP.[ChildSubjectTypeID] = 1 THEN  
+		   (SELECT [dbo].[FN_CalculateGAonHPLCDate](SP.[ID], HT.[BarcodeNo])) ELSE '' END AS GestationalAge  
+		   ,CASE WHEN SP.[ChildSubjectTypeID] = 1 THEN  
 			('G'+CONVERT(VARCHAR,SPR.[G])+'-P'+CONVERT(VARCHAR,SPR.[P])+'-L'+CONVERT(VARCHAR,SPR.[L])+'-A'+  
 			CONVERT(VARCHAR,SPR.[A])) ELSE '' END AS ObstetricScore  
 		   ,ISNULL(SPR.[ECNumber],'') AS ECNumber  
@@ -521,7 +521,7 @@ BEGIN
 		LEFT JOIN [dbo].[Tbl_CBCTestResult] CBC WITH (NOLOCK) ON CBC.BarcodeNo = HT.BarcodeNo  
 		LEFT JOIN [dbo].[Tbl_SSTestResult] SST WITH (NOLOCK) ON SST.BarcodeNo = HT.BarcodeNo  
 		LEFT JOIN [dbo].[Tbl_ANMCHCShipmentsDetail] ACS  WITH (NOLOCK) ON ACS.BarcodeNo = HT.BarcodeNo 
-		LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.UniqueSubjectID = ACS.UniqueSubjectID   
+		LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.BarcodeNo = ACS.BarcodeNo   
 		LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP   WITH (NOLOCK) ON SP.UniqueSubjectID = SC.UniqueSubjectID 
 		LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail] SPR   WITH (NOLOCK) ON SPR.UniqueSubjectID = SP.UniqueSubjectID  
 		LEFT JOIN [dbo].[Tbl_SubjectAddressDetail] SPA   WITH (NOLOCK) ON SPA.UniqueSubjectID = SP.UniqueSubjectID    

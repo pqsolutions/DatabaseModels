@@ -1135,7 +1135,7 @@ CREATE TABLE [dbo].[Tbl_ANMCHCShipments](
 	[DateofShipment][date] NULL,
 	[TimeofShipment] [time](2)NULL,
 	[ReceivedDate] [date] NULL,
-	[ProcessingDateTime] [datetime] NULL,
+	[ProcessingDateTime] [datetime] NULL, -- ReceivedDateTime
 	[ILRInDateTime] [datetime] NULL,
 	[ILROutDateTime] [datetime] NULL,
 	[CreatedBy] [int] NULL,
@@ -1474,7 +1474,7 @@ CREATE TABLE [dbo].[Tbl_CHCShipments](
 	[DateofShipment][date] NULL,
 	[TimeofShipment] [time](2)NULL,
 	[ReceivedDate] [date] NULL,
-	[ProcessingDateTime] [datetime] NULL,
+	[ProcessingDateTime] [datetime] NULL,   -- ReceivedDateTime
 	[CreatedBy] [int] NULL,
 	[CreatedOn] [datetime] NULL,
 	[UpdatedBy] [int] NULL,
@@ -1970,6 +1970,153 @@ END
 
 
 --------------------------------------------------------------------------------------------------------------------------
+--USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO  
+
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_PNDTestNew' AND [type] = 'U')
+BEGIN
+CREATE TABLE [dbo].[Tbl_PNDTestNew](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[PrePNDTCounsellingId] [int] NULL,
+	[ANWSubjectId] [varchar](250)NULL,
+	[SpouseSubjectId] [varchar](250) NULL,
+	[PNDTDateTime] [datetime] NULL,
+	[CounsellorId] [int] NULL,
+	[ObstetricianId] [int] NULL,
+	[ClinicalHistory] [varchar](max) NULL,
+	[Examination] [varchar](max) NULL,
+	[ProcedureofTestingId] [int] NULL,
+	[OthersProcedureofTesting] [varchar](max) NULL,
+	[PNDTComplecationsId] [varchar](100) NULL,
+	[OthersComplecations] [varchar] (max) NULL,
+	[MotherVoided] [bit] NULL,
+	[MotherVitalStable] [bit] NULL,
+	[FoetalHeartRateDocumentScan] [bit] NULL,
+	[PregnancyType] [int]  NULL,
+	[IsMolTestCompleted] [bit] NULL,
+	[IsCompletePNDT] [bit] NULL,
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
+	[UpdatedToANM] [bit] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END
+---------------------------------------------------------------------------------------------------------------------
+
+--USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO  
+
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_PNDTFoetusDetail' AND [type] = 'U')
+BEGIN
+CREATE TABLE [dbo].[Tbl_PNDTFoetusDetail](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[PNDTestId] [int] NOT NULL,
+	[ANWSubjectId] [varchar](250)NULL,
+	[SpouseSubjectId] [varchar](250) NULL,
+	[PregnancyType] [int] NOT NULL,
+	[SampleRefNo] [varchar](300) NULL,
+	[BabyName] [varchar] (max) NULL,
+	[ZygosityId] [int] NULL,
+	[Mutation1] [int] NULL,
+	[Mutation2] [int] NULL,
+	[Mutation3] [varchar](max) NULL,
+	[MolResult] [varchar] (max) NULL,
+	[PlanForPregnencyContinue] [bit] NULL,
+	[IsTestComplete] [bit] NULL,
+	[IsProcessed] [bit] NULL,
+	[ResultProducedBy] [int] NULL,
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END
+
+-------------------------------------------------------------------------------------------------------------------------------
+
+--USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO  
+
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_PNDTShipments' AND [type] = 'U')
+BEGIN
+CREATE TABLE [dbo].[Tbl_PNDTShipments](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[GenratedShipmentID] [varchar] (200) NOT NULL,
+	[SenderName] [int] NULL,
+	[SenderContact][varchar](250) NULL,
+	[SenderLocation][varchar](250) NULL,
+	[ReceivingMolecularLabId] [int] NULL,
+	[DateofShipment] [date] NULL,
+	[TimeofShipment] [time] NULL,
+	[ReceivedDate] [datetime] NULL,
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END
+
+-------------------------------------------------------------------------------------------------------------------------------
+
+
+--USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO  
+
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_PNDTShipmentsDetail' AND [type] = 'U')
+BEGIN
+CREATE TABLE [dbo].[Tbl_PNDTShipmentsDetail](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[ShipmentID] [varchar] (200) NOT NULL,
+	[PNDTestId] [int] NOT NULL,
+	[PNDTFoetusId][int] NOT NULL,
+	[SampleRefNo] [varchar](300) NULL,
+	[IsAccept] [bit] NULL,
+	[SampleDamaged] [bit] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END
+
+-------------------------------------------------------------------------------------------------------------------------------
 
 
 USE [Eduquaydb]
@@ -2847,3 +2994,69 @@ END
 
 ---------------------------------------------------------------------------------------------------------------------------------
 
+
+--USE [Eduquaydb]
+GO
+
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_ZygosityMaster' AND [type] = 'U')
+BEGIN
+
+CREATE TABLE [dbo].[Tbl_ZygosityMaster](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[ZygosityName] [varchar](max) NULL,
+	[Createdon] [datetime] NULL,
+	[Createdby] [int] NULL,
+	[Updatedon] [datetime] NULL,
+	[Updatedby] [int] NULL,
+	[Comments] [varchar](max) NULL,
+	[Isactive] [bit] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END
+
+
+-------------------------------------------------------------------
+
+
+
+--USE [Eduquaydb]
+GO
+
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_MutationMaster' AND [type] = 'U')
+BEGIN
+
+CREATE TABLE [dbo].[Tbl_MutationMaster](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[Mutation] [varchar](max) NULL,
+	[Createdon] [datetime] NULL,
+	[Createdby] [int] NULL,
+	[Updatedon] [datetime] NULL,
+	[Updatedby] [int] NULL,
+	[Comments] [varchar](max) NULL,
+	[Isactive] [bit] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END
+
+
+-------------------------------------------------------------------

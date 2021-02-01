@@ -50,7 +50,7 @@ CREATE PROCEDURE [dbo].[SPC_AddPrimaryDetail]
 )AS
 DECLARE 
 	@ID INT
-	,@Count int
+	,@Count INT
 	,@DateOfBirth DATE
 	,@DateofReg DATE
 BEGIN

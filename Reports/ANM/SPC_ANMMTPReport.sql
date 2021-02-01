@@ -74,7 +74,7 @@ BEGIN
 				WHEN  SST.[IsPositive] = 1 THEN (CBC.[CBCResult] + ', SST Positive, ' + ISNULL(HT.[HPLCResult],'') +', '+ ISNULL(HT.[LabDiagnosis],'')) END AS   TestResult
 				,CASE WHEN CCS.[GenratedShipmentID] IS NULL THEN  '--' ELSE (CONVERT(VARCHAR,CCS.[DateofShipment],103) + ' ' +CONVERT(VARCHAR(5),CCS.[TimeofShipment],108)) END AS CHCShipmentDateTime
 				,HT.[LabDiagnosis] AS HPLCPathoDiagnosis
-				,('Sch Dt: ' +  (CONVERT(VARCHAR,PPS.[CounsellingDateTime],103) + ' ' +CONVERT(VARCHAR(5),PPS.[CounsellingDateTime],108)) +', Agreed, ' +
+				,('Sch Dt: ' +  (CONVERT(VARCHAR,PPS.[CounsellingDateTime],103) + ' ' +CONVERT(VARCHAR(5),PPS.[CounsellingDateTime],108)) +', Agreed, PNDT Dt: ' +
 				(CONVERT(VARCHAR,PT.[PNDTDateTime],103) + ' ' +CONVERT(VARCHAR(5),PT.[PNDTDateTime],108)) +', ' + ISNULL(PTR.[ResultName],'')) AS PNDT
 				,('Sch Dt: ' +  (CONVERT(VARCHAR,PoPS.[CounsellingDateTime],103) + ' ' +CONVERT(VARCHAR(5),PoPS.[CounsellingDateTime],108))+', Agreed') AS MTP
 				,(SELECT  [dbo].[FN_FindSubjectStage](SPRD.[UniqueSubjectID])) AS CurrentStatus
@@ -158,9 +158,9 @@ BEGIN
 				WHEN  SST.[IsPositive] = 1 THEN (CBC.[CBCResult] + ', SST Positive, ' + ISNULL(HT.[HPLCResult],'') +', '+ ISNULL(HT.[LabDiagnosis],'')) END AS   TestResult
 				,CASE WHEN CCS.[GenratedShipmentID] IS NULL THEN  '--' ELSE (CONVERT(VARCHAR,CCS.[DateofShipment],103) + ' ' +CONVERT(VARCHAR(5),CCS.[TimeofShipment],108)) END AS CHCShipmentDateTime
 				,HT.[LabDiagnosis] AS HPLCPathoDiagnosis
-				,('Sch Dt: ' +  (CONVERT(VARCHAR,PPS.[CounsellingDateTime],103) + ' ' +CONVERT(VARCHAR(5),PPS.[CounsellingDateTime],108)) +', Agreed, ' +
+				,('Sch Dt: ' +  (CONVERT(VARCHAR,PPS.[CounsellingDateTime],103) + ' ' +CONVERT(VARCHAR(5),PPS.[CounsellingDateTime],108)) +', Agreed, PNDT Dt: ' +
 				(CONVERT(VARCHAR,PT.[PNDTDateTime],103) + ' ' +CONVERT(VARCHAR(5),PT.[PNDTDateTime],108)) +', ' + ISNULL(PTR.[ResultName],'')) AS PNDT
-				,('Sch Dt: ' +  (CONVERT(VARCHAR,PoPS.[CounsellingDateTime],103) + ' ' +CONVERT(VARCHAR(5),PoPS.[CounsellingDateTime],108))+', Agreed, ' + 
+				,('Sch Dt: ' +  (CONVERT(VARCHAR,PoPS.[CounsellingDateTime],103) + ' ' +CONVERT(VARCHAR(5),PoPS.[CounsellingDateTime],108))+', Agreed, MTP Dt: ' + 
 				(CONVERT(VARCHAR,MT.[MTPDateTime],103) + ' ' +CONVERT(VARCHAR(5),MT.[MTPDateTime],108)) +', ' + ISNULL(DCM.[DischargeConditionName],'')) AS MTP
 				,(SELECT  [dbo].[FN_FindSubjectStage](SPRD.[UniqueSubjectID])) AS CurrentStatus
 				,ROW_NUMBER() OVER (PARTITION BY SPRD.[UniqueSubjectID]  ORDER BY SC.[CreatedOn] DESC) AS [ROW NUMBER]

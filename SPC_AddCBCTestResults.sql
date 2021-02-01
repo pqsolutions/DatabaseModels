@@ -36,7 +36,7 @@ DECLARE
 
 BEGIN
 	BEGIN TRY
-		SELECT @Barcode =  Barcode, @MCV = MCV, @RDW = RDW ,@RBC = RBC , @TestCompleteOn= TestedDateTime  FROM Tbl_CBCTestedDetail WHERE ID = @TestedId
+		SELECT @Barcode =  Barcode, @MCV = MCV, @RDW = RDW ,@RBC = RBC , @TestCompleteOn = TestedDateTime  FROM Tbl_CBCTestedDetail WHERE ID = @TestedId
 		SELECT @SubjectId = ID FROM Tbl_SubjectPrimaryDetail WHERE UniqueSubjectID = @UniqueSubjectId 
 		IF(@MCV < 80 AND @RDW < 16)
 		BEGIN

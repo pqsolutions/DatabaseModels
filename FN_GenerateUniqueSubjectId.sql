@@ -45,7 +45,7 @@ BEGIN
 			CONVERT(VARCHAR,ISNULL(MAX(RIGHT(@LastUniqueId1,5)),0)+1)) AS NVARCHAR(15))+ '/'
 			FROM Tbl_SubjectPrimaryDetail WHERE AssignANM_ID = @ANMID AND  UniqueSubjectID LIKE '%'+@Source 
 			
-		Set @ReturnValue = (Convert(VARCHAR(200),@UniqueSubjectId)+ CONVERT(VARCHAR(5),@Source)) --as UniqueSubjectId, ISNULL(@LastUniqueId,'') as PreviousUniqueSubjectId
+		SET @ReturnValue = (Convert(VARCHAR(200),@UniqueSubjectId)+ CONVERT(VARCHAR(5),@Source)) --as UniqueSubjectId, ISNULL(@LastUniqueId,'') as PreviousUniqueSubjectId
 	
 		RETURN @ReturnValue
 END        

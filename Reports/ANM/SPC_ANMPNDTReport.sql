@@ -7,7 +7,7 @@ SET QUOTED_IDENTIFIER ON
 GO
 IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_ANMPNDTReport' AND [type] = 'p')
 BEGIN
-	DROP PROCEDURE SPC_ANMPNDTReport -- '','',2,0,1,1
+	DROP PROCEDURE SPC_ANMPNDTReport  --'01/10/2020','21/01/2021',2,0,1,2
 END
 GO
 CREATE PROCEDURE [dbo].[SPC_ANMPNDTReport]
@@ -149,7 +149,7 @@ BEGIN
 				WHEN  SST.[IsPositive] = 1 THEN (CBC.[CBCResult] + ', SST Positive, ' + ISNULL(HT.[HPLCResult],'') +', '+ ISNULL(HT.[LabDiagnosis],'')) END AS   TestResult
 				,CASE WHEN CCS.[GenratedShipmentID] IS NULL THEN  '--' ELSE (CONVERT(VARCHAR,CCS.[DateofShipment],103) + ' ' +CONVERT(VARCHAR(5),CCS.[TimeofShipment],108)) END AS CHCShipmentDateTime
 				,HT.[LabDiagnosis] AS HPLCPathoDiagnosis
-				,('Sch Dt: ' +  (CONVERT(VARCHAR,PPS.[CounsellingDateTime],103) + ' ' +CONVERT(VARCHAR(5),PPS.[CounsellingDateTime],108)) +', Agreed, ' +
+				,('Sch Dt: ' +  (CONVERT(VARCHAR,PPS.[CounsellingDateTime],103) + ' ' +CONVERT(VARCHAR(5),PPS.[CounsellingDateTime],108)) +', Agreed, PNDT Dt: ' +
 				(CONVERT(VARCHAR,PT.[PNDTDateTime],103) + ' ' +CONVERT(VARCHAR(5),PT.[PNDTDateTime],108)) +', ' + ISNULL(PTR.[ResultName],'')) AS PNDT
 				,'--' AS MTP
 				,(SELECT  [dbo].[FN_FindSubjectStage](SPRD.[UniqueSubjectID])) AS CurrentStatus
@@ -199,7 +199,7 @@ BEGIN
 	END
 	IF @Status = 3
 	BEGIN
-		INSERT INTO #TempReportDetail (ANMID, ANMName, UniqueSubjectId, SubjectName, SubjectType,  SubjectType, RCHID, DateOfRegister, Barcode, RI, MobileNo, GA, SampleCollected, SampleCollectionDateTime, FirstTimeRecollected, RecollectedDateTime,
+		INSERT INTO #TempReportDetail (ANMID, ANMName, UniqueSubjectId, SubjectName, SubjectType, RCHID, DateOfRegister, Barcode, RI, MobileNo, GA, SampleCollected, SampleCollectionDateTime, FirstTimeRecollected, RecollectedDateTime,
 		ShipmentDone, ShipmentDateTime, ShipmentId, TestResult, CHCShipmentDateTime,HPLCPathoDiagnosis, PNDT, MTP, CurrentStatus,[ROW NUMBER])
 		SELECT * FROM (
 			SELECT	UM.[User_gov_code] AS ANMID
@@ -225,7 +225,7 @@ BEGIN
 				WHEN  SST.[IsPositive] = 1 THEN (CBC.[CBCResult] + ', SST Positive, ' + ISNULL(HT.[HPLCResult],'') +', '+ ISNULL(HT.[LabDiagnosis],'')) END AS   TestResult
 				,CASE WHEN CCS.[GenratedShipmentID] IS NULL THEN  '--' ELSE (CONVERT(VARCHAR,CCS.[DateofShipment],103) + ' ' +CONVERT(VARCHAR(5),CCS.[TimeofShipment],108)) END AS CHCShipmentDateTime
 				,HT.[LabDiagnosis] AS HPLCPathoDiagnosis
-				,('Sch Dt: ' +  (CONVERT(VARCHAR,PPS.[CounsellingDateTime],103) + ' ' +CONVERT(VARCHAR(5),PPS.[CounsellingDateTime],108)) +', Agreed, ' +
+				,('Sch Dt: ' +  (CONVERT(VARCHAR,PPS.[CounsellingDateTime],103) + ' ' +CONVERT(VARCHAR(5),PPS.[CounsellingDateTime],108)) +', Agreed, PNDT Dt: ' +
 				(CONVERT(VARCHAR,PT.[PNDTDateTime],103) + ' ' +CONVERT(VARCHAR(5),PT.[PNDTDateTime],108)) +', ' + ISNULL(PTR.[ResultName],'')) AS PNDT
 				,'--' AS MTP
 				,(SELECT  [dbo].[FN_FindSubjectStage](SPRD.[UniqueSubjectID])) AS CurrentStatus
