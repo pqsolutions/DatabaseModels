@@ -6,44 +6,36 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_AddMolecularLabReceipt' AND [type] = 'p')
+IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_AddMolecularLabSpecimenReceipt' AND [type] = 'p')
 BEGIN
-	DROP PROCEDURE SPC_AddMolecularLabReceipt
+	DROP PROCEDURE SPC_AddMolecularLabSpecimenReceipt
 END
 GO
-CREATE PROCEDURE [dbo].[SPC_AddMolecularLabReceipt]
+CREATE PROCEDURE [dbo].[SPC_AddMolecularLabSpecimenReceipt]
 (	
 	@ShipmentId VARCHAR(250)
 	,@ReceivedDate VARCHAR(300)
 	,@SampleDamaged BIT
 	,@BarcodeDamaged BIT
 	,@IsAccept BIT
-	,@Barcode VARCHAR(200)
+	,@PNDTFoetusId INT
 	,@UpdatedBy INT
 ) AS
 BEGIN
 	BEGIN TRY
 		
-		UPDATE Tbl_CentralLabShipments SET 
-				ReceivedDate =CONVERT(DATETIME,@ReceivedDate,103)  
+		UPDATE Tbl_PNDTShipments SET 
+				ReceivedDateTime =CONVERT(DATETIME,@ReceivedDate,103)  
 				,UpdatedBy = @UpdatedBy 
 				,UpdatedOn = GETDATE()
 		WHERE LTRIM(RTRIM(GenratedShipmentID)) = LTRIM(RTRIM(@ShipmentId))
 		
-		UPDATE Tbl_CentralLabShipmentsDetail SET 
+		UPDATE Tbl_PNDTShipmentsDetail SET 
 				SampleDamaged = @SampleDamaged
 				,BarcodeDamaged = @BarcodeDamaged
 				,IsAccept = @IsAccept 
-		WHERE LTRIM(RTRIM(BarcodeNo)) = LTRIM(RTRIM(@Barcode))
+		WHERE  PNDTFoetusId= @PNDTFoetusId
 		
-		UPDATE Tbl_SampleCollection SET
-				IsDamagedMolecular = @SampleDamaged 
-				,BarcodeDamaged  = @BarcodeDamaged
-				,IsAcceptMolecular = @IsAccept 
-				,UpdatedBy = @UpdatedBy 
-				,UpdatedOn = GETDATE()
-		WHERE  LTRIM(RTRIM(BarcodeNo)) = LTRIM(RTRIM(@Barcode))
-	
 	END TRY
 	BEGIN CATCH
 		IF @@TRANCOUNT > 0

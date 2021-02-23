@@ -8,7 +8,7 @@ GO
 
 IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_AddPNDT' AND [type] = 'p')
 BEGIN
-	DROP PROCEDURE SPC_AddPNDT 
+	DROP PROCEDURE SPC_AddPNDT  
 END
 GO
 CREATE PROCEDURE [dbo].[SPC_AddPNDT] 
@@ -25,70 +25,32 @@ CREATE PROCEDURE [dbo].[SPC_AddPNDT]
 	,@OthersPOT VARCHAR(MAX)
 	,@PNDTComplecationsId VARCHAR(100)
 	,@OthersComplecations VARCHAR(MAX)
-	,@MotherVoided VARCHAR(10)
-	,@MotherVitalStable VARCHAR(10)
-	,@FoetalHeartRateDocumentScan VARCHAR(10)
+	,@MotherVoided BIT
+	,@MotherVitalStable BIT
+	,@FoetalHeartRateDocumentScan BIT
 	,@UserId INT
 	,@PregnancyType INT
-	,@SampleRefNo VARCHAR(MAX)	
-	,@BabyName VARCHAR(MAX)
-
+	,@SampleRefId VARCHAR(MAX)	   --- eg: Coma seperated values Like 408010-C1,408010-C2,408010-C3
+	,@FoetusName VARCHAR(MAX)      --- eg: Coma seperated values Like Baby1 of ANWName,Baby2 Of ANWName, Baby3 of ANWName
+	,@CVSSampleRefId VARCHAR(MAX)  --- eg: Coma seperated values Like 124343,232323,121313
+	,@PNDTLocationId INT
+	,@AssistedBy VARCHAR(250)
+ ---  @SampleRefId  == @FoetusName  == @CVSSampleRefId
 )
 AS
-DECLARE @MV BIT
-		,@MVS BIT
-		,@FHRDS BIT
-		,@GetId INT
+DECLARE @GetId INT
 		,@Indexvar INT  
 		,@TotalCount INT  
-		,@CurrentIndexRefNo NVARCHAR(MAX)
-		,@CurrentIndexBabyName NVARCHAR(MAX)
+		,@CurrentIndexRefId NVARCHAR(MAX)
+		,@CurrentIndexFoetusName NVARCHAR(MAX)
+		,@CurrentIndexCVSSampleRefId NVARCHAR(MAX)
 		,@BNO VARCHAR(MAX)=''
 		,@ANWName VARCHAR(MAX)
 		
 		
 BEGIN
 	BEGIN TRY
-		IF ISNULL(@MotherVoided,'') = ''
-		BEGIN 
-			SET @MV = NULL
-		END
-		ELSE IF UPPER(@MotherVoided)= 'TRUE'
-		BEGIN
-			SET @MV = 1
-		END
-		ELSE
-		BEGIN
-			SET @MV = 0
-		END
-		----------------------------
-		IF ISNULL(@MotherVitalStable,'') = ''
-		BEGIN 
-			SET @MVS  = NULL
-		END
-		ELSE IF UPPER(@MotherVitalStable)= 'TRUE'
-		BEGIN
-			SET @MVS = 1
-		END
-		ELSE
-		BEGIN
-			SET @MVS = 0
-		END
-	
-		----------------------------
-		IF ISNULL(@FoetalHeartRateDocumentScan,'') = ''
-		BEGIN 
-			SET @FHRDS   = NULL
-		END
-		ELSE IF UPPER(@FoetalHeartRateDocumentScan)= 'TRUE'
-		BEGIN
-			SET @FHRDS = 1
-		END
-		ELSE
-		BEGIN
-			SET @FHRDS = 0
-		END
-		-----------------------------------------
+		
 
 		IF NOT EXISTS(SELECT 1 FROM Tbl_PNDTestNew  WHERE PrePNDTCounsellingId = @PrePNDTCounsellingId)
 		BEGIN
@@ -116,6 +78,8 @@ BEGIN
 				,UpdatedToANM
 				,IsCompletePNDT
 				,IsMolTestCompleted
+				,PNDTLocationId
+				,AssistedBy
 			)VALUES(
 				@PrePNDTCounsellingId 
 				,@ANWSubjectId 
@@ -129,9 +93,9 @@ BEGIN
 				,@OthersPOT
 				,@PNDTComplecationsId
 				,@OthersComplecations
-				,@MV 
-				,@MVS
-				,@FHRDS 
+				,@MotherVoided 
+				,@MotherVitalStable
+				,@FoetalHeartRateDocumentScan 
 				,@PregnancyType
 				,@UserId
 				,GETDATE()
@@ -139,29 +103,33 @@ BEGIN
 				,GETDATE()
 				,0
 				,0
-				,0)
+				,0
+				,@PNDTLocationId
+				,@AssistedBy)
 
 			SET @GetId = (SELECT SCOPE_IDENTITY())
-			--SELECT @ANWName = (FirstName + ' ' +LastName) FROM Tbl_SubjectPrimaryDetail WHERE UniqueSubjectID = @ANWSubjectId
+			
 
-			IF EXISTS (SELECT Value FROM [dbo].[FN_Split](@SampleRefNo,',') WHERE Value  in (SELECT SampleRefNo FROM Tbl_PNDTFoetusDetail))
+			IF NOT EXISTS (SELECT Value FROM [dbo].[FN_Split](@SampleRefId,',') WHERE Value  IN (SELECT SampleRefId FROM Tbl_PNDTFoetusDetail))
 			BEGIN
 				SET @IndexVar = 0  
-				SELECT @TotalCount = COUNT(value) FROM [dbo].[FN_Split](@SampleRefNo,',')  
+				SELECT @TotalCount = COUNT(value) FROM [dbo].[FN_Split](@SampleRefID,',')  
 				WHILE @Indexvar < @TotalCount  
 				BEGIN
 					SELECT @IndexVar = @IndexVar + 1
-					SELECT @CurrentIndexRefNo = Value FROM  [dbo].[FN_Split](@SampleRefNo,',') WHERE id = @Indexvar
-					SELECT @CurrentIndexBabyName = Value FROM  [dbo].[FN_Split](@BabyName,',') WHERE id = @Indexvar
-					IF EXISTS(SELECT SampleRefNo FROM Tbl_PNDTFoetusDetail WHERE SampleRefNo = @CurrentIndexRefNo)
+					SELECT @CurrentIndexRefId = Value FROM  [dbo].[FN_Split](@SampleRefId,',') WHERE id = @Indexvar
+					SELECT @CurrentIndexFoetusName = Value FROM  [dbo].[FN_Split](@FoetusName,',') WHERE id = @Indexvar
+					SELECT @CurrentIndexCVSSampleRefId = Value FROM  [dbo].[FN_Split](@CVSSampleRefId,',') WHERE id = @Indexvar
+					IF NOT EXISTS(SELECT SampleRefId FROM Tbl_PNDTFoetusDetail WHERE SampleRefId = @CurrentIndexRefId)
 					BEGIN
 						INSERT INTO Tbl_PNDTFoetusDetail (
 							[PNDTestId],
 							[ANWSubjectId],
 							[SpouseSubjectId],
 							[PregnancyType],
-							[SampleRefNo],
-							[BabyName],
+							[SampleRefId],
+							[FoetusName],
+							[CVSSampleRefId],
 							[CreatedBy],
 							[CreatedOn], 
 							[UpdatedBy], 
@@ -172,8 +140,9 @@ BEGIN
 							,@ANWSubjectId
 							,@SpouseSubjectId
 							,@PregnancyType
-							,@CurrentIndexRefNo
-							,@CurrentIndexBabyName
+							,@CurrentIndexRefId
+							,@CurrentIndexFoetusName
+							,@CurrentIndexCVSSampleRefId
 							,@UserId
 							,GETDATE()
 							,@UserId
@@ -185,19 +154,19 @@ BEGIN
 
 			UPDATE Tbl_PrePNDTCounselling SET 
 				IsActive = 0 
-				,ReasonForClose = 'PND Test Completed'
+				,ReasonForClose = 'PNDT Completed'
 				,UpdatedBy = @UserId 
 				,UpdatedOn = GETDATE()
 			WHERE ID = @PrePNDTCounsellingId 
 			
 			UPDATE Tbl_PrePNDTReferal SET 
 				IsPNDTCompleted = 1 
-				,ReasonForClose = 'PND Test Completed'
+				,ReasonForClose = 'PNDT Completed'
 				,UpdatedBy = @UserId 
 				,UpdatedOn = GETDATE()
 			WHERE ANWSubjectId = @ANWSubjectId 
 			
-			SELECT 'PNDT detail submitted successfully' AS MSG
+			SELECT 'PNDT detail updated successfully' AS MSG
 
 		END
 

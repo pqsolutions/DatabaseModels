@@ -1,4 +1,4 @@
-USE [Eduquaydb]
+--USE [Eduquaydb]
 GO
 
 SET ANSI_NULLS ON
@@ -8,7 +8,7 @@ GO
 
 IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_FetchSubjectsPNDTPending' AND [type] = 'p')
 BEGIN
-	DROP PROCEDURE SPC_FetchSubjectsPNDTPending
+	DROP PROCEDURE SPC_FetchSubjectsPNDTPending 
 END
 GO
 CREATE PROCEDURE [dbo].[SPC_FetchSubjectsPNDTPending] 
@@ -78,6 +78,8 @@ BEGIN
 		,CONVERT(VARCHAR(5),PPC.[SchedulePNDTTime]) AS SchedulePNDTTime
 		,PPC.[CounsellingRemarks] 
 		,'The couple has agreed for Pre-natal Diagnosis' AS CounsellingStatus
+		,PRSD.[BarcodeNo] AS ANWBarcodeNo
+		,PRSDS.[BarcodeNo] AS SpouseBarcodeNo
 	FROM Tbl_PositiveResultSubjectsDetail PRSD
 	LEFT JOIN Tbl_SubjectPrimaryDetail SPD WITH (NOLOCK) ON SPD.[UniqueSubjectID] = PRSD.[UniqueSubjectID] 
 	LEFT JOIN Tbl_SubjectPregnancyDetail SPR WITH (NOLOCK) ON SPD.[UniqueSubjectID] = SPR.[UniqueSubjectID]
@@ -95,7 +97,7 @@ BEGIN
 	LEFT JOIN Tbl_UserMaster UM1 WITH(NOLOCK) ON PPC.[AssignedObstetricianId] = UM1.[ID] 
 	WHERE  PRSD.[HPLCStatus] = 'P' AND PRSD.[IsActive] = 1 AND PRSDS.[HPLCStatus] = 'P' AND PRSDS.[IsActive] = 1
 	AND  (SPD.[SubjectTypeID] = 1 OR SPD.ChildSubjectTypeID =1)
-	AND PPC.[ANWSubjectId] NOT IN(SELECT ANWSubjectId FROM Tbl_PNDTest) AND PPC.[IsPNDTAgreeYes] = 1 AND PPC.[IsActive] = 1
+	AND PPC.[ANWSubjectId] NOT IN(SELECT ANWSubjectId FROM Tbl_PNDTestNew) AND PPC.[IsPNDTAgreeYes] = 1 AND PPC.[IsActive] = 1  
 	AND (@DistrictId = 0 OR SPD.[DistrictID] = @DistrictId)
 	AND (@CHCId = 0 OR SPD.[CHCID] = @CHCId)
 	AND (@PHCId = 0 OR SPD.[PHCID] = @PHCId)

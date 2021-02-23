@@ -1,5 +1,5 @@
 
-USE [Eduquaydb]
+--USE [Eduquaydb]
 GO
 
 SET ANSI_NULLS ON
@@ -26,7 +26,7 @@ BEGIN
 		CREATE  TABLE #TempTable(code int identity(1,1), counsellingId int)
 				
 		INSERT INTO #TempTable(counsellingId) (SELECT ID FROM Tbl_PrePNDTCounselling 
-		WHERE [IsActive] = 1 AND [ID] NOT IN(SELECT PrePNDTCounsellingId FROM Tbl_PNDTest)
+		WHERE [IsActive] = 1 AND [ID] NOT IN(SELECT PrePNDTCounsellingId FROM Tbl_PNDTestNew)
 		AND (SELECT [dbo].[FN_CalculateGestationalAgeBySubId]([ANWSubjectId])) > 30)
 		
 		SELECT @TotalCount = COUNT(code) FROM #TempTable

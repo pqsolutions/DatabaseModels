@@ -60,6 +60,7 @@ Begin
 			,um.[Comments] 
 			,um.[Isactive] 
 			,um.[DigitalSignature] 
+			,um.[PNDTLocationId]
 			,CASE WHEN ut.[Usertype] = 'ANM' THEN (SELECT ID FROM Tbl_ConstantValues WHERE CommonName = 'ANM' AND comments = 'RegisterFrom')
 				ELSE (SELECT ID FROM Tbl_ConstantValues WHERE CommonName = 'CHC' AND comments = 'RegisterFrom')END AS RegisteredFrom
 			,CASE WHEN ut.[Usertype] = 'ANM' THEN (SELECT ID FROM Tbl_ConstantValues WHERE CommonName = 'ANM' AND comments = 'SampleCollectionFrom')

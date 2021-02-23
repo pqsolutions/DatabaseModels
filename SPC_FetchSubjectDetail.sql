@@ -1,4 +1,4 @@
-USE [Eduquaydb]
+--USE [Eduquaydb]
 GO
 
 SET ANSI_NULLS ON
@@ -16,6 +16,7 @@ CREATE PROCEDURE [dbo].[SPC_FetchSubjectDetail]
 	,@UniqueSubjectID VARCHAR(200)
 )AS
 BEGIN
+SELECT * FROM (
 	 SELECT CASE WHEN ISNULL(SPRD.[DateofRegister],'') = '' THEN '' 
 			 ELSE CONVERT(VARCHAR,SPRD.[DateofRegister],103)
 			 END  AS  [DateofRegister]
@@ -117,9 +118,11 @@ BEGIN
 			,(SELECT [dbo].[FN_FindResult](SPAD.[UniqueSubjectID],'CBC')) AS CBCTestResult
 			,(SELECT [dbo].[FN_FindResult](SPAD.[UniqueSubjectID],'SST')) AS SSTestResult
 			,(SELECT [dbo].[FN_FindResult](SPAD.[UniqueSubjectID],'HPLC')) AS HPLCTestResult
+			,ROW_NUMBER() OVER (PARTITION BY SPRD.[UniqueSubjectID]  ORDER BY SC.[CreatedOn] DESC) AS [ROW NUMBER]
 	FROM [dbo].[Tbl_SubjectPrimaryDetail] AS SPRD
 	LEFT JOIN [dbo].[Tbl_SubjectTypeMaster] STM WITH (NOLOCK) ON STM.[ID] = SPRD.[SubjectTypeID]
 	LEFT JOIN [dbo].[Tbl_SubjectTypeMaster] STM1 WITH (NOLOCK) ON STM1.[ID] = SPRD.[ChildSubjectTypeID]
+	LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SPRD.[UniqueSubjectID]  = SC.[UniqueSubjectID] 
 	LEFT JOIN [dbo].[Tbl_DistrictMaster] DM WITH (NOLOCK) ON DM.[ID] = SPRD.[DistrictID]
 	LEFT JOIN [dbo].[Tbl_CHCMaster] CM WITH (NOLOCK) ON CM.[ID] = SPRD.[CHCID]
 	LEFT JOIN [dbo].[Tbl_PHCMaster] PM WITH (NOLOCK) ON PM.[ID] = SPRD.[PHCID]
@@ -136,7 +139,10 @@ BEGIN
 	LEFT JOIN [dbo].[Tbl_Gov_IDTypeMaster] GIMM WITH (NOLOCK) ON GIMM.[ID] = SPAD.[Mother_GovIdType_ID]      
 	LEFT JOIN [dbo].[Tbl_Gov_IDTypeMaster] GIMG WITH (NOLOCK) ON GIMG.[ID] = SPAD.[Guardian_GovIdType_ID]       
 	LEFT JOIN [dbo].[Tbl_CommunityMaster] COM WITH (NOLOCK) ON COM.[ID] = SAD.[Community_Id]    
-	WHERE  SPRD.[AssignANM_ID] = @UserId  AND (SPRD.[UniqueSubjectID]  like '%'+ @UniqueSubjectID +'%' OR SPRD.[MobileNo]like '%'+ @UniqueSubjectID +'%' OR 
-	SPD.[RCHID] like '%'+ @UniqueSubjectID +'%' OR SPRD.[FirstName] like '%'+ @UniqueSubjectID +'%' OR
+	WHERE  SPRD.[AssignANM_ID] = @UserId  AND (SPRD.[UniqueSubjectID]  like '%'+ @UniqueSubjectID +'%' OR SPRD.[MobileNo] like '%'+ @UniqueSubjectID +'%' OR 
+	SPD.[RCHID] like '%'+ @UniqueSubjectID +'%' OR SPRD.[FirstName] like '%'+ @UniqueSubjectID +'%' OR SC.[BarcodeNo] like '%'+ @UniqueSubjectID +'%' OR 
 	SPRD.[LastName] like '%'+ @UniqueSubjectID +'%' ) 
+	)GROUPS
+	WHERE GROUPS.[ROW NUMBER] = 1 
+	ORDER BY GROUPS.UniqueSubjectID ASC
 END

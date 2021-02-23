@@ -8,7 +8,7 @@ GO
 
 IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_FetchSamplesCentralMolecularPickPack' AND [type] = 'p')
 BEGIN
-	DROP PROCEDURE SPC_FetchSamplesCentralMolecularPickPack 
+	DROP PROCEDURE SPC_FetchSamplesCentralMolecularPickPack  --1
 END
 GO
 CREATE PROCEDURE [dbo].[SPC_FetchSamplesCentralMolecularPickPack] 

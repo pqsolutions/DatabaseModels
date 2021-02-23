@@ -162,6 +162,7 @@ CREATE TABLE [dbo].[Tbl_DistrictMaster](
 	[Updatedby] [int] NULL,
 	[Comments] [varchar](max) NULL,
 	[Isactive] [bit] NULL,	
+	[PNDTLocationId] [int] NULL,
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
@@ -627,7 +628,8 @@ CREATE TABLE [dbo].[Tbl_UserMaster](
 	[MolecularLabId] [int] NULL,
 	[OTP] [varchar](max) NULL,
 	[OTPCreatedOn] [datetime] NULL,
-	[OTPExpiredOn] [datetime] NULL
+	[OTPExpiredOn] [datetime] NULL,
+	[PNDTLocationId] [int] NULL,
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
@@ -1740,6 +1742,47 @@ END
 
 
 
+--USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO  
+
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_MolecularBloodTestResult' AND [type] = 'U')
+BEGIN
+CREATE TABLE [dbo].[Tbl_MolecularBloodTestResult](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[UniqueSubjectID] [varchar](200) NOT NULL,
+	[BarcodeNo] [varchar] (200) NOT NULL,
+	[ZygosityId] [int] NULL,
+	[Mutation1Id] [int] NULL,
+	[Mutation2Id] [int] NULL,
+	[Mutation3] [varchar](max) NULL,
+	[TestResult] [varchar] (max) NULL,
+	[IsDamaged] [bit] NULL,
+	[IsProcessed] [bit] NULL,
+	[IsComplete] [bit] NULL,
+	[ReasonForClose] [varchar] (max) NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
+	[Remarks] [varchar](max) NULL,
+	[MolecularLabId] [int] NULL,
+	[TestDate] [date] NULL
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END	
+
+-------------------------------------------------------------------------------------------
+
+
+
+
 USE [Eduquaydb]
 GO
 
@@ -1970,6 +2013,8 @@ END
 
 
 --------------------------------------------------------------------------------------------------------------------------
+
+
 --USE [Eduquaydb]
 GO
 
@@ -1997,6 +2042,7 @@ CREATE TABLE [dbo].[Tbl_PNDTestNew](
 	[MotherVoided] [bit] NULL,
 	[MotherVitalStable] [bit] NULL,
 	[FoetalHeartRateDocumentScan] [bit] NULL,
+	[AssistedBy] [varchar](250) NULL,
 	[PregnancyType] [int]  NULL,
 	[IsMolTestCompleted] [bit] NULL,
 	[IsCompletePNDT] [bit] NULL,
@@ -2005,6 +2051,7 @@ CREATE TABLE [dbo].[Tbl_PNDTestNew](
 	[UpdatedBy] [int] NULL,
 	[UpdatedOn] [datetime] NULL,
 	[UpdatedToANM] [bit] NULL,
+	[PNDTLocationId] [int] NULL,
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
@@ -2030,17 +2077,22 @@ CREATE TABLE [dbo].[Tbl_PNDTFoetusDetail](
 	[ANWSubjectId] [varchar](250)NULL,
 	[SpouseSubjectId] [varchar](250) NULL,
 	[PregnancyType] [int] NOT NULL,
-	[SampleRefNo] [varchar](300) NULL,
-	[BabyName] [varchar] (max) NULL,
+	[SampleRefId] [varchar](300) NULL, --[Mother Barcode-C1/C2 .. etc]
+	[FoetusName] [varchar] (max) NULL,
+	[CVSSampleRefId] [varchar] (max) NULL, 
 	[ZygosityId] [int] NULL,
 	[Mutation1] [int] NULL,
 	[Mutation2] [int] NULL,
 	[Mutation3] [varchar](max) NULL,
 	[MolResult] [varchar] (max) NULL,
-	[PlanForPregnencyContinue] [bit] NULL,
 	[IsTestComplete] [bit] NULL,
-	[IsProcessed] [bit] NULL,
-	[ResultProducedBy] [int] NULL,
+	[Result] [varchar] (max) NULL,
+	[ResultUpdatedBy] [int] NULL,
+	[ResultUpdatedOn] [datetime] NULL,
+	[PlanForPregnencyContinue] [bit] NULL,
+	[IsReviewed] [bit] NULL,
+	[ReviewedBy] [datetime] NULL,
+	[ReviewedOn] [datetime] NULL,
 	[CreatedBy] [int] NULL,
 	[CreatedOn] [datetime] NULL,
 	[UpdatedBy] [int] NULL,
@@ -2068,17 +2120,17 @@ BEGIN
 CREATE TABLE [dbo].[Tbl_PNDTShipments](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
 	[GenratedShipmentID] [varchar] (200) NOT NULL,
-	[SenderName] [int] NULL,
+	[SenderName][varchar](250) NULL,
 	[SenderContact][varchar](250) NULL,
 	[SenderLocation][varchar](250) NULL,
 	[ReceivingMolecularLabId] [int] NULL,
-	[DateofShipment] [date] NULL,
-	[TimeofShipment] [time] NULL,
-	[ReceivedDate] [datetime] NULL,
+	[ShipmentDateTime] [datetime] NULL,
+	[ReceivedDateTime] [datetime] NULL,
 	[CreatedBy] [int] NULL,
 	[CreatedOn] [datetime] NULL,
 	[UpdatedBy] [int] NULL,
 	[UpdatedOn] [datetime] NULL,
+	[PNDTLocationId] [int] NULL,
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
@@ -2105,9 +2157,10 @@ CREATE TABLE [dbo].[Tbl_PNDTShipmentsDetail](
 	[ShipmentID] [varchar] (200) NOT NULL,
 	[PNDTestId] [int] NOT NULL,
 	[PNDTFoetusId][int] NOT NULL,
-	[SampleRefNo] [varchar](300) NULL,
 	[IsAccept] [bit] NULL,
 	[SampleDamaged] [bit] NULL,
+	[BarcodeDamaged] [bit] NULL,
+	[IsProcessed] [bit] NULL,
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
@@ -2119,7 +2172,7 @@ END
 -------------------------------------------------------------------------------------------------------------------------------
 
 
-USE [Eduquaydb]
+--USE [Eduquaydb]
 GO
 
 SET ANSI_NULLS ON
@@ -2995,6 +3048,43 @@ END
 ---------------------------------------------------------------------------------------------------------------------------------
 
 
+
+
+--USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_PNDTLocationMaster' AND [type] = 'U')
+BEGIN
+
+CREATE TABLE [dbo].[Tbl_PNDTLocationMaster](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[PNDTCode] [varchar](50) NULL,
+	[PNDTLocationName] [varchar](max) NULL,
+	[Createdon] [datetime] NULL,
+	[Createdby] [int] NULL,
+	[Updatedon] [datetime] NULL,
+	[Updatedby] [int] NULL,
+	[Comments] [varchar](max) NULL,
+	[Isactive] [bit] NULL,
+	
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END
+
+
+-------------------------------------------------------------------------------------------------------------------------
+
+
 --USE [Eduquaydb]
 GO
 
@@ -3059,4 +3149,88 @@ PRIMARY KEY CLUSTERED
 END
 
 
--------------------------------------------------------------------
+------------------------------------------------------------------
+
+
+
+--USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO  
+
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_MolecularSpecimenTestResult' AND [type] = 'U')
+BEGIN
+CREATE TABLE [dbo].[Tbl_MolecularSpecimenTestResult](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[UniqueSubjectID] [varchar](200) NOT NULL,
+	[PNDTFoetusId] [int] NOT NULL,
+	[ZygosityId] [int] NULL,
+	[Mutation1Id] [int] NULL,
+	[Mutation2Id] [int] NULL,
+	[Mutation3] [varchar](max) NULL,
+	[TestResult] [varchar] (max) NULL,
+	[IsDamaged] [bit] NULL,
+	[IsProcessed] [bit] NULL,
+	[IsComplete] [bit] NULL,
+	[ReasonForClose] [varchar] (max) NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
+	[Remarks] [varchar](max) NULL,
+	[MolecularLabId] [int] NULL,
+	[TestDate] [date] NULL,
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END	
+
+-------------------------------------------------------------------------------------------
+
+
+--USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO  
+
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_MolecularBloodTestResult' AND [type] = 'U')
+BEGIN
+CREATE TABLE [dbo].[Tbl_MolecularBloodTestResult](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[UniqueSubjectID] [varchar](200) NOT NULL,
+	[BarcodeNo] [varchar] (200) NOT NULL,
+	[ZygosityId] [int] NULL,
+	[Mutation1Id] [int] NULL,
+	[Mutation2Id] [int] NULL,
+	[Mutation3] [varchar](max) NULL,
+	[TestResult] [varchar] (max) NULL,
+	[IsDamaged] [bit] NULL,
+	[IsProcessed] [bit] NULL,
+	[IsComplete] [bit] NULL,
+	[ReasonForClose] [varchar] (max) NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
+	[Remarks] [varchar](max) NULL,
+	[MolecularLabId] [int] NULL,
+	[TestDate] [date] NULL,
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END	
+
+-------------------------------------------------------------------------------------------
+
