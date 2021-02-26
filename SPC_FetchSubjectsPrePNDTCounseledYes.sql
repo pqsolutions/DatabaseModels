@@ -1,4 +1,4 @@
-USE [Eduquaydb]
+--USE [Eduquaydb]
 GO
 
 SET ANSI_NULLS ON
@@ -97,7 +97,7 @@ BEGIN
 	WHERE PRSD.[HPLCStatus] = 'P' AND PRSD.[IsActive] = 1 AND PRSDS.[HPLCStatus] = 'P' AND PRSDS.[IsActive] = 1 
 	
 	AND  (SPD.[SubjectTypeID] = 1 OR SPD.ChildSubjectTypeID =1)
-	AND PPC.[ANWSubjectId] NOT IN(SELECT ANWSubjectId FROM Tbl_PNDTest) AND PPC.[IsPNDTAgreeYes] = 1 AND PPC.[IsActive] = 1
+	AND PPC.[ANWSubjectId] NOT IN(SELECT ANWSubjectId FROM Tbl_PNDTestNew) AND PPC.[IsPNDTAgreeYes] = 1 AND PPC.[IsActive] = 1
 	AND (SPD.[DistrictID] = @DistrictId OR SPD.[DistrictID] IN (SELECT DistrictID FROM Tbl_UserDistrictMaster WHERE UserId = @UserId))
 	AND (@CHCId = 0 OR SPD.[CHCID] = @CHCId)
 	AND (@PHCId = 0 OR SPD.[PHCID] = @PHCId)

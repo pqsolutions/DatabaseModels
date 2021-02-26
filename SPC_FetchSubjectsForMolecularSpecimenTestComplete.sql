@@ -40,5 +40,5 @@ BEGIN
 	LEFT JOIN [dbo].[Tbl_PNDTestNew] PT WITH (NOLOCK) ON PT.[ID] = PF.[PNDTestId]
 	LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP   WITH (NOLOCK) ON SP.UniqueSubjectID = PT.ANWSubjectId
 	LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail] SPR   WITH (NOLOCK) ON SPR.UniqueSubjectID = PT.ANWSubjectId
-	WHERE MSTR.[MolecularLabId] = @MolecularLabId AND MSTR.[IsComplete] = 1
+	WHERE MSTR.[MolecularLabId] = @MolecularLabId AND PT.[IsMolTestCompleted] = 1 AND MSTR.[IsComplete] = 1
 END

@@ -83,9 +83,9 @@ BEGIN
 			ELSE POT.[ProcedureName] END AS ProcedureOfTesting
 		,(SELECT [dbo].[FN_GetPNDTSubjectComplications](PT.[ID])) AS Complications
 		
-		,CASE WHEN PT.[MotherVoided] = 0 THEN 'NO' ELSE 'YES' END AS  MotherVoided
-		,CASE WHEN PT.[MotherVitalStable]  = 0 THEN 'NO' ELSE 'YES' END AS MotherVitalStable
-		,CASE WHEN PT.[FoetalHeartRateDocumentScan]= 0 THEN 'NO' ELSE 'YES' END AS  FoetalHeartRatedocumentedinScan
+		,CASE WHEN PT.[MotherVoided] = 0 THEN 'Mother voided - NO' ELSE 'Mother voided - YES' END AS  MotherVoided
+		,CASE WHEN PT.[MotherVitalStable]  = 0 THEN 'Mother vitals (pulse & Bp) stable - NO' ELSE 'Mother vitals (pulse & Bp) stable - YES' END AS MotherVitalStable
+		,CASE WHEN PT.[FoetalHeartRateDocumentScan] = 0 THEN 'Foetal heart rate document in scan - NO' ELSE 'Foetal heart rate document in scan - YES' END AS  FoetalHeartRatedocumentedinScan
 		,PF.[PregnancyType]
 		,PF.[ID] AS PNDFoetusId
 		,PF.[MolResult]

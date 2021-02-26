@@ -28,6 +28,7 @@ CREATE PROCEDURE [dbo].[SPC_AddMolecularBloodTestResult]
 	,@ReasonForClose VARCHAR(MAX)
 	,@TestDate VARCHAR(250)
 	,@UserId INT
+	,@MolecularLabId INT 
 )
 AS
 DECLARE 
@@ -54,6 +55,7 @@ BEGIN
 				,[IsDamaged]
 				,[IsProcessed] 
 				,[IsComplete]
+				,[MolecularLabId]
 			)VALUES(
 				@UniqueSubjectId 
 				,@Barcode 
@@ -70,7 +72,8 @@ BEGIN
 				,GETDATE()
 				,@IsDamaged
 				,@IsProcessed 
-				,@IsComplete)
+				,@IsComplete
+				,@MolecularLabId)
 			
 			UPDATE 	Tbl_PositiveResultSubjectsDetail SET 
 				MolecularResult = @TestResult 

@@ -28,6 +28,7 @@ CREATE PROCEDURE [dbo].[SPC_AddMolecularSpecimenTestResult]
 	,@ReasonForClose VARCHAR(MAX)
 	,@TestDate VARCHAR(250)
 	,@UserId INT
+	,@MolecularLabId INT 
 )
 AS
 DECLARE	
@@ -59,7 +60,8 @@ BEGIN
 				,[UpdatedOn]
 				,[IsDamaged]
 				,[IsProcessed] 
-				,[IsComplete])
+				,[IsComplete]
+				,[MolecularLabId])
 			VALUES(
 				@UniqueSubjectId 
 				,@PNDTFoetusId 
@@ -69,14 +71,15 @@ BEGIN
 				,@Mutation3
 				,@TestResult
 				,@ReasonForClose
-				,@TestDate
+				,CONVERT(DATE,@TestDate,103)
 				,@UserId
 				,GETDATE()
 				,@UserId 
 				,GETDATE()
 				,@IsDamaged
 				,@IsProcessed 
-				,@IsComplete)
+				,@IsComplete
+				,@MolecularLabId)
 
 			IF @IsComplete = 1 
 			BEGIN
@@ -109,7 +112,7 @@ BEGIN
 				END
 			END
 
-			SET @MSG = (@CVSSampleRefId + ' - Moleculr Test Successfully Completed')
+			SET @MSG = 'CVSSampleRefID - '+(@CVSSampleRefId + ' - Moleculr Test Successfully Completed')
 			SELECT @MSG AS MSG
 
 		END
@@ -160,7 +163,7 @@ BEGIN
 				END
 			END
 
-			SET @MSG = (@CVSSampleRefId + ' - Moleculr Test Successfully Updated')
+			SET @MSG = 'CVSSampleRefID - '+(@CVSSampleRefId + ' - Moleculr Test Successfully Updated')
 			SELECT @MSG AS MSG
 		 
 		END

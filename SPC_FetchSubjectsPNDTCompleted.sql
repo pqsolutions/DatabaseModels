@@ -1,4 +1,4 @@
-USE [Eduquaydb]
+--USE [Eduquaydb]
 GO
 
 SET ANSI_NULLS ON
@@ -12,9 +12,9 @@ BEGIN
 END
 GO
 CREATE PROCEDURE [dbo].[SPC_FetchSubjectsPNDTCompleted] 
---(
---	@UserInput  VARCHAR(MAX)
---)
+(
+	@MolecularLabId  INT
+)
 AS
 BEGIN
 	SELECT SPD.[UniqueSubjectID] AS ANWSubjectId
@@ -82,19 +82,26 @@ BEGIN
 		, CASE WHEN POT.[ProcedureName] = 'Others' THEN POT.[ProcedureName] + '(' + PT.[OthersProcedureofTesting] + ')'
 			ELSE POT.[ProcedureName] END AS ProcedureOfTesting
 		,(SELECT [dbo].[FN_GetPNDTSubjectComplications](PT.[ID])) AS Complications
-		,PT.[PNDTDiagnosisId] 
-		,PDM.[DiagnosisName]  AS PNDTDiagnosis
-		,PT.[PNDTResultId] 
-		,PRM.[ResultName] AS PNDTResults
-		,CASE WHEN PT.[MotherVoided] = 0 THEN 'NO' ELSE 'YES' END AS  MotherVoided
-		,CASE WHEN PT.[MotherVitalStable]  = 0 THEN 'NO' ELSE 'YES' END AS MotherVitalStable
-		,CASE WHEN PT.[FoetalHeartRateDocumentScan]= 0 THEN 'NO' ELSE 'YES' END AS  FoetalHeartRatedocumentedinScan
-		,CASE WHEN PT.[PlanForPregnencyContinue] = 0  THEN 'Plan for MTP' ELSE 'OG Follow up' END AS PlanforPregnancy
-	FROM Tbl_PNDTest PT 
+		
+		,CASE WHEN PT.[MotherVoided] = 0 THEN 'Mother voided - NO' ELSE 'Mother voided - YES' END AS  MotherVoided
+		,CASE WHEN PT.[MotherVitalStable]  = 0 THEN 'Mother vitals (pulse & Bp) stable - NO' ELSE 'Mother vitals (pulse & Bp) stable - YES' END AS MotherVitalStable
+		,CASE WHEN PT.[FoetalHeartRateDocumentScan]= 0 THEN 'Foetal heart rate document in scan - NO' ELSE 'Foetal heart rate document in scan - YES' END AS  FoetalHeartRatedocumentedinScan
+		,PF.[PregnancyType]
+		,PF.[ID] AS PNDFoetusId
+		,PF.[MolResult]
+		,PF.[FoetusName]
+		,PF.[SampleRefId]
+		,PF.[CVSSampleRefId]
+		,UM2.[FirstName] AS MolucularResultUpdatedBy
+		,CONVERT(VARCHAR,PF.[ResultUpdatedOn],103) AS MolecularResultUpdatedOn
+		,CASE WHEN PF.[PlanForPregnencyContinue] = 0  THEN 'Plan for MTP' ELSE 'OG Follow up' END AS PlanforPregnancy
+		,UM3.[FirstName] AS ResultReviewedBy
+		,CONVERT(VARCHAR,PF.[ReviewedOn],103) AS ResultReviewedOn
+	FROM Tbl_PNDTestNew PT 
+	LEFT JOIN Tbl_PNDTFoetusDetail PF WITH (NOLOCK) ON PT.[ID] = PF.[PNDTestId]
+	LEFT JOIN Tbl_MolecularSpecimenTestResult MSTR WITH (NOLOCK) ON  MSTR.[PNDTFoetusId] = PF.[ID]
 	LEFT JOIN Tbl_PrePNDTCounselling PPC WITH (NOLOCK) ON  PT.[ANWSubjectId] = PPC.[ANWSubjectId]
 	LEFT JOIN Tbl_PrePNDTScheduling PPS WITH (NOLOCK) ON PT.[ANWSubjectId] = PPS.[ANWSubjectId]
-	LEFT JOIN Tbl_PNDTDiagnosisMaster PDM WITH (NOLOCK) ON PDM.[ID] = PT.[PNDTDiagnosisId]
-	LEFT JOIN Tbl_PNDTResultMaster  PRM WITH (NOLOCK) ON PRM.[ID] = PT.[PNDTResultId]
 	LEFT JOIN Tbl_PNDTProcedureOfTestingMaster POT  WITH (NOLOCK) ON POT.[ID] = PT.[ProcedureofTestingId] 
 	LEFT JOIN Tbl_PositiveResultSubjectsDetail PRSD WITH (NOLOCK) ON PT.[ANWSubjectId] = PRSD.[UniqueSubjectID] 
 	LEFT JOIN Tbl_PositiveResultSubjectsDetail PRSDS WITH (NOLOCK) ON PRSDS.[UniqueSubjectID] = PT.[SpouseSubjectId]
@@ -108,13 +115,13 @@ BEGIN
 	LEFT JOIN Tbl_HPLCTestResult HTR WITH (NOLOCK) ON HTR.[BarcodeNo] = PRSD.[BarcodeNo]
 	LEFT JOIN Tbl_HPLCTestResult SHTR WITH (NOLOCK) ON SHTR.[BarcodeNo] = PRSDS.[BarcodeNo]
 	LEFT JOIN Tbl_UserMaster UM WITH(NOLOCK) ON PT.[CounsellorId] = UM.[ID]
-	LEFT JOIN Tbl_UserMaster UM1 WITH(NOLOCK) ON PT.[ObstetricianId] = UM1.[ID] 
+	LEFT JOIN Tbl_UserMaster UM1 WITH(NOLOCK) ON PT.[ObstetricianId] = UM1.[ID]
+	LEFT JOIN Tbl_UserMaster UM2 WITH(NOLOCK) ON PF.[ResultUpdatedBy] = UM2.[ID] 
+	LEFT JOIN Tbl_UserMaster UM3 WITH(NOLOCK) ON PF.[ReviewedBy] = UM3.[ID] 
 	WHERE PRSD.[HPLCStatus] = 'P' AND PRSD.[IsActive] = 1 AND PRSDS.[HPLCStatus] = 'P' AND PRSDS.[IsActive] = 1
 	AND (SPD.[SubjectTypeID] = 1 OR SPD.ChildSubjectTypeID =1)
 	AND PPC.[IsPNDTAgreeYes] = 1 AND PPC.[IsActive] = 0
-	AND PT.IsCompletePNDT = 1
-	--AND (@UserInput = '' OR SPD.[FirstName] LIKE '%'+@UserInput+'%' OR SPD.[LastName] LIKE '%'+@UserInput+'%'  
-	--OR PT.[ANWSubjectId] LIKE '%'+@UserInput+'%' OR SPR.[RCHID] LIKE '%'+@UserInput+'%'  OR SPD.[MobileNo] LIKE '%'+@UserInput+'%' )
+	AND PT.IsCompletePNDT = 1 ANd PT.IsMolTestCompleted = 1 AND (MSTR.[MolecularLabId] = @MolecularLabId OR @MolecularLabId = 0)
 	ORDER BY PT.[PNDTDateTime]  DESC
 END
 
