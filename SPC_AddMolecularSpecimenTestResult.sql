@@ -112,7 +112,15 @@ BEGIN
 				END
 			END
 
-			SET @MSG = 'CVSSampleRefID - '+(@CVSSampleRefId + ' - Moleculr Test Successfully Completed')
+			IF @IsComplete = 1
+			BEGIN
+				SET @MSG = 'CVSSampleRefID - '+@CVSSampleRefId + ' - Moleculr Test Successfully Completed'
+			END
+			ELSE
+			BEGIN
+				SET @MSG = 'CVSSampleRefID - '+@CVSSampleRefId + ' - Moleculr Test will update Later'
+			END
+
 			SELECT @MSG AS MSG
 
 		END
@@ -162,8 +170,14 @@ BEGIN
 					WHERE ID = @PNDTestId 
 				END
 			END
-
-			SET @MSG = 'CVSSampleRefID - '+(@CVSSampleRefId + ' - Moleculr Test Successfully Updated')
+			IF @IsComplete = 1
+			BEGIN
+				SET @MSG = 'CVSSampleRefID - '+@CVSSampleRefId + ' - Moleculr Test Successfully Updated'
+			END
+			ELSE
+			BEGIN
+				SET @MSG = 'CVSSampleRefID - '+@CVSSampleRefId + ' - Moleculr Test will update Later'
+			END
 			SELECT @MSG AS MSG
 		 
 		END

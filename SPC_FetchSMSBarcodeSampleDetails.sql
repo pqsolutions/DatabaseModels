@@ -26,8 +26,8 @@ BEGIN
 			,(UM.[FirstName] + ' ' +UM.[LastName]) AS ANMName
 			,UM.[ContactNo1] AS ANMMobileNo
 	FROM [dbo].[Tbl_SampleCollection] SC
-	LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP ON SP.[UniqueSubjectID] = SC.[UniqueSubjectID]
-	LEFT JOIN [dbo].[Tbl_UserMaster] UM ON UM.[ID] = SP.[AssignANM_ID]
+	LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP WITH (NOLOCK) ON SP.[UniqueSubjectID] = SC.[UniqueSubjectID]
+	LEFT JOIN [dbo].[Tbl_UserMaster] UM WITH (NOLOCK) ON  UM.[ID] = SP.[AssignANM_ID]
 	WHERE SC.[BarcodeNo]  = @Barcode 
 	AND SC.[UniqueSubjectID] = @SubjectId
 	ORDER BY SC.ID DESC

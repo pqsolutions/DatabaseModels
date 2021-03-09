@@ -1,6 +1,10 @@
 --USE [Eduquaydb]
 GO
 
+
+
+
+
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -54,7 +58,7 @@ BEGIN
 	LEFT JOIN [dbo].[Tbl_CentralLabShipmentsDetail]  SD WITH (NOLOCK) ON SD.ShipmentID = S.ID
 	LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP   WITH (NOLOCK) ON SP.UniqueSubjectID = SD.UniqueSubjectID
 	LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail] SPR   WITH (NOLOCK) ON SPR.UniqueSubjectID = SD.UniqueSubjectID
-	LEFT JOIN [dbo].[Tbl_SubjectTypeMaster] ST WITH (NOLOCK) ON ST.ID = SP.[ChildSubjectTypeID] 
+	LEFT JOIN [dbo].[Tbl_SubjectTypeMaster] ST WITH (NOLOCK) ON ST.ID = SP.ChildSubjectTypeID 
 	LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.BarcodeNo = SD.BarcodeNo 
 	LEFT JOIN [dbo].[Tbl_DistrictMaster] DM WITH (NOLOCK)ON  DM.ID = SP.DistrictID
 	LEFT JOIN [dbo].[Tbl_CBCTestResult] CR WITH (NOLOCK) ON CR.BarcodeNo = SD.BarcodeNo 
@@ -62,8 +66,7 @@ BEGIN
 	LEFT JOIN [dbo].[Tbl_HPLCTestResult] HR WITH (NOLOCK) ON HR.BarcodeNo = SD.BarcodeNo 
 	LEFT JOIN [dbo].[Tbl_PositiveResultSubjectsDetail] PRSD WITH (NOLOCK) ON PRSD.BarcodeNo = SD.BarcodeNo 
 	LEFT JOIN [dbo].[Tbl_HPLCDiagnosisResult] HD WITH (NOLOCK) ON HD.BarcodeNo = PRSD.BarcodeNo 
-	LEFT JOIN [dbo].[Tbl_ClinicalDiagnosisMaster] CDM WITH (NOLOCK) ON HD.ClinicalDiagnosisId = CDM.ID 
 	WHERE S.[ReceivedDate] IS NOT NULL AND S.[ReceivingMolecularLabId] = @MolecularLabId 
 	AND SD.[BarcodeNo]   NOT IN (SELECT BarcodeNo FROM Tbl_MolecularBloodTestResult)
-	
+	ORDER BY S.[ReceivedDate] DESC
 END

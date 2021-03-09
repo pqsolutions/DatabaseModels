@@ -80,8 +80,14 @@ BEGIN
 				,MolecularUpdatedOn  = GETDATE()
 			WHERE BarcodeNo = @Barcode 
 
-			
-			SET @MSG = (@Barcode + ' - Moleculr Test Successfully Completed')
+			IF @IsComplete = 1
+			BEGIN
+				SET @MSG = (@Barcode + ' - Moleculr Test Successfully Completed')
+			END
+			ELSE
+			BEGIN
+				SET @MSG = (@Barcode + ' - Moleculr Test will update Later')
+			END
 			SELECT @MSG AS MSG
 			 
 		END
@@ -106,7 +112,14 @@ BEGIN
 				,MolecularUpdatedOn  = GETDATE()
 			WHERE BarcodeNo = @Barcode 
 
+			IF @IsComplete = 1
+			BEGIN
 				SET @MSG = (@Barcode + ' - Moleculr Test Successfully Updated')
+			END
+			ELSE
+			BEGIN
+				SET @MSG = (@Barcode + ' - Moleculr Test will update Later')
+			END
 			SELECT @MSG AS MSG
 		END
 	END TRY

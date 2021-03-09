@@ -1,4 +1,4 @@
-USE [Eduquaydb]
+--USE [Eduquaydb]
 GO
 
 SET ANSI_NULLS ON
@@ -17,7 +17,9 @@ CREATE PROCEDURE [dbo].[SPC_FetchShipmentReceiptInCHC]
 )
 
 AS
+DECLARE @TestingCHC INT
 BEGIN
+	SET @TestingCHC = (SELECT TestingCHCID FROM Tbl_CHCMaster WHERE ID = @TestingCHCId)
 	SELECT S.[ID]
 		,S.[GenratedShipmentID] AS ShipmentID
 		,S.[ShipmentFrom]
@@ -51,7 +53,7 @@ BEGIN
 	LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP   WITH (NOLOCK) ON SP.UniqueSubjectID = SD.UniqueSubjectID
 	LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail] SPR   WITH (NOLOCK) ON SPR.UniqueSubjectID = SD.UniqueSubjectID
 	LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.BarcodeNo = SD.BarcodeNo
-	WHERE ISNULL(S.[ReceivedDate],'') = '' AND S.[TestingCHCID] = @TestingCHCId
+	WHERE ISNULL(S.[ReceivedDate],'') = '' AND S.[TestingCHCID] = @TestingCHC
 	ORDER BY ShipmentDate DESC  
 END
 

@@ -3234,3 +3234,113 @@ END
 
 -------------------------------------------------------------------------------------------
 
+
+
+--USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO  
+
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_ErrorBarcodeDetail' AND [type] = 'U')
+BEGIN
+CREATE TABLE [dbo].[Tbl_ErrorBarcodeDetail](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[UniqueSubjectId]  [varchar] (250)  NULL,
+	[SampleCollectionDate] [date] NULL,
+	[Barcode] [varchar] (250)  NULL,
+	[AlternateBarcode] [varchar] (250)  NULL,
+	[ANMId] [int] NULL,
+	[ExistUniqueSubjectId]  [varchar] (250)  NULL,
+	[ExistSampleCollectionDate] [date] NULL,
+	[ExistBarcode] [varchar] (250)  NULL,
+	[ExistANMId] [int] NULL,
+	[Remarks] [varchar](max) NULL,
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END	
+
+-------------------------------------------------------------------------------------------
+
+
+
+--USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO  
+
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_CBCMachineDetail' AND [type] = 'U')
+BEGIN
+CREATE TABLE [dbo].[Tbl_CBCMachineDetail](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[TestingCHCId] [int] NULL,
+	[TestingCHCName] [varchar](500) NULL,
+	[CHCLocation]  [varchar] (max)  NULL,
+	[MachineNo] [varchar] (max) NULL,
+	[IPAddress]  [varchar] (250)  NULL,
+	[Password]  [varchar] (250)  NULL,
+	[IsActive] [bit] NULL,
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL
+	PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END	
+
+-------------------------------------------------------------------------------------------
+
+
+
+--USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO  
+
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_HPLCMachineDetail' AND [type] = 'U')
+BEGIN
+CREATE TABLE [dbo].[Tbl_HPLCMachineDetail](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[CentralLabId] [int] NULL,
+	[CentralLabName] [varchar](500) NULL,
+	[CentralLabLocation]  [varchar] (max)  NULL,
+	[MachineNo] [varchar] (max) NULL,
+	[IPAddress]  [varchar] (250)  NULL,
+	[Password]  [varchar] (250)  NULL,
+	[IsActive] [bit] NULL,
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL
+	PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END	
+
+-------------------------------------------------------------------------------------------
+
+
+
