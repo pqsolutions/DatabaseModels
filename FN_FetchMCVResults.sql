@@ -1,7 +1,7 @@
 
 
 
-USE [Eduquaydb]
+--USE [Eduquaydb]
 GO
 SET ANSI_NULLS ON
 GO
@@ -39,7 +39,14 @@ BEGIN
 
 		IF ISNULL(@ProcessStatus,0) = 0 AND ISNULL(@ConfirmStatus,0) = 0
 		BEGIN
-			SET @Result = CONVERT(VARCHAR(10),@MCV)
+			IF EXISTS (SELECT Barcode FROM Tbl_ErrorBarcodeDetail WHERE Barcode = @Barcode AND ProblemSolvedStatus = 0)
+			BEGIN
+				SET @Result = '--'
+			END
+			ELSE
+			BEGIN
+				SET @Result = CONVERT(VARCHAR(10),@MCV)
+			END
 		END
 		ELSE
 		BEGIN

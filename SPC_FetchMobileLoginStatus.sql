@@ -1,4 +1,4 @@
-USE [Eduquaydb]
+--USE [Eduquaydb]
 GO
 
 SET ANSI_NULLS ON
@@ -58,7 +58,7 @@ BEGIN
 				END
 				ELSE IF  @Device =  @DeviceId AND @LoginStatus = 1
 				BEGIN
-					SET @Msg = 'Welcome '+ @UserName + ' !!!   You are already logged in a same TAB because of some issue!!! Try reset login to continue logging here.'
+					SET @Msg = 'Hello '+ @UserName + ' ! Your Tablet seems to have crashed and data has been lost  !!! Please RESET Login to clear corruption and then LOGIN !!!'
 					SELECT 0 AS Allow, @Msg AS Msg
 					PRINT 'D'
 				END

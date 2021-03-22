@@ -50,7 +50,7 @@ BEGIN
 					SELECT @CurrentIndexBarcode = Value FROM  [dbo].[FN_Split](@BarcodeNo,',') WHERE id = @Indexvar
 					IF EXISTS(SELECT BarcodeNo FROM Tbl_ANMCHCShipmentsDetail WHERE BarcodeNo = @CurrentIndexBarcode)
 					BEGIN
-						SET @BNO += 'ERR-'+@CurrentIndexBarcode + ','
+						SET @BNO += (@CurrentIndexBarcode +'-ERR') + ','
 					END
 					ELSE
 					BEGIN

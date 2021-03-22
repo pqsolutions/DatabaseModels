@@ -71,7 +71,7 @@ BEGIN
 				,IsAccept = 0
 			WHERE BarcodeNo = @Barcode 
 
-			IF EXISTS(SELECT 1 FROM Tbl_PositiveResultSubjectsDetail WHERE BarcodeNo = @Barcode )
+			IF EXISTS(SELECT 1 FROM Tbl_PositiveResultSubjectsDetail WHERE BarcodeNo = @Barcode AND UniqueSubjectID = @UniqueSubjectId)
 			BEGIN
 				UPDATE Tbl_PositiveResultSubjectsDetail SET 
 					CBCStatus = NULL 
@@ -79,7 +79,7 @@ BEGIN
 					,CBCUpdatedOn = GETDATE()
 					,IsActive = @IsActive 
 					,UpdatedToANM = 0
-				WHERE BarcodeNo = @Barcode 
+				WHERE BarcodeNo = @Barcode AND UniqueSubjectID = @UniqueSubjectId
 			END
 			
 			SELECT  ('Barcode ' + @Barcode + ' - Sample  Timedout Successfully') AS MSG
@@ -154,7 +154,7 @@ BEGIN
 					,@CreatedBy
 					,GETDATE())
 			END
-			IF EXISTS(SELECT 1 FROM Tbl_PositiveResultSubjectsDetail WHERE BarcodeNo = @Barcode )
+			IF EXISTS(SELECT 1 FROM Tbl_PositiveResultSubjectsDetail WHERE BarcodeNo = @Barcode AND UniqueSubjectID = @UniqueSubjectId)
 			BEGIN
 				UPDATE Tbl_PositiveResultSubjectsDetail SET 
 					CBCStatus = @CBCStatus 
@@ -162,7 +162,7 @@ BEGIN
 					,CBCUpdatedOn = @TestCompleteOn
 					,IsActive = @IsActive 
 					,UpdatedToANM = 0
-				WHERE BarcodeNo = @Barcode 
+				WHERE BarcodeNo = @Barcode AND UniqueSubjectID = @UniqueSubjectId
 			END
 			ELSE
 			BEGIN

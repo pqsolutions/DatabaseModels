@@ -75,7 +75,7 @@ BEGIN
 				IF EXISTS(SELECT BarcodeNo FROM Tbl_SampleCollection WHERE BarcodeNo = @BarcodeNo)
 				BEGIN
 					
-					SET  @BNo = 'ERR-'+@BarcodeNo 
+					SET  @BNo = @BarcodeNo +'-ERR'
 
 					INSERT INTO Tbl_ErrorBarcodeDetail (
 						[UniqueSubjectId],
@@ -91,7 +91,8 @@ BEGIN
 						[CreatedBy],
 						[CreatedOn],
 						[UpdatedBy],
-						[UpdatedOn])
+						[UpdatedOn],
+						[ProblemSolvedStatus])
 					SELECT Top 1 @UniqueSubjectID
 						,CONVERT(DATE,@SampleCollectionDate,103)
 						,@BarcodeNo
@@ -106,6 +107,7 @@ BEGIN
 						,GETDATE()
 						,@CollectedBy
 						,GETDATE()
+						,0
 					FROM Tbl_SampleCollection WHERE BarcodeNo = @BarcodeNo ORDER BY ID DESC
 					SET @GetId = (SELECT SCOPE_IDENTITY())
 				END

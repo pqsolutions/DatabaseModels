@@ -1,7 +1,7 @@
 
 
 
-USE [Eduquaydb]
+--USE [Eduquaydb]
 GO
 SET ANSI_NULLS ON
 GO
@@ -43,13 +43,20 @@ BEGIN
 
 		IF ISNULL(@ProcessStatus,0) = 0 AND ISNULL(@ConfirmStatus,0) = 0
 		BEGIN
-			IF @CheckDate < @TestedDateTime
+			IF EXISTS (SELECT Barcode FROM Tbl_ErrorBarcodeDetail WHERE Barcode = @Barcode AND ProblemSolvedStatus = 0)
 			BEGIN
-				SET  @Result = 1
+				SET @Result = 0
 			END
 			ELSE
 			BEGIN
-				SET  @Result = 0
+				IF @CheckDate < @TestedDateTime
+				BEGIN
+					SET  @Result = 1
+				END
+				ELSE
+				BEGIN
+					SET  @Result = 0
+				END
 			END
 		END
 		ELSE

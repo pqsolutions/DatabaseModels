@@ -1,6 +1,6 @@
 
 
-USE [Eduquaydb]
+--USE [Eduquaydb]
 GO
 
 SET ANSI_NULLS ON
@@ -29,26 +29,29 @@ BEGIN
 	BEGIN TRY
 		SELECT @SubjectId = ID FROM Tbl_SubjectPrimaryDetail WHERE UniqueSubjectID = @UniqueSubjectId 
 		
-		INSERT INTO Tbl_SSTestResult(
-			[UniqueSubjectID]
-           ,[BarcodeNo]
-           ,[TestingCHCId]
-           ,[IsPositive]
-           ,[SSTComplete]
-           ,[CreatedOn]
-           ,[CreatedBy]
-		   ,[UpdatedBy]
-		   ,[UpdatedOn])
-		VALUES(
-			@UniqueSubjectId 
-			,@Barcode 
-			,@TestingCHCId
-			,@IsPositive 
-			,1
-			,GETDATE()
-			,@CreatedBy
-			,@CreatedBy
-			,GETDATE())
+		IF NOT EXISTS (SELECT 1 FROM Tbl_SSTestResult WHERE BarcodeNo = @Barcode )
+		BEGIN
+			INSERT INTO Tbl_SSTestResult(
+				[UniqueSubjectID]
+			   ,[BarcodeNo]
+			   ,[TestingCHCId]
+			   ,[IsPositive]
+			   ,[SSTComplete]
+			   ,[CreatedOn]
+			   ,[CreatedBy]
+			   ,[UpdatedBy]
+			   ,[UpdatedOn])
+			VALUES(
+				@UniqueSubjectId 
+				,@Barcode 
+				,@TestingCHCId
+				,@IsPositive 
+				,1
+				,GETDATE()
+				,@CreatedBy
+				,@CreatedBy
+				,GETDATE())
+		END
 			
 		IF @IsPositive = 1
 		BEGIN
@@ -58,13 +61,13 @@ BEGIN
 		BEGIN
 			SET @SSTStatus = 'N'
 		END
-		IF EXISTS(SELECT 1 FROM Tbl_PositiveResultSubjectsDetail WHERE BarcodeNo = @Barcode )
+		IF EXISTS(SELECT 1 FROM Tbl_PositiveResultSubjectsDetail WHERE BarcodeNo = @Barcode AND UniqueSubjectID = @UniqueSubjectId)
 		BEGIN
 			UPDATE Tbl_PositiveResultSubjectsDetail SET 
 				SSTStatus  = @SSTStatus
 				,SSTUpdatedOn = GETDATE()
 				,UpdatedToANM = 0
-			WHERE BarcodeNo = @Barcode 
+			WHERE BarcodeNo = @Barcode AND UniqueSubjectID = @UniqueSubjectId
 		END
 		ELSE
 		BEGIN
@@ -85,7 +88,6 @@ BEGIN
 				,1
 				,0)	
 		END
-		
 		
 	END TRY
 	BEGIN CATCH
