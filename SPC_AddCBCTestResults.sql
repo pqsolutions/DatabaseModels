@@ -35,6 +35,15 @@ DECLARE
 	,@TestCompleteOn DATETIME
 
 BEGIN
+
+-------------
+--Confirmation Status = 1 means Process Confirmed
+--Confirmation Status = 2 means Re run Sample
+--Confirmation Status = 3 means Sample timed out
+--Confirmation Status = 4 means Duplicate Sample
+--Confirmation Status = 5 means Data received after processing 
+--------------
+
 	BEGIN TRY
 		SELECT @Barcode =  Barcode, @MCV = MCV, @RDW = RDW ,@RBC = RBC , @TestCompleteOn = TestedDateTime  FROM Tbl_CBCTestedDetail WHERE ID = @TestedId
 		SELECT @SubjectId = ID FROM Tbl_SubjectPrimaryDetail WHERE UniqueSubjectID = @UniqueSubjectId 
@@ -83,8 +92,6 @@ BEGIN
 			END
 			
 			SELECT  ('Barcode ' + @Barcode + ' - Sample  Timedout Successfully') AS MSG
-
-
 		END
 		ELSE IF @ConfirmStatus = 2
 		BEGIN
@@ -206,3 +213,4 @@ BEGIN
 	END CATCH
 
 END
+

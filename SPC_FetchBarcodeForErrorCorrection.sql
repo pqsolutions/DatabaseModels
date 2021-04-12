@@ -20,6 +20,8 @@ AS
 BEGIN
 	SELECT  (SP.[FirstName] +' '+ SP.[LastName] ) AS SubjectName
 		,SP.[UniqueSubjectID] AS SubjectID
+		,SPD.[RCHID]
+		,CONVERT(VARCHAR,SPD.[LMP_Date],103) AS LMPDate
 		,SC.[BarcodeNo] AS BarcodeNo
 		,(UM.[User_gov_code]+ ' - ' + UM.[FirstName]) AS ANMName 
 		,UM.[User_gov_code] AS ANMCode
@@ -30,10 +32,11 @@ BEGIN
 		,CASE WHEN AL.[LoginStatus] = 1 THEN 'Logged In' ELSE 'Logged Off' END AS LoginStatus
 		,CASE WHEN AL.[LoginStatus] = 1 THEN 0 ELSE 1 END AS LoginIconEnableStatus
 	FROM [dbo].[Tbl_SubjectPrimaryDetail] SP  
+	LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail] SPD WITH (NOLOCK) ON SPD.[UniqueSubjectID] = SP.[UniqueSubjectID] 
 	LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.[UniqueSubjectID] = SP.[UniqueSubjectID] 
 	LEFT JOIN [dbo].[Tbl_UserMaster] UM WITH (NOLOCK) ON UM.[ID] = SP.[AssignANM_ID]
 	LEFT JOIN [dbo].[Tbl_CHCMaster] CM WITH (NOLOCK) ON CM.[ID] = SP.[CHCID]
 	LEFT JOIN [dbo].[Tbl_ANMLogin] AL WITH (NOLOCK) ON AL.[ANMId] = UM.[ID]
-	WHERE  SC.[BarcodeNo] Like ( '%' +@BarcodeNo+ '%') --AND SC.[SampleTimeoutExpiry] = 0 AND SC.[SampleDamaged] = 0
+	WHERE  SC.[BarcodeNo] LIKE ( '%' +@BarcodeNo+ '%') --AND SC.[SampleTimeoutExpiry] = 0 AND SC.[SampleDamaged] = 0
 
 END

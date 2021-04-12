@@ -630,6 +630,8 @@ CREATE TABLE [dbo].[Tbl_UserMaster](
 	[OTPCreatedOn] [datetime] NULL,
 	[OTPExpiredOn] [datetime] NULL,
 	[PNDTLocationId] [int] NULL,
+	[EffectStart] [date] NULL,
+	[EffectEnd] [date] NULL
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
@@ -3293,6 +3295,35 @@ CREATE TABLE [dbo].[Tbl_BarcodeUpdationDetails](
 	[UniqueSubjectId]  [varchar] (250)  NULL,
 	[ExistBarcodeNo] [varchar] (250) NULL,
 	[NewBarcodeNo] [varchar] (250)  NULL,
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END	
+
+-------------------------------------------------------------------------------------------
+
+
+
+--USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO  
+
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_RCHIdUpdationDetails' AND [type] = 'U')
+BEGIN
+CREATE TABLE [dbo].[Tbl_RCHIdUpdationDetails](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[UniqueSubjectId]  [varchar] (250)  NULL,
+	[ExistRCHId] [varchar] (250) NULL,
+	[NewRCHId] [varchar] (250)  NULL,
 	[CreatedBy] [int] NULL,
 	[CreatedOn] [datetime] NULL,
 PRIMARY KEY CLUSTERED 

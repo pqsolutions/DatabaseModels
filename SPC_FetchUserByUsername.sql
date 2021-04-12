@@ -81,5 +81,5 @@ Begin
 	LEFT JOIN [dbo].[Tbl_Gov_IDTypeMaster] gm WITH (NOLOCK) ON gm.ID = um.GovIDType_ID
 	LEFT JOIN [dbo].[Tbl_MolecularLabMaster] ml WITH (NOLOCK) ON ml.ID = um.MolecularLabId
 	
-	WHERE um.[Username] = @Username
+	WHERE um.[Username] = @Username AND um.[IsActive] = 1
 End

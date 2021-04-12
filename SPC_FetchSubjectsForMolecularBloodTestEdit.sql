@@ -50,6 +50,7 @@ BEGIN
 		,HR.[HbS] 
 		,HR.[LabDiagnosis] AS HPLCDiagnosis
 		,ISNULL(MSTR.[IsDamaged],0) AS SampleDamaged
+		,ISNULL(MSTR.[IsProcessed],0) AS SampleProcessed
 		,MSTR.[ZygosityId]
 		,MSTR.[Mutation1Id]
 		,MSTR.[Mutation2Id]

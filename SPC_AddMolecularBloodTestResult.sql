@@ -65,7 +65,7 @@ BEGIN
 				,@Mutation3
 				,@TestResult
 				,@ReasonForClose
-				,@TestDate
+				,CONVERT(DATE,@TestDate,103)
 				,@UserId
 				,GETDATE()
 				,@UserId 
