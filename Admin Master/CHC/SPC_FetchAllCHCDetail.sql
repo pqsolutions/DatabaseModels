@@ -31,7 +31,6 @@ BEGIN
 		,CL.[CentralLabName]
 		,C.[HNIN_ID]
 		,C.[Pincode]
-		,C.[Isactive]
 	FROM [dbo].[Tbl_CHCMaster] C
 	LEFT JOIN [dbo].[Tbl_CHCMaster] CH WITH (NOLOCK) ON CH.ID = C.TestingCHCID
 	LEFT JOIN [dbo].[Tbl_BlockMaster] B WITH (NOLOCK) ON B.ID = C.BlockID	

@@ -1221,6 +1221,8 @@ END
 
 --------------------------------------------------------------------------------------------------------------------------
 
+
+
 USE [Eduquaydb]
 GO
 
@@ -1236,13 +1238,14 @@ BEGIN
 CREATE TABLE [dbo].[Tbl_ILRMaster](
 	[ID] [int] IDENTITY(1,1) NOT NULL,	
 	[ILRCode] [varchar] (200) NOT NULL,	
-	[ILRPoint] [varchar] (200) NOT NULL,	
+	[ILRPoint] [varchar] (200) NOT NULL,
 	[CreatedBy][int] NULL,
 	[CreatedOn] [datetime] NULL,
 	[UpdatedBy] [int] NULL,
 	[UpdatedOn][datetime] NULL,
 	[Comments] [varchar] (max) NULL,
-	[IsActive] [bit] NULL
+	[IsActive] [bit] NULL,
+	[CHCID] INT NULL
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC

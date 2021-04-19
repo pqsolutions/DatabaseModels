@@ -97,7 +97,7 @@ BEGIN
 		,PF.[FoetusName]
 		,PF.[SampleRefId]
 		,PF.[CVSSampleRefId]
-		,UM3.[FirstName] AS MolucularResultUpdatedBy
+		,UM3.[FirstName] AS MolecularResultUpdatedBy
 		,CONVERT(VARCHAR,PF.[ResultUpdatedOn],103) AS MolecularResultUpdatedOn
 		,CASE WHEN PF.[PlanForPregnencyContinue] = 0  THEN 'Plan for MTP' ELSE 'OG Follow up' END AS PlanforPregnancy
 		,PF.[PlanForPregnencyContinue]
