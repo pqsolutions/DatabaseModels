@@ -8,7 +8,7 @@ GO
 
 IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_FetchSubjectsPostPNDTScheduling' AND [type] = 'p')
 BEGIN
-	DROP PROCEDURE SPC_FetchSubjectsPostPNDTScheduling
+	DROP PROCEDURE SPC_FetchSubjectsPostPNDTScheduling 
 END
 GO
 CREATE PROCEDURE [dbo].[SPC_FetchSubjectsPostPNDTScheduling] 
@@ -21,7 +21,7 @@ CREATE PROCEDURE [dbo].[SPC_FetchSubjectsPostPNDTScheduling]
 )
 AS
 BEGIN
-	SELECT PT.[ANWSubjectId]
+	SELECT DISTINCT PT.[ANWSubjectId]
 		,SPD.[SpouseSubjectID]
 		,(SPD.[FirstName] + ' ' + SPD.[LastName] )AS SubjectName
 		,SPR.[RCHID]
@@ -37,6 +37,7 @@ BEGIN
 		,(CONVERT(VARCHAR,PT.[PNDTDateTime],103) + ' ' + CONVERT(VARCHAR(5),PT.[PNDTDateTime],108))AS PNDTDateTime
 		
 	FROM Tbl_PNDTestNew PT 
+	LEFT JOIN Tbl_PNDTFoetusDetail PF WITH (NOLOCK) ON PF.[PNDTestId] = PT.[ID]
 	LEFT JOIN Tbl_SubjectPrimaryDetail SPD WITH (NOLOCK) ON SPD.[UniqueSubjectID] = PT.[ANWSubjectId]
 	LEFT JOIN Tbl_SubjectPregnancyDetail SPR WITH (NOLOCK) ON SPD.[UniqueSubjectID] = SPR.[UniqueSubjectID] 
 	WHERE PT.[IsCompletePNDT] = 1  
@@ -46,6 +47,7 @@ BEGIN
 	AND (@CHCId = 0 OR SPD.[CHCID] = @CHCId)
 	AND (@PHCId = 0 OR SPD.[PHCID] = @PHCId)
 	AND (@ANMId = 0 OR SPD.[AssignANM_ID] = @ANMId)
+	AND PF.[PlanForPregnencyContinue] = 0
 	ORDER BY [GestationalAge] DESC  
 END
 

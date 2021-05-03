@@ -1,6 +1,6 @@
 
 
-USE [Eduquaydb]
+--USE [Eduquaydb]
 GO
 
 SET ANSI_NULLS ON
@@ -28,7 +28,6 @@ CREATE PROCEDURE [dbo].[SPC_AddPostPNDTCounselling]
 	,@ScheduleMTPTime VARCHAR(100)
 	,@FileName VARCHAR(MAX)
 	,@FileLocation VARCHAR(MAX)
-	,@IsFoetalDisease BIT
 	,@CreatedBy INT
 )
 AS
@@ -61,16 +60,20 @@ BEGIN
 		BEGIN
 			SET @ScheduleTime = CONVERT(TIME(2),@ScheduleMTPTime,103)
 		END
-		IF @IsFoetalDisease = 1 
-		BEGIN
-			SET @Active = 1
-			SET @ReasonForClose = ''
-		END
-		ELSE IF @IsFoetalDisease = 0
-		BEGIN 
-			SET @Active = 0
-			SET @ReasonForClose = 'It is foetal disease not positive, So no need send MTP'
-		END 
+
+		SET @Active = 1
+		SET @ReasonForClose = ''
+
+		--IF @IsFoetalDisease = 1 
+		--BEGIN
+		--	SET @Active = 1
+		--	SET @ReasonForClose = ''
+		--END
+		--ELSE IF @IsFoetalDisease = 0
+		--BEGIN 
+		--	SET @Active = 0
+		--	SET @ReasonForClose = 'It is foetal disease not positive, So no need send MTP'
+		--END 
 		
 		IF NOT EXISTS(SELECT 1 FROM Tbl_PostPNDTCounselling  WHERE PostPNDTSchedulingId  = @PostPNDTSchedulingId)
 		BEGIN
@@ -101,7 +104,6 @@ BEGIN
 				,UpdatedOn
 				,IsActive
 				,ReasonForClose
-				,IsFoetalDisease
 				,UpdatedToANM
 			)VALUES(
 				@AssignedObstetricianId
@@ -123,7 +125,6 @@ BEGIN
 				,GETDATE()
 				,@Active
 				,@ReasonForClose 
-				,@IsFoetalDisease
 				,0)
 				
 			SET @GetId = (SELECT SCOPE_IDENTITY())

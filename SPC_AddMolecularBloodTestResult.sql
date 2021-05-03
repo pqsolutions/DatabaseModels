@@ -82,11 +82,12 @@ BEGIN
 
 			IF @IsComplete = 1
 			BEGIN
-				SET @MSG = (@Barcode + ' - Moleculr Test Successfully Completed')
+				SET @MSG = (@Barcode + ' - Molecular Test Result Updated Successfully')
 			END
 			ELSE
 			BEGIN
-				SET @MSG = (@Barcode + ' - Moleculr Test will update Later')
+				SET @MSG = ('Molecular Test Result for '+@Barcode+' to be updated later')  
+
 			END
 			SELECT @MSG AS MSG
 			 
@@ -114,11 +115,11 @@ BEGIN
 
 			IF @IsComplete = 1
 			BEGIN
-				SET @MSG = (@Barcode + ' - Moleculr Test Successfully Updated')
+				SET @MSG = (@Barcode + ' - Molecular Test Result Updated Successfully')
 			END
 			ELSE
 			BEGIN
-				SET @MSG = (@Barcode + ' - Moleculr Test will update Later')
+				SET @MSG = ('Molecular Test Result for '+@Barcode+' to be updated later')  
 			END
 			SELECT @MSG AS MSG
 		END

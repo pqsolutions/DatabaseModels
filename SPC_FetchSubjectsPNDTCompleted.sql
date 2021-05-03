@@ -12,9 +12,9 @@ BEGIN
 END
 GO
 CREATE PROCEDURE [dbo].[SPC_FetchSubjectsPNDTCompleted] 
-(
-	@MolecularLabId  INT
-)
+--(
+--	@MolecularLabId  INT
+--)
 AS
 BEGIN
 	SELECT SPD.[UniqueSubjectID] AS ANWSubjectId
@@ -94,9 +94,10 @@ BEGIN
 		,PF.[CVSSampleRefId]
 		,UM2.[FirstName] AS MolucularResultUpdatedBy
 		,CONVERT(VARCHAR,PF.[ResultUpdatedOn],103) AS MolecularResultUpdatedOn
-		,CASE WHEN PF.[PlanForPregnencyContinue] = 0  THEN 'Plan for MTP' ELSE 'OG Follow up' END AS PlanforPregnancy
+		,CASE WHEN PF.[PlanForPregnencyContinue] IS NULL  THEN ''  WHEN PF.[PlanForPregnencyContinue] = 0  THEN 'Plan for MTP' ELSE 'OG Follow up' END AS PlanforPregnancy
 		,UM3.[FirstName] AS ResultReviewedBy
 		,CONVERT(VARCHAR,PF.[ReviewedOn],103) AS ResultReviewedOn
+		,PT.IsCompletePNDT
 	FROM Tbl_PNDTestNew PT 
 	LEFT JOIN Tbl_PNDTFoetusDetail PF WITH (NOLOCK) ON PT.[ID] = PF.[PNDTestId]
 	LEFT JOIN Tbl_MolecularSpecimenTestResult MSTR WITH (NOLOCK) ON  MSTR.[PNDTFoetusId] = PF.[ID]
@@ -121,7 +122,7 @@ BEGIN
 	WHERE PRSD.[HPLCStatus] = 'P' AND PRSD.[IsActive] = 1 AND PRSDS.[HPLCStatus] = 'P' AND PRSDS.[IsActive] = 1
 	AND (SPD.[SubjectTypeID] = 1 OR SPD.ChildSubjectTypeID =1)
 	AND PPC.[IsPNDTAgreeYes] = 1 AND PPC.[IsActive] = 0
-	AND PT.IsCompletePNDT = 1 ANd PT.IsMolTestCompleted = 1 AND (MSTR.[MolecularLabId] = @MolecularLabId OR @MolecularLabId = 0)
+	--AND PT.IsCompletePNDT = 1 ANd PT.IsMolTestCompleted = 1 --AND (MSTR.[MolecularLabId] = @MolecularLabId OR @MolecularLabId = 0)
 	ORDER BY PT.[PNDTDateTime]  DESC
 END
 

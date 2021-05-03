@@ -97,7 +97,7 @@ BEGIN
 		,PF.[FoetusName]
 		,PF.[SampleRefId]
 		,PF.[CVSSampleRefId]
-		,UM3.[FirstName] AS MolecularResultUpdatedBy
+		,UM3.[FirstName] AS MolucularResultUpdatedBy
 		,CONVERT(VARCHAR,PF.[ResultUpdatedOn],103) AS MolecularResultUpdatedOn
 		,CASE WHEN PF.[PlanForPregnencyContinue] = 0  THEN 'Plan for MTP' ELSE 'OG Follow up' END AS PlanforPregnancy
 		,PF.[PlanForPregnencyContinue]
@@ -109,7 +109,7 @@ BEGIN
 		,(UM.[FirstName] +' '+UM.[LastName] ) AS PostPNDTCounsellorName
 		,(CONVERT(VARCHAR,PPS.[CounsellingDateTime],103) + ' ' +
 		  CONVERT(VARCHAR(5),CONVERT(TIME(2),PPS.[CounsellingDateTime],103))) AS CounsellingDateTime
-
+		
 
 	FROM Tbl_PostPNDTScheduling PPS
 	LEFT JOIN Tbl_PNDTestNew PT WITH (NOLOCK) ON PPS.[ANWSubjectId] = PT.[ANWSubjectId]
@@ -131,8 +131,8 @@ BEGIN
 	LEFT JOIN Tbl_UserMaster UM WITH(NOLOCK) ON PPS.[CounsellorId] = UM.[ID] 
 	LEFT JOIN Tbl_UserMaster UM1 WITH (NOLOCK) ON UM1.[ID] = PPC.[CounsellorId] 
 	LEFT JOIN Tbl_UserMaster UM2 WITH (NOLOCK) ON UM2.[ID] = PT.[ObstetricianId]
-	LEFT JOIN Tbl_UserMaster UM3 WITH(NOLOCK) ON PF.[ResultUpdatedBy] = UM2.[ID] 
-	LEFT JOIN Tbl_UserMaster UM4 WITH(NOLOCK) ON PF.[ReviewedBy] = UM2.[ID] 
+	LEFT JOIN Tbl_UserMaster UM3 WITH(NOLOCK) ON PF.[ResultUpdatedBy] = UM3.[ID] 
+	LEFT JOIN Tbl_UserMaster UM4 WITH(NOLOCK) ON PF.[ReviewedBy] = UM4.[ID] 
 	WHERE PRSD.[HPLCStatus] = 'P' AND PRSD.[IsActive] = 1 AND PRSDS.[HPLCStatus] = 'P' AND PRSDS.[IsActive] = 1
 	AND (SPD.[SubjectTypeID] = 1 OR SPD.ChildSubjectTypeID =1)
 	AND PPS.[IsCounselled] = 0 

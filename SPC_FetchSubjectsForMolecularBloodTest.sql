@@ -2,9 +2,6 @@
 GO
 
 
-
-
-
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -12,7 +9,7 @@ GO
 
 IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_FetchSubjectsForMolecularBloodTest' AND [type] = 'p')
 BEGIN
-	DROP PROCEDURE SPC_FetchSubjectsForMolecularBloodTest
+	DROP PROCEDURE SPC_FetchSubjectsForMolecularBloodTest 
 END
 GO
 CREATE PROCEDURE [dbo].[SPC_FetchSubjectsForMolecularBloodTest] 
@@ -54,19 +51,42 @@ BEGIN
 		,HR.[HbS] 
 		,HR.[LabDiagnosis] AS HPLCDiagnosis
 		,ISNULL(SD.[SampleDamaged],0) AS SampleDamaged
+
+
+		,PRSDS.[UniqueSubjectID] AS SpouseSubectId
+		,(SPDS.[FirstName] + ' ' +SPDS.[LastName] ) AS SpouseName
+		,PRSDS.[CBCResult] AS SpouseCBCResult
+		,CASE WHEN PRSDS.[SSTStatus] = 'P' THEN 'Positive' ELSE 'Negative' END AS SpouseSSTResult
+		,PRSDS.[HPLCTestResult] AS SpouseHPLCResult
+
+		,SCTR.[MCV] AS Spouse_MCV
+		,SCTR.[RDW] AS Spouse_RDW
+		,SCTR.[RBC] AS Spouse_RBC
+
+		,SHTR.[HbF] AS Spouse_HbF
+		,SHTR.[HbS] AS Spouse_HbS
+		,SHTR.[HbD] AS Spouse_HbD
+		,SHTR.[HbA0] AS Spouse_HbA0
+		,SHTR.[HbA2] AS Spouse_HbA2
+
 	FROM [dbo].[Tbl_CentralLabShipments] S 
 	LEFT JOIN [dbo].[Tbl_CentralLabShipmentsDetail]  SD WITH (NOLOCK) ON SD.ShipmentID = S.ID
 	LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP   WITH (NOLOCK) ON SP.UniqueSubjectID = SD.UniqueSubjectID
 	LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail] SPR   WITH (NOLOCK) ON SPR.UniqueSubjectID = SD.UniqueSubjectID
+	LEFT JOIN Tbl_SubjectPrimaryDetail SPDS WITH (NOLOCK) ON SPDS.[UniqueSubjectID] = SP.[SpouseSubjectID]
 	LEFT JOIN [dbo].[Tbl_SubjectTypeMaster] ST WITH (NOLOCK) ON ST.ID = SP.ChildSubjectTypeID 
 	LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.BarcodeNo = SD.BarcodeNo 
+	LEFT JOIN [dbo].[Tbl_PositiveResultSubjectsDetail] PRSD WITH (NOLOCK) ON PRSD.BarcodeNo = SD.BarcodeNo
+	LEFT JOIN [dbo].[Tbl_PositiveResultSubjectsDetail] PRSDS WITH (NOLOCK) ON SPDS.UniqueSubjectID = PRSDS.UniqueSubjectID
 	LEFT JOIN [dbo].[Tbl_DistrictMaster] DM WITH (NOLOCK)ON  DM.ID = SP.DistrictID
 	LEFT JOIN [dbo].[Tbl_CBCTestResult] CR WITH (NOLOCK) ON CR.BarcodeNo = SD.BarcodeNo 
+	LEFT JOIN Tbl_CBCTestResult SCTR WITH (NOLOCK) ON SCTR.[BarcodeNo] = PRSDS.[BarcodeNo]
 	LEFT JOIN [dbo].[Tbl_SSTestResult] SR WITH (NOLOCK) ON SR.BarcodeNo = SD.BarcodeNo 
 	LEFT JOIN [dbo].[Tbl_HPLCTestResult] HR WITH (NOLOCK) ON HR.BarcodeNo = SD.BarcodeNo 
-	LEFT JOIN [dbo].[Tbl_PositiveResultSubjectsDetail] PRSD WITH (NOLOCK) ON PRSD.BarcodeNo = SD.BarcodeNo 
+	LEFT JOIN Tbl_HPLCTestResult SHTR WITH (NOLOCK) ON SHTR.[BarcodeNo] = PRSDS.[BarcodeNo]
 	LEFT JOIN [dbo].[Tbl_HPLCDiagnosisResult] HD WITH (NOLOCK) ON HD.BarcodeNo = PRSD.BarcodeNo 
-	WHERE S.[ReceivedDate] IS NOT NULL AND S.[ReceivingMolecularLabId] = @MolecularLabId 
+	WHERE  PRSD.[HPLCStatus] = 'P' AND PRSD.[IsActive] = 1 AND PRSDS.[HPLCStatus] = 'P' AND PRSDS.[IsActive] = 1 AND
+	S.[ReceivedDate] IS NOT NULL AND S.[ReceivingMolecularLabId] = @MolecularLabId
 	AND SD.[BarcodeNo]   NOT IN (SELECT BarcodeNo FROM Tbl_MolecularBloodTestResult)
 	ORDER BY S.[ReceivedDate] DESC
 END

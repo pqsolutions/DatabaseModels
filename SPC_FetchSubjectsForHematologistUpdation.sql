@@ -8,7 +8,7 @@ GO
 
 IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_FetchSubjectsForHematologistUpdation' AND [type] = 'p')
 BEGIN
-	DROP PROCEDURE SPC_FetchSubjectsForHematologistUpdation 
+	DROP PROCEDURE SPC_FetchSubjectsForHematologistUpdation
 END
 GO
 CREATE PROCEDURE [dbo].[SPC_FetchSubjectsForHematologistUpdation] 

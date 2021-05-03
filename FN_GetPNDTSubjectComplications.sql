@@ -28,7 +28,7 @@ BEGIN
 		,@PNDTComplecations VARCHAR(MAX)
 		,@Others NVARCHAR(MAX)
 		
-		SELECT @ComplecationsId = PNDTComplecationsId, @Others = OthersComplecations  FROM Tbl_PNDTest WHERE ID = ISNULL(@PNDTTestID,0)
+		SELECT @ComplecationsId = PNDTComplecationsId, @Others = OthersComplecations  FROM Tbl_PNDTestNew WHERE ID = ISNULL(@PNDTTestID,0)
 		SET @IndexVar = 0 
 		SELECT @TotalCount = COUNT(value) FROM [dbo].[FN_Split](ISNULL(@ComplecationsId,0),',')
 		WHILE @Indexvar < @TotalCount  

@@ -114,11 +114,12 @@ BEGIN
 
 			IF @IsComplete = 1
 			BEGIN
-				SET @MSG = 'CVSSampleRefID - '+@CVSSampleRefId + ' - Moleculr Test Successfully Completed'
+				SET @MSG = 'CVS Specimen RefID - '+@CVSSampleRefId + ' - Molecular Test Result Updated Successfully'
 			END
 			ELSE
 			BEGIN
-				SET @MSG = 'CVSSampleRefID - '+@CVSSampleRefId + ' - Moleculr Test will update Later'
+			
+				SET @MSG = 'Molecular Test Result for '+@CVSSampleRefId+' to be updated later '
 			END
 
 			SELECT @MSG AS MSG
@@ -172,11 +173,11 @@ BEGIN
 			END
 			IF @IsComplete = 1
 			BEGIN
-				SET @MSG = 'CVSSampleRefID - '+@CVSSampleRefId + ' - Moleculr Test Successfully Updated'
+				SET @MSG = 'CVS Specimen RefID - '+@CVSSampleRefId + ' - Molecular Test Result Updated Successfully'
 			END
 			ELSE
 			BEGIN
-				SET @MSG = 'CVSSampleRefID - '+@CVSSampleRefId + ' - Moleculr Test will update Later'
+				SET @MSG ='Molecular Test Result for '+@CVSSampleRefId+' to be updated later'
 			END
 			SELECT @MSG AS MSG
 		 
