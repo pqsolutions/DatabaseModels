@@ -75,13 +75,15 @@ BEGIN
 				,@IsComplete
 				,@MolecularLabId)
 			
-			UPDATE 	Tbl_PositiveResultSubjectsDetail SET 
-				MolecularResult = @TestResult 
-				,MolecularUpdatedOn  = GETDATE()
-			WHERE BarcodeNo = @Barcode 
+		
 
 			IF @IsComplete = 1
 			BEGIN
+				UPDATE 	Tbl_PositiveResultSubjectsDetail SET 
+					MolecularResult = @TestResult 
+					,MolecularUpdatedOn  = GETDATE()
+				WHERE BarcodeNo = @Barcode 
+
 				SET @MSG = (@Barcode + ' - Molecular Test Result Updated Successfully')
 			END
 			ELSE
