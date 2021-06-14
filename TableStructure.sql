@@ -1774,7 +1774,8 @@ CREATE TABLE [dbo].[Tbl_MolecularBloodTestResult](
 	[UpdatedOn] [datetime] NULL,
 	[Remarks] [varchar](max) NULL,
 	[MolecularLabId] [int] NULL,
-	[TestDate] [date] NULL
+	[TestDate] [date] NULL,
+	[OrderPhysicianId] [int] NULL
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
@@ -3187,7 +3188,8 @@ CREATE TABLE [dbo].[Tbl_MolecularSpecimenTestResult](
 	[MolecularLabId] [int] NULL,
 	[TestDate] [date] NULL,
 	[CreatedBy] [int] NULL,
-	[CreatedOn] [datetime] NULL
+	[CreatedOn] [datetime] NULL,
+	[OrderPhysicianId] [int] NULL
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
@@ -3239,6 +3241,33 @@ END
 
 -------------------------------------------------------------------------------------------
 
+
+--USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO  
+
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_MolecularLabOrderPhysicianDetails' AND [type] = 'U')
+BEGIN
+CREATE TABLE [dbo].[Tbl_MolecularLabOrderPhysicianDetails](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[MolecularLabId] [int] NULL,
+	[OrderPhysician] [varchar](250) NULL,
+	[IsActive] [bit] NULL,
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL
+	PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END	
+
+-------------------------------------------------
 
 
 --USE [Eduquaydb]

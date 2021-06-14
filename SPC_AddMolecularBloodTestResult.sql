@@ -33,9 +33,10 @@ CREATE PROCEDURE [dbo].[SPC_AddMolecularBloodTestResult]
 AS
 DECLARE 
 	@MSG VARCHAR(MAX)
+	,@OrderPhysicianId INT
 BEGIN
 	BEGIN TRY
-		
+		SET  @OrderPhysicianId = (SELECT TOP 1 ID FROM Tbl_MolecularLabOrderPhysicianDetails WHERE MolecularLabId = @MolecularLabId AND IsActive = 1)
 		IF NOT EXISTS (SELECT UniqueSubjectId FROM Tbl_MolecularBloodTestResult WHERE BarcodeNo = @Barcode)
 		BEGIN
 			INSERT INTO Tbl_MolecularBloodTestResult(
@@ -56,6 +57,7 @@ BEGIN
 				,[IsProcessed] 
 				,[IsComplete]
 				,[MolecularLabId]
+				,[OrderPhysicianId]
 			)VALUES(
 				@UniqueSubjectId 
 				,@Barcode 
@@ -73,9 +75,8 @@ BEGIN
 				,@IsDamaged
 				,@IsProcessed 
 				,@IsComplete
-				,@MolecularLabId)
-			
-		
+				,@MolecularLabId
+				,@OrderPhysicianId)
 
 			IF @IsComplete = 1
 			BEGIN
@@ -108,6 +109,7 @@ BEGIN
 			   ,[IsDamaged] = @IsDamaged
 			   ,[IsProcessed] = @IsProcessed
 			   ,[IsComplete] = @IsComplete
+			   ,[OrderPhysicianId] = @OrderPhysicianId
 			WHERE BarcodeNo = @Barcode AND UniqueSubjectID = @UniqueSubjectId
 			
 			UPDATE 	Tbl_PositiveResultSubjectsDetail SET 

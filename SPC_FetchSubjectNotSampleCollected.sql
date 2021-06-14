@@ -1,4 +1,4 @@
-USE [Eduquaydb]
+--USE [Eduquaydb]
 GO
 
 SET ANSI_NULLS ON
@@ -23,7 +23,7 @@ CREATE PROCEDURE [dbo].[SPC_FetchSubjectNotSampleCollected]
 )
 AS
 BEGIN
-	DECLARE @RegisterFrom VARCHAR(10), @CHCID INT, @StartDate VARCHAR(50), @EndDate VARCHAR(50)
+	DECLARE @RegisterFrom VARCHAR(10), @CHCID INT, @StartDate VARCHAR(50), @EndDate VARCHAR(50), @BlockId INT
 	IF @FromDate = NULL OR @FromDate = ''
 	BEGIN
 		SET @StartDate = (SELECT CONVERT(VARCHAR,DATEADD(YEAR ,-1,GETDATE()),103))
@@ -42,6 +42,7 @@ BEGIN
 	END
 	SELECT  @RegisterFrom = CommonName FROM Tbl_ConstantValues WHERE   ID = @RegisteredFrom
 	SELECT  @CHCID = CHCID FROM Tbl_UserMaster WHERE ID = @UserID
+	SELECT  @BlockId = BlockID FROM Tbl_UserMaster WHERE ID = @UserID
 	
 	IF @RegisterFrom = 'ANM'
 	BEGIN
@@ -66,40 +67,44 @@ BEGIN
 		LEFT JOIN Tbl_SubjectPregnancyDetail SPR WITH (NOLOCK) ON SPR.UniqueSubjectID  = SP.UniqueSubjectID 
 		LEFT JOIN Tbl_SubjectTypeMaster ST WITH (NOLOCK) ON ST.ID = SP.SubjectTypeID 
 		WHERE SP.[AssignANM_ID] = @UserID  
-			AND (CONVERT(DATE,SP.[DateofRegister],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103))
-			AND (@SubjectType = 0 OR SP.[SubjectTypeID] = @SubjectType)
+		AND (CONVERT(DATE,SP.[DateofRegister],103) BETWEEN CONVERT(DATE,@StartDate,103) AND CONVERT(DATE,@EndDate,103))
+		AND (@SubjectType = 0 OR SP.[SubjectTypeID] = @SubjectType)
 		--	AND SP.[RegisteredFrom] = @RegisteredFrom
-			AND SP.[ID]  IN (SELECT TOP 1 SubjectID  FROM Tbl_SubjectAddressDetail WHERE SubjectID = SP.ID)
-			AND SP.[ID]  IN (SELECT TOP 1 SubjectID FROM Tbl_SubjectPregnancyDetail  WHERE SubjectID = SP.ID) 
-			AND SP.[ID]  IN (SELECT TOP 1 SubjectID FROM Tbl_SubjectParentDetail   WHERE SubjectID  = SP.ID)
-			AND SP.[ID] NOT IN (SELECT SubjectID FROM Tbl_SampleCollection WHERE SampleDamaged != 1 AND SampleTimeoutExpiry != 1)
-			--AND SP.[IsActive]  = 1
-			ORDER By GestationalAge DESC
+		AND SP.[ID]  IN (SELECT TOP 1 SubjectID  FROM Tbl_SubjectAddressDetail WHERE SubjectID = SP.ID)
+		AND SP.[ID]  IN (SELECT TOP 1 SubjectID FROM Tbl_SubjectPregnancyDetail  WHERE SubjectID = SP.ID) 
+		AND SP.[ID]  IN (SELECT TOP 1 SubjectID FROM Tbl_SubjectParentDetail   WHERE SubjectID  = SP.ID)
+		AND SP.[ID] NOT IN (SELECT SubjectID FROM Tbl_SampleCollection WHERE SampleDamaged != 1 AND SampleTimeoutExpiry != 1)
+		--AND SP.[IsActive]  = 1
+		ORDER By GestationalAge DESC
 			
 	END
 	ELSE IF @RegisterFrom = 'CHC'
     BEGIN
-		SELECT SP.[ID]
-			,SP.[UniqueSubjectID]
-			,(SP.[FirstName] + ' ' + SP.[MiddleName] + ' ' + SP.[LastName]) AS SubjectName
-			,SPR.[RCHID]
-			,SP.[ChildSubjectTypeID] AS SubjectTypeID
-			,ST.[SubjectType] 
-			,(SP.[Spouse_FirstName] + ' ' + SP.[Spouse_MiddleName] + ' ' + SP.[Spouse_LastName]) AS SpouseName 
-			,(CONVERT(VARCHAR,SP.[DateofRegister],103)) AS  DateofRegister
-			,SP.[MobileNo] AS ContactNo
-			,CAST((SELECT [dbo].[FN_CalculateGestationalAge](SPR.[SubjectID])) AS DECIMAL(18,1)) AS GestationalAge
-			,(SELECT [dbo].[FN_FindSampleType](SP.[ID])) AS SampleType
-			,(SELECT [dbo].[FN_FindSampleTypeReason](SP.[ID])) AS Reason
-			,@StartDate AS FromDate
-			,@EndDate AS ToDate
-			,CASE WHEN (SELECT [dbo].[FN_FindSampleType](SP.[ID])) !='F' THEN 
-			(SELECT TOP 1 (CONVERT(VARCHAR,SampleCollectionDate,103)+' '+CONVERT(VARCHAR(5),SampleCollectionTime,108)) AS SampleCollectionDate FROM Tbl_SampleCollection WHERE SubjectID  = SP.[ID] ORDER BY ID DESC)
-			ELSE NULL END  AS SampleCollectionDate
-		FROM Tbl_SubjectPrimaryDetail SP
-		LEFT JOIN Tbl_SubjectPregnancyDetail SPR WITH (NOLOCK) ON SPR.UniqueSubjectID  = SP.UniqueSubjectID 
-		LEFT JOIN Tbl_SubjectTypeMaster ST WITH (NOLOCK) ON ST.ID = SP.ChildSubjectTypeID  
-		WHERE SP.CHCID = @CHCID 
+		
+		IF ISNULL(@CHCID,0) != 0
+		BEGIN
+
+			SELECT SP.[ID]
+				,SP.[UniqueSubjectID]
+				,(SP.[FirstName] + ' ' + SP.[MiddleName] + ' ' + SP.[LastName]) AS SubjectName
+				,SPR.[RCHID]
+				,SP.[ChildSubjectTypeID] AS SubjectTypeID
+				,ST.[SubjectType] 
+				,(SP.[Spouse_FirstName] + ' ' + SP.[Spouse_MiddleName] + ' ' + SP.[Spouse_LastName]) AS SpouseName 
+				,(CONVERT(VARCHAR,SP.[DateofRegister],103)) AS  DateofRegister
+				,SP.[MobileNo] AS ContactNo
+				,CAST((SELECT [dbo].[FN_CalculateGestationalAge](SPR.[SubjectID])) AS DECIMAL(18,1)) AS GestationalAge
+				,(SELECT [dbo].[FN_FindSampleType](SP.[ID])) AS SampleType
+				,(SELECT [dbo].[FN_FindSampleTypeReason](SP.[ID])) AS Reason
+				,@StartDate AS FromDate
+				,@EndDate AS ToDate
+				,CASE WHEN (SELECT [dbo].[FN_FindSampleType](SP.[ID])) !='F' THEN 
+				(SELECT TOP 1 (CONVERT(VARCHAR,SampleCollectionDate,103)+' '+CONVERT(VARCHAR(5),SampleCollectionTime,108)) AS SampleCollectionDate FROM Tbl_SampleCollection WHERE SubjectID  = SP.[ID] ORDER BY ID DESC)
+				ELSE NULL END  AS SampleCollectionDate
+			FROM Tbl_SubjectPrimaryDetail SP
+			LEFT JOIN Tbl_SubjectPregnancyDetail SPR WITH (NOLOCK) ON SPR.UniqueSubjectID  = SP.UniqueSubjectID 
+			LEFT JOIN Tbl_SubjectTypeMaster ST WITH (NOLOCK) ON ST.ID = SP.ChildSubjectTypeID  
+			WHERE SP.CHCID = @CHCID 
 			AND (CONVERT(DATE,SP.[DateofRegister],103) BETWEEN CONVERT(DATE,@StartDate ,103) AND CONVERT(DATE,@EndDate,103))
 			AND (@SubjectType = 0 OR SP.[ChildSubjectTypeID] = @SubjectType)
 			AND SP.[RegisteredFrom] = @RegisteredFrom
@@ -109,6 +114,43 @@ BEGIN
 			AND SP.[ID] NOT IN (SELECT SubjectID FROM Tbl_SampleCollection WHERE SampleDamaged != 1 AND SampleTimeoutExpiry != 1)
 			--AND SP.[IsActive]  = 1
 			ORDER By GestationalAge DESC
+		END
+		ELSE
+		BEGIN
+			SELECT SP.[ID]
+				,SP.[UniqueSubjectID]
+				,(SP.[FirstName] + ' ' + SP.[MiddleName] + ' ' + SP.[LastName]) AS SubjectName
+				,SPR.[RCHID]
+				,SP.[ChildSubjectTypeID] AS SubjectTypeID
+				,ST.[SubjectType] 
+				,(SP.[Spouse_FirstName] + ' ' + SP.[Spouse_MiddleName] + ' ' + SP.[Spouse_LastName]) AS SpouseName 
+				,(CONVERT(VARCHAR,SP.[DateofRegister],103)) AS  DateofRegister
+				,SP.[MobileNo] AS ContactNo
+				,CAST((SELECT [dbo].[FN_CalculateGestationalAge](SPR.[SubjectID])) AS DECIMAL(18,1)) AS GestationalAge
+				,(SELECT [dbo].[FN_FindSampleType](SP.[ID])) AS SampleType
+				,(SELECT [dbo].[FN_FindSampleTypeReason](SP.[ID])) AS Reason
+				,@StartDate AS FromDate
+				,@EndDate AS ToDate
+				,CASE WHEN (SELECT [dbo].[FN_FindSampleType](SP.[ID])) !='F' THEN 
+				(SELECT TOP 1 (CONVERT(VARCHAR,SampleCollectionDate,103)+' '+CONVERT(VARCHAR(5),SampleCollectionTime,108)) AS SampleCollectionDate FROM Tbl_SampleCollection WHERE SubjectID  = SP.[ID] ORDER BY ID DESC)
+				ELSE NULL END  AS SampleCollectionDate
+			FROM Tbl_SubjectPrimaryDetail SP
+			LEFT JOIN Tbl_SubjectPregnancyDetail SPR WITH (NOLOCK) ON SPR.UniqueSubjectID  = SP.UniqueSubjectID 
+			LEFT JOIN Tbl_SubjectTypeMaster ST WITH (NOLOCK) ON ST.ID = SP.ChildSubjectTypeID 
+			LEFT JOIN Tbl_CHCMaster CM WITH (NOLOCK) ON CM.ID = SP.CHCID
+			--LEFT JOIN Tbl_BlockMaster BM WITH (NOLOCK) ON BM.ID = CM.BlockID
+			WHERE CM.[BlockId] = @BlockId 
+			AND (CONVERT(DATE,SP.[DateofRegister],103) BETWEEN CONVERT(DATE,@StartDate ,103) AND CONVERT(DATE,@EndDate,103))
+			AND (@SubjectType = 0 OR SP.[ChildSubjectTypeID] = @SubjectType)
+			AND SP.[RegisteredFrom] = @RegisteredFrom
+			AND SP.[ID]  IN (SELECT TOP 1 SubjectID  FROM Tbl_SubjectAddressDetail WHERE SubjectID = SP.ID)
+			AND SP.[ID]  IN (SELECT TOP 1 SubjectID FROM Tbl_SubjectPregnancyDetail  WHERE SubjectID = SP.ID) 
+			AND SP.[ID]  IN (SELECT TOP 1 SubjectID FROM Tbl_SubjectParentDetail   WHERE SubjectID  = SP.ID)
+			AND SP.[ID] NOT IN (SELECT SubjectID FROM Tbl_SampleCollection WHERE SampleDamaged != 1 AND SampleTimeoutExpiry != 1)
+				--AND SP.[IsActive]  = 1
+			ORDER By GestationalAge DESC
+		END
+
 	END
 END
       

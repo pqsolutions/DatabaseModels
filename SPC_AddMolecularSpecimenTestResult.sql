@@ -37,11 +37,13 @@ DECLARE
 	,@PNDTestId INT
 	,@CVSSampleRefId VARCHAR(250)
 	,@MSG VARCHAR(MAX)
+	,@OrderPhysicianId INT
 
 BEGIN
 	BEGIN TRY
 		SELECT @PNDTestId = PNDTestId , @CVSSampleRefId = CVSSampleRefId  FROM Tbl_PNDTFoetusDetail WHERE ID = @PNDTFoetusId
 		SELECT @PregnancyType = PregnancyType FROM Tbl_PNDTestNew WHERE ID = @PNDTestId 
+		SET  @OrderPhysicianId = (SELECT TOP 1 ID FROM Tbl_MolecularLabOrderPhysicianDetails WHERE MolecularLabId = @MolecularLabId AND IsActive = 1)
 		IF NOT EXISTS (SELECT UniqueSubjectId FROM Tbl_MolecularSpecimenTestResult WHERE PNDTFoetusId = @PNDTFoetusId)
 		BEGIN
 			INSERT INTO Tbl_MolecularSpecimenTestResult(
@@ -61,7 +63,8 @@ BEGIN
 				,[IsDamaged]
 				,[IsProcessed] 
 				,[IsComplete]
-				,[MolecularLabId])
+				,[MolecularLabId]
+				,[OrderPhysicianId])
 			VALUES(
 				@UniqueSubjectId 
 				,@PNDTFoetusId 
@@ -79,7 +82,8 @@ BEGIN
 				,@IsDamaged
 				,@IsProcessed 
 				,@IsComplete
-				,@MolecularLabId)
+				,@MolecularLabId
+				,@OrderPhysicianId)
 
 			IF @IsComplete = 1 
 			BEGIN
@@ -139,6 +143,7 @@ BEGIN
 			   ,[IsDamaged] = @IsDamaged
 			   ,[IsProcessed] = @IsProcessed
 			   ,[IsComplete] = @IsComplete
+			   ,[OrderPhysicianId] = @OrderPhysicianId
 			WHERE PNDTFoetusId = @PNDTFoetusId AND UniqueSubjectID = @UniqueSubjectId
 			
 			IF @IsComplete = 1 

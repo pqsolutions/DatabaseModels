@@ -6,18 +6,15 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_FetchMolecularLabBloodTestReports' AND [type] = 'p')
+IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_FetchMolecularLabBloodTestReportIndividual' AND [type] = 'p')
 BEGIN
-	DROP PROCEDURE SPC_FetchMolecularLabBloodTestReports --1 , '08/10/2020',  '08/06/2021',0,0
+	DROP PROCEDURE SPC_FetchMolecularLabBloodTestReportIndividual 
 END
 GO
-CREATE PROCEDURE [dbo].[SPC_FetchMolecularLabBloodTestReports] 
+CREATE PROCEDURE [dbo].[SPC_FetchMolecularLabBloodTestReportIndividual] 
 (
 	@MolecularLabId INT
-	,@FromDate VARCHAR(250)
-	,@ToDate VARCHAR(250)
-	,@DistrictID INT
-	,@CHCID INT
+	,@Input VARCHAR(MAX)
 )
 AS
 BEGIN
@@ -91,8 +88,6 @@ BEGIN
 	LEFT JOIN [dbo].[Tbl_UserMaster] LT  WITH (NOLOCK)ON  LT.[ID]= CS.[UpdatedBy]
 	WHERE MSTR.[MolecularLabId] = @MolecularLabId AND MSTR.[IsComplete] = 1
 	AND  PRSD.[HPLCStatus] = 'P' AND PRSD.[IsActive] = 1 AND PRSDS.[HPLCStatus] = 'P' AND PRSDS.[IsActive] = 1 
-	AND (@CHCID = 0 OR SP.[CHCID] = @CHCID)
-	AND (@DistrictID = 0 OR SP.[DistrictID] = @DistrictID)
-	AND (MSTR.[TestDate] BETWEEN CONVERT(DATE,@FromDate,103) AND CONVERT(DATE,@ToDate,103))
+	AND ((SP.[UniqueSubjectID] LIKE '%'+@Input+'%') OR (SC.[BarcodeNo] LIKE '%'+@Input+'%') OR (SP.[FirstName] LIKE '%'+@Input+'%'))
 	ORDER BY MSTR.[TestDate] DESC
 END

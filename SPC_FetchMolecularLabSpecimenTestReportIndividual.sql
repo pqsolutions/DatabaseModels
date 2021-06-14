@@ -6,18 +6,15 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_FetchMolecularLabSpecimenTestReports' AND [type] = 'p')
+IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_FetchMolecularLabSpecimenTestReportIndividual' AND [type] = 'p')
 BEGIN
-	DROP PROCEDURE SPC_FetchMolecularLabSpecimenTestReports  
+	DROP PROCEDURE SPC_FetchMolecularLabSpecimenTestReportIndividual 
 END
 GO
-CREATE PROCEDURE [dbo].[SPC_FetchMolecularLabSpecimenTestReports] 
+CREATE PROCEDURE [dbo].[SPC_FetchMolecularLabSpecimenTestReportIndividual] 
 (
 	@MolecularLabId INT
-	,@FromDate VARCHAR(250)
-	,@ToDate VARCHAR(250)
-	,@DistrictID INT
-	,@CHCID INT
+	,@Input VARCHAR(MAX)
 )
 AS
 BEGIN
@@ -102,8 +99,6 @@ BEGIN
 	LEFT JOIN [dbo].[Tbl_UserMaster] LT  WITH (NOLOCK)ON  LT.[ID]= PS.[UpdatedBy]
 
 	WHERE MSTR.[MolecularLabId] = @MolecularLabId AND PF.[IsTestComplete] = 1 AND MSTR.[IsComplete] = 1
-	AND (@CHCID = 0 OR SP.[CHCID] = @CHCID)
-	AND (@DistrictID = 0 OR SP.[DistrictID] = @DistrictID)
-	AND (MSTR.[TestDate] BETWEEN CONVERT(DATE,@FromDate,103) AND CONVERT(DATE,@ToDate,103))
+	AND ((SP.[UniqueSubjectID] LIKE '%'+@Input+'%') OR (SC.[BarcodeNo] LIKE '%'+@Input+'%') OR (SP.[FirstName] LIKE '%'+@Input+'%'))
 	ORDER BY PF.Resultupdatedon DESC
 END

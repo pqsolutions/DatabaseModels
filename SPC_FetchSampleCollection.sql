@@ -1,4 +1,4 @@
-USE [Eduquaydb]
+--USE [Eduquaydb]
 GO
 
 SET ANSI_NULLS ON
@@ -20,9 +20,10 @@ CREATE PROCEDURE [dbo].[SPC_FetchSampleCollection]
 )
 AS
 BEGIN
-	DECLARE @CollectFrom VARCHAR(10),@CHCID INT
+	DECLARE @CollectFrom VARCHAR(10),@CHCID INT, @BlockId INT
 	SET @CollectFrom = (SELECT CommonName FROM Tbl_ConstantValues WHERE ID = @CollectionFrom AND comments='SampleCollectionFrom')
 	SET @CHCID = (SELECT CHCID FROM Tbl_UserMaster WHERE ID = @UserID)
+	SELECT  @BlockId = BlockID FROM Tbl_UserMaster WHERE ID = @UserID
 	IF @CollectFrom = 'ANM'
 	BEGIN 
 		SELECT SC.[UniqueSubjectID]
@@ -43,20 +44,43 @@ BEGIN
     END
     ELSE IF @CollectFrom = 'CHC'
     BEGIN
-		SELECT SC.[UniqueSubjectID]
-		  ,SC.[ID] AS SampleCollectionID
-		  ,(SP.[FirstName] + ' ' + SP.[MiddleName] + ' ' + SP.[LastName]) AS SubjectName
-		  ,SPR.[RCHID] 
-		  ,SC.[BarcodeNo]
-		  ,(CONVERT(VARCHAR,SC.[SampleCollectionDate],103) + ' ' + CONVERT(VARCHAR(5),SC.[SampleCollectionTime])) AS SampleDateTime
-		  ,CONVERT(DATETIME,(CONVERT(VARCHAR,SC.[SampleCollectionDate],103) + ' ' + CONVERT(VARCHAR(5),SC.[SampleCollectionTime])),103) AS SDT
-		  ,CAST((SELECT [dbo].[FN_CalculateGestationalAge](SPR.[SubjectID])) AS DECIMAL(18,1)) AS GestationalAge
-		   FROM Tbl_SampleCollection SC
-		   LEFT JOIN Tbl_SubjectPrimaryDetail SP WITH (NOLOCK) ON SP.ID = SC.SubjectID
-		   LEFT JOIN Tbl_SubjectPregnancyDetail SPR WITH (NOLOCK) ON SPR.SubjectID = SP.ID
-		WHERE SP.CHCID = @CHCID AND SC.CollectionFrom = @CollectionFrom   AND SC.SampleTimeoutExpiry != 1 AND SC.SampleDamaged != 1
-		--AND SP.[IsActive] = 1 
-		AND SC.BarcodeNo NOT IN (SELECT BarcodeNo from Tbl_ANMCHCShipmentsDetail)
-		ORDER BY SDT ASC
+		IF ISNULL(@CHCID,0) != 0
+		BEGIN
+			SELECT SC.[UniqueSubjectID]
+			  ,SC.[ID] AS SampleCollectionID
+			  ,(SP.[FirstName] + ' ' + SP.[MiddleName] + ' ' + SP.[LastName]) AS SubjectName
+			  ,SPR.[RCHID] 
+			  ,SC.[BarcodeNo]
+			  ,(CONVERT(VARCHAR,SC.[SampleCollectionDate],103) + ' ' + CONVERT(VARCHAR(5),SC.[SampleCollectionTime])) AS SampleDateTime
+			  ,CONVERT(DATETIME,(CONVERT(VARCHAR,SC.[SampleCollectionDate],103) + ' ' + CONVERT(VARCHAR(5),SC.[SampleCollectionTime])),103) AS SDT
+			  ,CAST((SELECT [dbo].[FN_CalculateGestationalAge](SPR.[SubjectID])) AS DECIMAL(18,1)) AS GestationalAge
+			   FROM Tbl_SampleCollection SC
+			   LEFT JOIN Tbl_SubjectPrimaryDetail SP WITH (NOLOCK) ON SP.ID = SC.SubjectID
+			   LEFT JOIN Tbl_SubjectPregnancyDetail SPR WITH (NOLOCK) ON SPR.SubjectID = SP.ID
+			WHERE SP.CHCID = @CHCID AND SC.CollectionFrom = @CollectionFrom   AND SC.SampleTimeoutExpiry != 1 AND SC.SampleDamaged != 1
+			--AND SP.[IsActive] = 1 
+			AND SC.BarcodeNo NOT IN (SELECT BarcodeNo from Tbl_ANMCHCShipmentsDetail)
+			ORDER BY SDT ASC
+		END
+		ELSE
+		BEGIN
+			SELECT SC.[UniqueSubjectID]
+			  ,SC.[ID] AS SampleCollectionID
+			  ,(SP.[FirstName] + ' ' + SP.[MiddleName] + ' ' + SP.[LastName]) AS SubjectName
+			  ,SPR.[RCHID] 
+			  ,SC.[BarcodeNo]
+			  ,(CONVERT(VARCHAR,SC.[SampleCollectionDate],103) + ' ' + CONVERT(VARCHAR(5),SC.[SampleCollectionTime])) AS SampleDateTime
+			  ,CONVERT(DATETIME,(CONVERT(VARCHAR,SC.[SampleCollectionDate],103) + ' ' + CONVERT(VARCHAR(5),SC.[SampleCollectionTime])),103) AS SDT
+			  ,CAST((SELECT [dbo].[FN_CalculateGestationalAge](SPR.[SubjectID])) AS DECIMAL(18,1)) AS GestationalAge
+			   FROM Tbl_SampleCollection SC
+			   LEFT JOIN Tbl_SubjectPrimaryDetail SP WITH (NOLOCK) ON SP.ID = SC.SubjectID
+			   LEFT JOIN Tbl_SubjectPregnancyDetail SPR WITH (NOLOCK) ON SPR.SubjectID = SP.ID
+			   LEFT JOIN Tbl_CHCMaster CM WITH (NOLOCK) ON CM.ID = SP.CHCID
+			WHERE CM.[BlockId] = @BlockId 
+			AND SC.CollectionFrom = @CollectionFrom   AND SC.SampleTimeoutExpiry != 1 AND SC.SampleDamaged != 1
+			--AND SP.[IsActive] = 1 
+			AND SC.BarcodeNo NOT IN (SELECT BarcodeNo from Tbl_ANMCHCShipmentsDetail)
+			ORDER BY SDT ASC
+		END
     END
 END
