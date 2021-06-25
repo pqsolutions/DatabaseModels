@@ -1,6 +1,6 @@
 
 
-USE [Eduquaydb]
+--USE [Eduquaydb]
 GO
 
 SET ANSI_NULLS ON
@@ -102,7 +102,7 @@ BEGIN
 			   WHERE ID != @HPLCTestId AND ISNULL(ProcessStatus,0) = 0
 			   AND SampleStatus IS NULL AND Barcode = @BarcodeNo
 
-			SELECT   ('Barcode ' + @BarcodeNo + ' - Sample HPLC test result updated successfully') AS MSG
+			SELECT   ('Barcode ' + @BarcodeNo + ' - Sample HPLC test result updated successfully') AS MSG, @IsNormal AS IsNormal
 		END
 		ELSE
 		BEGIN

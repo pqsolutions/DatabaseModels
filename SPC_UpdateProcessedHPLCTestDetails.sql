@@ -1,4 +1,4 @@
-USE [Eduquaydb]
+--USE [Eduquaydb]
 GO
 
 SET ANSI_NULLS ON
@@ -55,7 +55,7 @@ BEGIN
 		WHERE BarcodeNo = @BarcodeNo 
 
 
-		SELECT 'HPLC processed test result updated successfully' AS MSG
+		SELECT 'HPLC processed test result updated successfully' AS MSG , @IsNormal AS IsNormal
 
 	END TRY
 	BEGIN CATCH

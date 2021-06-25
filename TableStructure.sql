@@ -3242,6 +3242,7 @@ END
 -------------------------------------------------------------------------------------------
 
 
+
 --USE [Eduquaydb]
 GO
 
@@ -3268,6 +3269,39 @@ CREATE TABLE [dbo].[Tbl_MolecularLabOrderPhysicianDetails](
 END	
 
 -------------------------------------------------
+
+
+
+--USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO  
+
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_MolecularLabInchargeDetails' AND [type] = 'U')
+BEGIN
+CREATE TABLE [dbo].[Tbl_MolecularLabInchargeDetails](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[UserId] [int] NULL,
+	[Designation] [varchar](max) NULL,
+	[Department] [varchar](max) NULL,
+	[Incharge] [varchar](max) NULL,
+	[MolAddress] [varchar](max) NULL,
+	[IsActive] [bit] NULL,
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL
+	PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END	
+
+-------------------------------------------------
+
 
 
 --USE [Eduquaydb]
@@ -3368,6 +3402,68 @@ END
 
 -------------------------------------------------------------------------------------------
 
+
+
+--USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO  
+
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_LMPUpdationDetails' AND [type] = 'U')
+BEGIN
+CREATE TABLE [dbo].[Tbl_LMPUpdationDetails](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[UniqueSubjectId]  [varchar] (250)  NULL,
+	[OldLMP] [date]  NULL,
+	[NewLMP] [date]   NULL,
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL,
+	[Remarks] [varchar] (max) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END	
+
+-------------------------------------------------------------------------------------------
+
+
+
+
+--USE [Eduquaydb]
+GO
+
+SET ANSI_NULLS ON
+GO  
+
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE name='Tbl_SSTUpdationDetails' AND [type] = 'U')
+BEGIN
+CREATE TABLE [dbo].[Tbl_SSTUpdationDetails](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[SSTID] [int] NULL,
+	[UniqueSubjectId]  [varchar] (250)  NULL,
+	[Barcode] [varchar] (250)  NULL,
+	[OldResult] [varchar] (250)  NULL,
+	[NewResult] [varchar] (250)  NULL,
+	[Remarks] [varchar] (max) NULL,
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+END	
+
+-------------------------------------------------------------------------------------------
 
 
 

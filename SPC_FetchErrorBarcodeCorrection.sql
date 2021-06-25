@@ -27,8 +27,13 @@ BEGIN
 		,CM.[CHCname] AS CHCName
 		,(SELECT TOP 1 [FirstName] FROM Tbl_UserMaster WHERE DistrictID = UM.[DistrictID] AND IsActive = 1 AND [UserType_ID] = (SELECT ID FROM [dbo].[Tbl_UserTypeMaster] WHERE Usertype = 'DC') ORDER BY ID DESC) AS DCName
 		,(SELECT TOP 1 [ContactNo1] FROM Tbl_UserMaster WHERE DistrictID = UM.[DistrictID] AND IsActive = 1 AND [UserType_ID] = (SELECT ID FROM [dbo].[Tbl_UserTypeMaster] WHERE Usertype = 'DC') ORDER BY ID DESC) AS DCContact
-		,CASE WHEN AL.[LoginStatus] = 1 THEN 'Logged In' ELSE 'Logged Off' END AS LoginStatus
-		,CASE WHEN AL.[LoginStatus] = 1 THEN 0 ELSE 1 END AS LoginIconEnableStatus
+		,CASE WHEN AL.[LoginStatus] = 1 THEN 'Logged In' ELSE 'Logged Off' END AS LoginStatus  
+		-------------------Temporarily default  set values - all ANM are Logged OFF--------------------
+		
+		,CASE WHEN AL.[LoginStatus] = 1 THEN 1 ELSE 1 END AS LoginIconEnableStatus
+		--,CASE WHEN AL.[LoginStatus] = 1 THEN 0 ELSE 1 END AS LoginIconEnableStatus
+
+		--------------------------------------------------------------------------------------
 	FROM [dbo].[Tbl_ErrorBarcodeDetail] EB  
 	LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON  SC.[BarcodeNo] = EB.[AlternateBarcode]
 	LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP WITH (NOLOCK) ON SP.[UniqueSubjectID] = SC.[UniqueSubjectID] 

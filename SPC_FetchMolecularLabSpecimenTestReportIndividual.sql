@@ -8,7 +8,7 @@ GO
 
 IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_FetchMolecularLabSpecimenTestReportIndividual' AND [type] = 'p')
 BEGIN
-	DROP PROCEDURE SPC_FetchMolecularLabSpecimenTestReportIndividual 
+	DROP PROCEDURE SPC_FetchMolecularLabSpecimenTestReportIndividual --1,'OD/19115/00013/F'
 END
 GO
 CREATE PROCEDURE [dbo].[SPC_FetchMolecularLabSpecimenTestReportIndividual] 
@@ -21,27 +21,27 @@ BEGIN
 	SELECT SP.[ID] AS SubjectId
 		,(SP.[FirstName] + ' ' + SP.[MiddleName] + ' '+ SP.[LastName] ) AS SubjectName
 		,SP.[UniqueSubjectID]
-		,ISNULL(SPR.[RCHID] ,'') AS RCHID
+		,ISNULL(SPR.[RCHID] ,'N/A') AS RCHID
 		,ST.[SubjectType] 
 		,SP.[Age] 
 		,SP.[Gender] 
-		,CASE WHEN ISNULL(SP.[DOB],'') = '' THEN '' ELSE CONVERT(VARCHAR,SP.[DOB],103) END DOB
+		,CASE WHEN ISNULL(SP.[DOB],'') = '' THEN 'N/A' ELSE CONVERT(VARCHAR,SP.[DOB],103) END DOB
 		,SP.[MobileNo] AS ContactNo 
 		,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN
-			CONVERT(VARCHAR,SPR.[LMP_Date],103) ELSE '' END AS LMPDate
+			CONVERT(VARCHAR,SPR.[LMP_Date],103) ELSE 'N/A' END AS LMPDate
 
 		,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN
 		--(SELECT [dbo].[FN_CalculateGestationalAge](SP.[ID])) ELSE '' END AS GestationalAge
-		(SELECT [dbo].[FN_CalculateGAatRegDate](SP.[ID] , SP.[DateofRegister])) ELSE '' END AS GestationalAge
+		(SELECT [dbo].[FN_CalculateGAatRegDate](SP.[ID] , SP.[DateofRegister])) ELSE 'N/A' END AS GestationalAge
 		,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN
 		 ('G'+CONVERT(VARCHAR,SPR.[G])+'-P'+CONVERT(VARCHAR,SPR.[P])+'-L'+CONVERT(VARCHAR,SPR.[L])+'-A'+
-		 CONVERT(VARCHAR,SPR.[A])) ELSE '' END AS ObstetricScore
-		,ISNULL(SPR.[ECNumber],'') AS ECNumber
+		 CONVERT(VARCHAR,SPR.[A])) ELSE 'N/A' END AS ObstetricScore
+		,ISNULL(SPR.[ECNumber],'N/A') AS ECNumber
 		,CONVERT(VARCHAR,SP.[DateofRegister],103) AS RegistrationDate
 		,CONVERT(VARCHAR,SC.[SampleCollectionDate],103) AS SampleCollectionDate
 		,(SAD.Address1 + ' ' + SAD.[Address2] + ' ' + SAD.[Address3] + ' - ' + SAD.[Pincode]) AS Address
 		,SC.[BarcodeNo]
-
+		,SCS.[BarcodeNo] AS SpouseBarcodeNo
 		,SPDS.[UniqueSubjectID] AS SpouseSubjectId
 		,(SPDS.[FirstName] + ' ' +SPDS.[LastName] ) AS SpouseName
 
@@ -52,7 +52,11 @@ BEGIN
 		,SM.[SCname]
 		,RI.[RIsite]
 		,ANM.[FirstName] AS ANMName
-		,MLU.[FirstName] AS ResultEnteredBy
+		,MLU.[FirstName] AS LabInchargeName
+		,MLI.[Designation] AS LabIchargeDesignation
+		,MLI.[Department] AS LabIchargeDepartment
+		,MLI.[Incharge] AS Incharge 
+		,MLI.[MolAddress] AS LabInchargeAddress
 
 		,PF.[FoetusName]
 		,PF.[CVSSampleRefId]
@@ -61,12 +65,12 @@ BEGIN
 		,PF.[PNDTestId]
 		,ISNULL(MSTR.[IsDamaged],0) AS SampleDamaged
 		,ISNULL(MSTR.[IsProcessed],0) AS SampleProcessed
-		,CASE WHEN MSTR.[IsComplete] = 1 THEN MSTR.[TestResult] ELSE '' END AS SpecimenTestResult
+		,CASE WHEN MSTR.[IsComplete] = 1 THEN MSTR.[TestResult] ELSE 'N/A' END AS SpecimenTestResult
 		,MSTR.[ReasonForClose]
 		,CONVERT(VARCHAR,MSTR.[TestDate],103) AS MolecularSpecimenTestDate
 
-		,CASE WHEN MS.[IsComplete] = 1 THEN MS.[TestResult] ELSE '' END AS MolecularLabBloodResult
-		,CASE WHEN MSS.[IsComplete] = 1 THEN MSS.[TestResult] ELSE '' END AS SpouseMolecularLabBloodResult
+		,CASE WHEN MS.[IsComplete] = 1 THEN MS.[TestResult] ELSE 'N/A' END AS MolecularLabBloodResult
+		,CASE WHEN MSS.[IsComplete] = 1 THEN MSS.[TestResult] ELSE 'N/A' END AS SpouseMolecularLabBloodResult
 
 		,MLM.[MLabName] AS MolecularLabName
 		,OP.[OrderPhysician]  AS OrderingPhysician
@@ -90,6 +94,7 @@ BEGIN
 	LEFT JOIN [dbo].[Tbl_UserMaster] MLU  WITH (NOLOCK) ON  MLU.[ID] = MSTR.[UpdatedBy]
 	LEFT JOIN [dbo].[Tbl_MolecularBloodTestResult] MS WITH (NOLOCK) ON MS.[UniqueSubjectID] = MSTR.[UniqueSubjectID]
 	LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.[UniqueSubjectID] = SP.[UniqueSubjectID] AND SC.[SampleDamaged] = 0 AND SC.[SampleTimeoutExpiry] = 0
+	LEFT JOIN [dbo].[Tbl_SampleCollection] SCS WITH (NOLOCK) ON SCS.[UniqueSubjectID] = SPDS.[UniqueSubjectID] AND SCS.[SampleDamaged] = 0 AND SCS.[SampleTimeoutExpiry] = 0
 	LEFT JOIN [dbo].[Tbl_MolecularBloodTestResult] MSS WITH (NOLOCK) ON MSS.[UniqueSubjectID] =  SP.[SpouseSubjectID]
 	LEFT JOIN [dbo].[Tbl_MolecularLabMaster] MLM WITH (NOLOCK) ON MLM.[ID] = MSTR.[MolecularLabId]
 	LEFT JOIN [dbo].[Tbl_MolecularLabOrderPhysicianDetails] OP WITH (NOLOCK) ON MSTR.[MolecularLabId] = OP.[MolecularLabId]
@@ -97,8 +102,8 @@ BEGIN
 	LEFT JOIN [dbo].[Tbl_PNDTShipmentsDetail] PSD WITH (NOLOCK) ON MSTR.[PNDTFoetusId] = PSD.[PNDTFoetusId]
 	LEFT JOIN [dbo].[Tbl_PNDTShipments] PS WITH (NOLOCK) ON PS.[ID] = PSD.[ShipmentID] AND PS.[ReceivedDateTime] IS NOT NULL
 	LEFT JOIN [dbo].[Tbl_UserMaster] LT  WITH (NOLOCK)ON  LT.[ID]= PS.[UpdatedBy]
-
+	LEFT JOIN [dbo].[Tbl_MolecularLabInchargeDetails] MLI  WITH (NOLOCK)ON  MLI.[UserId]= MLU.[ID]
 	WHERE MSTR.[MolecularLabId] = @MolecularLabId AND PF.[IsTestComplete] = 1 AND MSTR.[IsComplete] = 1
 	AND ((SP.[UniqueSubjectID] LIKE '%'+@Input+'%') OR (SC.[BarcodeNo] LIKE '%'+@Input+'%') OR (SP.[FirstName] LIKE '%'+@Input+'%'))
-	ORDER BY PF.Resultupdatedon DESC
+	ORDER BY  PF.[PNDTestId],PF.[ID], PF.Resultupdatedon DESC
 END

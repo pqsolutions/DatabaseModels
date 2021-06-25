@@ -22,26 +22,26 @@ BEGIN
 		,(SP.[FirstName] + ' ' + SP.[MiddleName] + ' '+ SP.[LastName] ) AS SubjectName
 		,MSTR.[UniqueSubjectID]
 		,ST.[SubjectType] 
-		,ISNULL(SPR.[RCHID] ,'') AS RCHID
+		,ISNULL(SPR.[RCHID] ,'N/A') AS RCHID
 		,SP.[Age] 
 		,SP.[Gender] 
-		,CASE WHEN ISNULL(SP.[DOB],'') = '' THEN '' ELSE CONVERT(VARCHAR,SP.[DOB],103) END DOB
+		,CASE WHEN ISNULL(SP.[DOB],'') = '' THEN 'N/A' ELSE CONVERT(VARCHAR,SP.[DOB],103) END DOB
 		,SP.[MobileNo] AS ContactNo 
 		,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN
-			CONVERT(VARCHAR,SPR.[LMP_Date],103) ELSE '' END AS LMPDate
+			CONVERT(VARCHAR,SPR.[LMP_Date],103) ELSE 'N/A' END AS LMPDate
 
 		,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN
 		--(SELECT [dbo].[FN_CalculateGestationalAge](SP.[ID])) ELSE '' END AS GestationalAge
-		(SELECT [dbo].[FN_CalculateGAatRegDate](SP.[ID] , SP.[DateofRegister])) ELSE '' END AS GestationalAge
+		(SELECT [dbo].[FN_CalculateGAatRegDate](SP.[ID] , SP.[DateofRegister])) ELSE 'N/A' END AS GestationalAge
 		,CASE WHEN SP.[SubjectTypeID] = 1 OR SP.[ChildSubjectTypeID] = 1 THEN
 		 ('G'+CONVERT(VARCHAR,SPR.[G])+'-P'+CONVERT(VARCHAR,SPR.[P])+'-L'+CONVERT(VARCHAR,SPR.[L])+'-A'+
-		 CONVERT(VARCHAR,SPR.[A])) ELSE '' END AS ObstetricScore
-		,ISNULL(SPR.[ECNumber],'') AS ECNumber
+		 CONVERT(VARCHAR,SPR.[A])) ELSE 'N/A' END AS ObstetricScore
+		,ISNULL(SPR.[ECNumber],'N/A') AS ECNumber
 		,CONVERT(VARCHAR,SP.[DateofRegister],103) AS RegistrationDate
 		,CONVERT(VARCHAR,SC.[SampleCollectionDate],103) AS SampleCollectionDate
 		,(SAD.Address1 + ' ' + SAD.[Address2] + ' ' + SAD.[Address3] + ' - ' + SAD.[Pincode]) AS Address
 		,MSTR.[BarcodeNo]
-
+		,MSTRS.[BarcodeNo] AS SpouseBarcodeNo
 		,DM.[Districtname]
 		,CM.[CHCname]
 		,BM.[Blockname]
@@ -53,12 +53,16 @@ BEGIN
 		,MSTR.[TestResult] MolecularLabBloodResult
 		,MSTR.[ReasonForClose]
 		,CONVERT(VARCHAR,MSTR.[TestDate],103) AS TestDate
-		,MLU.[FirstName] AS ResultEnteredBy
+		,MLU.[FirstName] AS LabInchargeName
+		,MLI.[Designation] AS LabIchargeDesignation
+		,MLI.[Department] AS LabIchargeDepartment
+		,MLI.[Incharge] AS Incharge 
+		,MLI.[MolAddress] AS LabInchargeAddress
 		
 		,PRSDS.[UniqueSubjectID] AS SpouseSubjectId
 		,(SPDS.[FirstName] + ' ' + SPDS.[LastName]) AS SpouseName
 
-		,CASE WHEN MSTRS.[IsComplete] = 1 THEN MSTRS.[TestResult] ELSE '' END AS SpouseMolecularLabBloodResult
+		,CASE WHEN MSTRS.[IsComplete] = 1 THEN MSTRS.[TestResult] ELSE 'N/A' END AS SpouseMolecularLabBloodResult
 		,MLM.[MLabName] AS MolecularLabName
 		,OP.[OrderPhysician] AS OrderingPhysician
 		,(LT.[FirstName] + ' ' + LT.[LastName] )AS LabTechnician
@@ -86,6 +90,7 @@ BEGIN
 	LEFT JOIN [dbo].[Tbl_CentralLabShipmentsDetail] CSD WITH (NOLOCK) ON MSTR.[BarcodeNo] = CSD.[BarcodeNo]
 	LEFT JOIN [dbo].[Tbl_CentralLabShipments] CS WITH (NOLOCK) ON CS.[ID] = CSD.[ShipmentID] AND CS.[ReceivedDate] IS NOT NULL
 	LEFT JOIN [dbo].[Tbl_UserMaster] LT  WITH (NOLOCK)ON  LT.[ID]= CS.[UpdatedBy]
+	LEFT JOIN [dbo].[Tbl_MolecularLabInchargeDetails] MLI  WITH (NOLOCK)ON  MLI.[UserId]= MLU.[ID]
 	WHERE MSTR.[MolecularLabId] = @MolecularLabId AND MSTR.[IsComplete] = 1
 	AND  PRSD.[HPLCStatus] = 'P' AND PRSD.[IsActive] = 1 AND PRSDS.[HPLCStatus] = 'P' AND PRSDS.[IsActive] = 1 
 	AND ((SP.[UniqueSubjectID] LIKE '%'+@Input+'%') OR (SC.[BarcodeNo] LIKE '%'+@Input+'%') OR (SP.[FirstName] LIKE '%'+@Input+'%'))
