@@ -49,11 +49,10 @@ BEGIN
 	LEFT JOIN [dbo].[Tbl_UserMaster] UM WITH (NOLOCK) ON UM.[ID] = SP.[AssignANM_ID]
 	LEFT JOIN [dbo].[Tbl_CHCMaster] CM WITH (NOLOCK) ON CM.[ID] = SP.[CHCID]
 	LEFT JOIN [dbo].[Tbl_ANMLogin] AL WITH (NOLOCK) ON AL.[ANMId] = UM.[ID]
-	LEFT JOIN [dbo].[Tbl_SSTestResult] ST WITH (NOLOCK) ON ST.[BarcodeNo] = SC.[BarcodeNo] AND ST.[UniqueSubjectID] = SP.[UniqueSubjectID]
-	WHERE (SC.[BarcodeNo] LIKE ('%' +@Input+ '%') OR SP.[UniqueSubjectID] LIKE ('%' +@Input+ '%')  OR SP.[FirstName] LIKE ('%' +@Input+ '%'))
+	INNER JOIN [dbo].[Tbl_SSTestResult] ST WITH (NOLOCK) ON ST.[BarcodeNo] = SC.[BarcodeNo] AND ST.[UniqueSubjectID] = SP.[UniqueSubjectID]
+	WHERE SC.[BarcodeNo] IN (SELECT [BarcodeNo] FROM [Tbl_SSTestResult] )
+	AND (SC.[BarcodeNo] LIKE ('%' +@Input+ '%') OR SP.[UniqueSubjectID] LIKE ('%' +@Input+ '%')  OR SP.[FirstName] LIKE ('%' +@Input+ '%'))
 	AND SC.[SampleDamaged] = 0  AND SC.[SampleTimeoutExpiry] = 0
-	AND SC.[BarcodeNo] IN (SELECT [BarcodeNo] FROM [Tbl_SSTestResult] )
-
 
 END
 

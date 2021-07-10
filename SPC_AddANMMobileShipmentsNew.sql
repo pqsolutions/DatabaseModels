@@ -106,7 +106,7 @@ BEGIN
 				BEGIN 
 					 SELECT @Indexvar  = @Indexvar + 1 
 					 SELECT @CurrentIndexBarcode = TempCol FROM #TempTable WHERE ArrayIndex = @Indexvar
-					 SET  @UniqueSubjectId = (SELECT Top 1 UniqueSubjectID FROM Tbl_SampleCollection WHERE BarcodeNo = @CurrentIndexBarcode AND CreatedBy = @CreatedBy ORDER BY ID DESC )
+					 SET  @UniqueSubjectId = (SELECT TOP 1 UniqueSubjectID FROM Tbl_SampleCollection WHERE BarcodeNo = @CurrentIndexBarcode AND CreatedBy = @CreatedBy ORDER BY ID DESC )
 						INSERT INTO Tbl_ANMCHCShipmentsDetail (ShipmentId,UniqueSubjectId,BarcodeNo)  
 						VALUES(@ShipmentID,@UniqueSubjectId,@CurrentIndexBarcode)
 					SET @UniqueSubjectId=''

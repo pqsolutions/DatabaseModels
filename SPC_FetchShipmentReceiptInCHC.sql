@@ -8,7 +8,7 @@ GO
 
 IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_FetchShipmentReceiptInCHC' AND [type] = 'p')
 BEGIN
-	DROP PROCEDURE SPC_FetchShipmentReceiptInCHC
+	DROP PROCEDURE SPC_FetchShipmentReceiptInCHC 
 END
 GO
 CREATE PROCEDURE [dbo].[SPC_FetchShipmentReceiptInCHC] 
@@ -52,7 +52,7 @@ BEGIN
 	LEFT JOIN [dbo].[Tbl_ANMCHCShipmentsDetail]  SD WITH (NOLOCK) ON SD.ShipmentID = S.ID
 	LEFT JOIN [dbo].[Tbl_SubjectPrimaryDetail] SP   WITH (NOLOCK) ON SP.UniqueSubjectID = SD.UniqueSubjectID
 	LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail] SPR   WITH (NOLOCK) ON SPR.UniqueSubjectID = SD.UniqueSubjectID
-	LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.BarcodeNo = SD.BarcodeNo
+	LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.UniqueSubjectID = SD.UniqueSubjectID
 	WHERE ISNULL(S.[ReceivedDate],'') = '' AND S.[TestingCHCID] = @TestingCHC
 	ORDER BY ShipmentDate DESC  
 END

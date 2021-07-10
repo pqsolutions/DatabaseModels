@@ -1,0 +1,20 @@
+--USE [Eduquaydb]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+  
+IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_FetchRIbyANM' AND [type] = 'p')
+BEGIN
+	DROP PROCEDURE SPC_FetchRIbyANM 
+END
+GO
+CREATE PROCEDURE [dbo].[SPC_FetchRIbyANM](@Id INT)
+ AS BEGIN  
+ SELECT R.[ID] AS Id
+		,(R.RIsite)  AS Name
+ FROM [dbo].[Tbl_RIMaster] R
+ LEFT JOIN [dbo].[Tbl_UserMaster] U WITH (NOLOCK) ON U.ID = R.ANMID  
+ WHERE  U.[ID] = @Id
+END  

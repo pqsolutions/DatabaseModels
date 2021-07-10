@@ -249,8 +249,6 @@ BEGIN
 					END
 				END	
 				SET @LabDiagnosis = (SELECT LEFT(@Results1,LEN(@Results1)-1))
-
-
 				
 				UPDATE Tbl_HPLCTestResult SET 
 					IsPositive = @IsPositive

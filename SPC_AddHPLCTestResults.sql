@@ -32,6 +32,7 @@ DECLARE
 	,@BarcodeNo VARCHAR(250)
 	,@TestCompleteOn DATETIME
 	,@InjectionNo VARCHAR(MAX)
+	,@SubjectTypeId INT
 	
 BEGIN
 	BEGIN TRY
@@ -43,7 +44,7 @@ BEGIN
 		BEGIN
 			SET @IsNormal = 0
 		END
-		SELECT @SubjectID = ID FROM Tbl_SubjectPrimaryDetail WHERE UniqueSubjectID = @UniqueSubjectId
+		SELECT @SubjectID = ID,@SubjectTypeId=SubjectTypeID FROM Tbl_SubjectPrimaryDetail WHERE UniqueSubjectID = @UniqueSubjectId
 		IF NOT EXISTS (SELECT BarcodeNo FROM Tbl_HPLCTestResult WHERE BarcodeNo = @BarcodeNo)
 		BEGIN
 			INSERT INTO Tbl_HPLCTestResult(
@@ -102,11 +103,11 @@ BEGIN
 			   WHERE ID != @HPLCTestId AND ISNULL(ProcessStatus,0) = 0
 			   AND SampleStatus IS NULL AND Barcode = @BarcodeNo
 
-			SELECT   ('Barcode ' + @BarcodeNo + ' - Sample HPLC test result updated successfully') AS MSG, @IsNormal AS IsNormal
+			SELECT   ('Barcode ' + @BarcodeNo + ' - Sample HPLC test result updated successfully') AS MSG, @IsNormal AS IsNormal,@SubjectTypeId SubjectTypeId
 		END
 		ELSE
 		BEGIN
-			SELECT   ('Barcode ' + @BarcodeNo + ' - Sample HPLC test result already updated') AS MSG
+			SELECT   ('Barcode ' + @BarcodeNo + ' - Sample HPLC test result already updated') AS MSG, IsNormal,@SubjectTypeId SubjectTypeId FROM Tbl_HPLCTestResult  WHERE BarcodeNo = @BarcodeNo
 		END
 
 	END TRY

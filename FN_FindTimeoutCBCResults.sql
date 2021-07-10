@@ -37,7 +37,7 @@ BEGIN
 	BEGIN
 
 		SELECT Top 1 @TestedDateTime = TestedDateTime, @ProcessStatus = ProcessStatus,@ConfirmStatus=ConfirmationStatus 
-		,@CheckDate = DATEADD(DAY,1,@SampleDateTime)
+		,@CheckDate = DATEADD(HOUR,36,@SampleDateTime)
 		FROM Tbl_CBCTestedDetail CD 
 		WHERE Barcode = @Barcode AND  (ConfirmationStatus IS NULL OR ConfirmationStatus = 2) ORDER BY TestedDateTime DESC
 

@@ -1,0 +1,20 @@
+--USE [Eduquaydb]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+  
+IF EXISTS (SELECT 1 FROM sys.objects WHERE name='SPC_FetchSCbyANM' AND [type] = 'p')
+BEGIN
+	DROP PROCEDURE SPC_FetchSCbyANM 
+END
+GO
+CREATE PROCEDURE [dbo].[SPC_FetchSCbyANM](@Id INT)
+ AS BEGIN  
+ SELECT S.[ID] AS Id
+		,(S.SCname)  AS Name
+ FROM [dbo].[Tbl_SCMaster] S
+ LEFT JOIN [dbo].[Tbl_UserMaster] U WITH (NOLOCK) ON U.SCID = S.ID  
+ WHERE  U.[ID] = @Id
+END  
