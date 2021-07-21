@@ -1,4 +1,4 @@
-USE [Eduquaydb]
+USE [InvoiceAppDB]
 GO
 SET ANSI_NULLS ON
 GO
@@ -7,7 +7,7 @@ GO
 
 IF EXISTS (SELECT 1 FROM sys.objects WHERE name='FN_Split' AND [type] = 'FN')
 BEGIN
-	DROP FUNCTION FN_Split
+	DROP FUNCTION FN_Split  
 END
 GO
 CREATE FUNCTION [dbo].[FN_Split] (@list nvarchar(4000),@Del char(1))
