@@ -1,4 +1,4 @@
-USE [InvoiceAppDB]
+USE [Eduquaydb]
 GO
 SET ANSI_NULLS ON
 GO

@@ -1,4 +1,4 @@
---USE [Eduquaydb]
+USE [Eduquaydb]
 GO
 
 SET ANSI_NULLS ON
@@ -41,25 +41,26 @@ BEGIN
 	BEGIN TRY
 		IF @BarcodeNo IS NOT NULL
 		BEGIN
+			IF EXISTS (SELECT Value FROM [dbo].[FN_Split](@BarcodeNo,',') WHERE Value  in (SELECT BarcodeNo FROM Tbl_ANMCHCShipmentsDetail))
+			BEGIN
 				SET @IndexVar = 0  
 				SELECT @TotalCount = COUNT(value) FROM [dbo].[FN_Split](@BarcodeNo,',')  
 				WHILE @Indexvar < @TotalCount  
 				BEGIN
 					SELECT @IndexVar = @IndexVar + 1
 					SELECT @CurrentIndexBarcode = Value FROM  [dbo].[FN_Split](@BarcodeNo,',') WHERE id = @Indexvar
-					IF EXISTS(SELECT BarcodeNo FROM Tbl_ANMCHCShipmentsDetail WHERE BarcodeNo = @CurrentIndexBarcode)
+					IF EXISTS( SELECT BarcodeNo FROM Tbl_ANMCHCShipmentsDetail WHERE BarcodeNo = @CurrentIndexBarcode)
 					BEGIN
-						SET @BNO += (@CurrentIndexBarcode +'-ERR') + ','
+						SELECT @BNO += @CurrentIndexBarcode + ','
 					END
-					ELSE
-					BEGIN
-						SET @BNO += @CurrentIndexBarcode + ','
-					END
-
 				END
 				SELECT @BNO =  LEFT(@BNO, LEN(@BNO) - 1)
-
-			
+				
+				SELECT 'The BarcodeNo''s '+ @BNO +' already exist in previous shipment' AS ErrorMessage
+				PRINT 'x'
+			END
+			ELSE
+			BEGIN
 				SET @GeneratedShipmentID = (SELECT  [dbo].[FN_GenerateANMCHCShipmentId](@ANM_ID,@Source,@ShipmentFrom))
 				INSERT INTO Tbl_ANMCHCShipments
 					(ShipmentFrom
@@ -97,9 +98,9 @@ BEGIN
 					,GETDATE())
 					
 				SET @ShipmentID = (SELECT SCOPE_IDENTITY())
-
+				
 				CREATE  TABLE #TempTable(TempCol NVARCHAR(250), ArrayIndex INT)
-				INSERT INTO #TempTable(TempCol,ArrayIndex) (SELECT Value,id FROM dbo.FN_Split(@BNO,','))
+				INSERT INTO #TempTable(TempCol,ArrayIndex) (SELECT Value,id FROM dbo.FN_Split(@BarcodeNo,','))
 				
 				SET @IndexVar = 0  
 				SELECT @TotalCount= COUNT(*) FROM #TempTable  
@@ -107,10 +108,11 @@ BEGIN
 				BEGIN 
 					 SELECT @Indexvar  = @Indexvar + 1 
 					 SELECT @CurrentIndexBarcode = TempCol FROM #TempTable WHERE ArrayIndex = @Indexvar
-					 SET  @UniqueSubjectId = (SELECT TOP 1 UniqueSubjectID FROM Tbl_SampleCollection WHERE BarcodeNo = @CurrentIndexBarcode AND CreatedBy = @CreatedBy ORDER BY ID DESC )
+					 SELECT @UniqueSubjectId = UniqueSubjectID FROM Tbl_SampleCollection WHERE BarcodeNo = @CurrentIndexBarcode 
+					 BEGIN  
 						INSERT INTO Tbl_ANMCHCShipmentsDetail (ShipmentId,UniqueSubjectId,BarcodeNo)  
 						VALUES(@ShipmentID,@UniqueSubjectId,@CurrentIndexBarcode)
-					SET @UniqueSubjectId=''
+					END 
 				END
 				DROP TABLE #TempTable
 				
@@ -118,6 +120,8 @@ BEGIN
 				
 				PRINT 'y'
 			END
+			
+		END
 	END TRY
 	BEGIN CATCH
 		IF @@TRANCOUNT > 0
