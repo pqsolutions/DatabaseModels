@@ -54,6 +54,7 @@ BEGIN
 	LEFT JOIN [dbo].[Tbl_SubjectPregnancyDetail] SPR   WITH (NOLOCK) ON SPR.UniqueSubjectID = SD.UniqueSubjectID
 	LEFT JOIN [dbo].[Tbl_SampleCollection] SC WITH (NOLOCK) ON SC.UniqueSubjectID = SD.UniqueSubjectID
 	WHERE ISNULL(S.[ReceivedDate],'') = '' AND S.[TestingCHCID] = @TestingCHC
+	AND S.ID IN(SELECT ShipmentID FROM [dbo].[Tbl_ANMCHCShipmentsDetail] )
 	ORDER BY ShipmentDate DESC  
 END
 

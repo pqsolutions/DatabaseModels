@@ -45,7 +45,7 @@ BEGIN
 	CREATE  TABLE #TempReportDetail(ID INT IDENTITY(1,1), ANMID VARCHAR(100), ANMName VARCHAR(MAX), ANMContact VARCHAR(200), 
 	UniqueSubjectId VARCHAR(250),  SubjectName VARCHAR(MAX), SubjectType VARCHAR(150), 
 	RCHID VARCHAR(250), Barcode VARCHAR(150), TimeoutDamaged VARCHAR(100), 
-	ShipmentDateTime VARCHAR(250), ShipmentId VARCHAR(250), ShipmentReceivedDate VARCHAR(200),
+	ShipmentDateTime VARCHAR(250), ShipmentId VARCHAR(250), ShipmentReceivedDate VARCHAR(200),TestDateTime VARCHAR(MAX),
 	 TestResult VARCHAR(MAX), CHCShipmentDateTime VARCHAR(250),CHCShipmentId VARCHAR(200),[ROW NUMBER] INT) 
 
 
@@ -53,7 +53,7 @@ BEGIN
 	BEGIN
 		
 		INSERT INTO #TempReportDetail (ANMID, ANMName, ANMContact, UniqueSubjectId, SubjectName, SubjectType, RCHID, Barcode, TimeoutDamaged, 
-		ShipmentDateTime, ShipmentId, ShipmentReceivedDate, TestResult, CHCShipmentDateTime,CHCShipmentId,[ROW NUMBER])
+		ShipmentDateTime, ShipmentId, ShipmentReceivedDate, TestDateTime, TestResult, CHCShipmentDateTime,CHCShipmentId,[ROW NUMBER])
 		SELECT * FROM (
 			SELECT	UM.[User_gov_code] AS ANMID
 				,(UM.[FirstName]+ ' ' +UM.[LastName]) AS ANMName
@@ -67,6 +67,7 @@ BEGIN
 				,(CONVERT(VARCHAR,ACS.[DateofShipment],103) + ' ' + CONVERT(VARCHAR(5),ACS.[TimeofShipment],108))  AS ShipmentDateTime
 				, ACS.[GenratedShipmentID]  AS ShipmentId
 				,CASE  WHEN ISNULL(ACS.[ReceivedDate],'') = '' THEN '--' ELSE CONVERT(VARCHAR,ACS.[ReceivedDate],103) END AS ShipmentReceivedDate
+				,CASE  WHEN ISNULL(CBC.[ID],'') = '' THEN 'CBC: --, SST: --' ELSE  ('CBC: '+  CONVERT(VARCHAR,CBC.[TestCompleteOn],103)+  ' '+CONVERT(VARCHAR,CBC.[TestCompleteOn],108) +' , SST: --') END AS TestDateTime
 				,CASE  WHEN ISNULL(CBC.[ID],'') = '' THEN 'CBC Pending, SST Pending' ELSE (CBC.CBCResult + ' SST Pending') END AS TestResult
 				,'--' AS CHCShipmentDateTime
 				,'--' AS CHCShipmentId

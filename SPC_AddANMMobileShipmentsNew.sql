@@ -95,7 +95,7 @@ BEGIN
 					,@CreatedBy 
 					,GETDATE())
 					
-				SET @ShipmentID = (SELECT SCOPE_IDENTITY())
+				SET @ShipmentID = (SELECT ID FROM Tbl_ANMCHCShipments WHERE GenratedShipmentID = @GeneratedShipmentID)
 				
 				CREATE  TABLE #TempTable(TempCol NVARCHAR(250), ArrayIndex INT)
 				INSERT INTO #TempTable(TempCol,ArrayIndex) (SELECT Value,id FROM dbo.FN_Split(@BNO,','))
