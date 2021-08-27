@@ -43,7 +43,9 @@ Begin
 			,sc.[SCname]
 			,ISNULL(um.[RIID],0) AS RIID
 			--,ri.[RIsite] 
-			,(um.[FirstName] + ' ' + um.[MiddleName] + ' ' + um.[LastName] ) AS Name
+			,CASE WHEN um.[UserRole_ID] = 6 THEN
+			(um.[FirstName] + ' ' + um.[LastName] +'/'+c.[CHCname]+'/'+d.[Districtname])
+			ELSE (um.[FirstName] + ' ' + um.[LastName]) END AS Name 
 			,um.[FirstName]
 			,um.[MiddleName]
 			,um.[LastName] 

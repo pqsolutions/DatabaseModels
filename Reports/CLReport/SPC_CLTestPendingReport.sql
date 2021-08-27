@@ -85,6 +85,7 @@ BEGIN
 			AND(CCS.[DateofShipment] BETWEEN  CONVERT(DATETIME,@StartDate,103) AND CONVERT(DATETIME,@EndDate,103))
 			AND SPRD.[UniqueSubjectID] IN (SELECT UniqueSubjectID FROM [dbo].[Tbl_CHCShipmentsDetail]) 
 			AND CCS.[ReceivedDate] IS NOT NULL
+			AND CCS.[ReceivingCentralLabId] = @CentalLabID
 			AND (SPRD.[SubjectTypeID] = @SubjectType OR @SubjectType = 0)
 			AND (SPRD.[CHCID] = @CHCID OR @CHCID = 0)
 			AND (SPRD.[PHCID] = @PHCID OR @PHCID = 0)

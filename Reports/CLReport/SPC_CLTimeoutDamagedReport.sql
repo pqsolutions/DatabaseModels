@@ -84,6 +84,7 @@ BEGIN
 			AND(CCS.[DateofShipment] BETWEEN  CONVERT(DATETIME,@StartDate,103) AND CONVERT(DATETIME,@EndDate,103))
 			AND SPRD.[UniqueSubjectID] IN (SELECT UniqueSubjectID FROM [dbo].[Tbl_CHCShipmentsDetail])
 			AND (SPRD.[SubjectTypeID] = @SubjectType OR @SubjectType = 0)
+			AND CCS.[ReceivingCentralLabId] = @CentalLabID
 			AND (SPRD.[CHCID] = @CHCID OR @CHCID = 0)
 			AND (SPRD.[PHCID] = @PHCID OR @PHCID = 0)
 			AND (SPRD.[AssignANM_ID] = @ANMID OR @ANMID = 0)
@@ -124,6 +125,7 @@ BEGIN
 			WHERE  SPRD.[ID] IN (SELECT SubjectID FROM [dbo].[Tbl_SubjectParentDetail])
 			AND(CCS.[DateofShipment] BETWEEN  CONVERT(DATETIME,@StartDate,103) AND CONVERT(DATETIME,@EndDate,103))
 			AND SPRD.[UniqueSubjectID] IN (SELECT UniqueSubjectID FROM [dbo].[Tbl_CHCShipmentsDetail])
+			AND CCS.[ReceivingCentralLabId] = @CentalLabID
 			AND (SPRD.[SubjectTypeID] = @SubjectType OR @SubjectType = 0)
 			AND (SPRD.[CHCID] = @CHCID OR @CHCID = 0)
 			AND (SPRD.[PHCID] = @PHCID OR @PHCID = 0)
